@@ -1,0 +1,10 @@
+dist/
+build/
+node_modules/
+src/main/webapp/resources/vendor/
+src/main/webapp/resources/default/css/
+.sass-cache/
+.gradle/
+storage/
+docs/
+containers/

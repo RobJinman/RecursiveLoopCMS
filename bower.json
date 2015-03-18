@@ -1,0 +1,14 @@
+{
+  "name": "RecursiveLoopCMS",
+  "version": "0.0.0",
+  "authors": [
+    "Rob Jinman <admin@robjinman.com>"
+  ],
+  "description": "Recursive Loop Content Managment System",
+  "license": "MIT License",
+  "private": true,
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "bootstrap": "~3.3.2"
+  }
+}

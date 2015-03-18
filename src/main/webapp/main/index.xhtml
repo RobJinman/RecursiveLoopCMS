@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<ui:composition template="/templates/layout.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:rl="http://xmlns.recursiveloop.org/cms">
+
+  <ui:param name="wrapperClass" value="base-theme index-xhtml"/>
+
+  <ui:define name="head">
+    <title>Recursive Loop CMS</title>
+  </ui:define>
+
+  <ui:define name="content">
+    <h1>Index</h1>
+    <p>Welcome to Recursive Loop CMS.</p>
+    <ul>
+      <li><a href="/editor/index.xhtml">Content Editor</a></li>
+      <li><a href="/devtools/index.xhtml">Developer Tools</a></li>
+    </ul>
+    <p>#{ mySessionBean.getMessage() }</p>
+    <h:form>
+      <h:commandButton value="Click me!" actionListener="#{ mySessionBean.setMessage('Hello world') }"/>
+    </h:form>
+  </ui:define>
+</ui:composition>

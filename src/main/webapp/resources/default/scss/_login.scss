@@ -1,0 +1,25 @@
+body.base-theme.login-xhtml {
+  h1 {
+    color: red;
+  }
+
+  .login-box {
+    position: relative;
+    top: 100px;
+
+    width: 400px;
+    height: 300px;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    background-color: white;
+    border: 1px solid #dd0001;
+  }
+
+  p {
+    color: teal;
+  }
+
+  // ...
+}

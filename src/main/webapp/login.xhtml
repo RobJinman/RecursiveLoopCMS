@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<ui:composition template="/templates/layout.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:rl="http://xmlns.recursiveloop.org/cms">
+
+  <ui:param name="wrapperClass" value="base-theme login-xhtml"/>
+
+  <ui:define name="html-head">
+    <title>Recursive Loop CMS - Login</title>
+  </ui:define>
+
+  <ui:define name="content">
+    <h1>Login</h1>
+    <p>This is the login page.</p>
+    <div class="login-box">
+      <h:form>
+        <h:outputLabel for="usernameInput">Username:</h:outputLabel>
+        <h:inputText id="usernameInput" value="#{ securityBean.username }" required="true"/>
+        <br/>
+        <h:outputLabel for="passwordInput">Password:</h:outputLabel>
+        <h:inputSecret id="passwordInput" value="#{ securityBean.password }" required="true"/>
+        <br/>
+        <h:commandButton value="Submit" action="#{ securityBean.login() }"/>
+      </h:form>
+    </div>
+  </ui:define>
+</ui:composition>

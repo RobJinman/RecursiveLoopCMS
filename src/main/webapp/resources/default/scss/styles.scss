@@ -1,0 +1,27 @@
+@import '../../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
+
+@import 'mixins';
+
+@import 'devTools/devTools';
+@import 'editor/contentEditor';
+@import 'denied';
+@import 'error';
+@import 'index';
+@import 'login';
+@import 'debug'; /*TODO*/
+
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url("\#{resource['vendor/bootstrap:fonts/glyphicons-halflings-regular.eot']}");
+  src: url("\#{resource['vendor/bootstrap:fonts/glyphicons-halflings-regular.eot?#iefix']}") format("embedded-opentype"), url("\#{resource['vendor/bootstrap:fonts/glyphicons-halflings-regular.woff2']}") format("woff2"), url("\#{resource['vendor/bootstrap:fonts/glyphicons-halflings-regular.woff']}") format("woff"), url("\#{resource['vendor/bootstrap:fonts/glyphicons-halflings-regular.ttf']}") format("truetype"), url("\#{resource['vendor/bootstrap:fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular']}") format("svg");
+}
+
+body {
+  background-color: #dddddd;
+}
+
+.base-theme {
+  p {
+    color: blue;
+  }
+}

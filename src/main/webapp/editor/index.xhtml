@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<ui:composition template="/templates/editor/layout.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:rl="http://xmlns.recursiveloop.org/cms">
+
+  <ui:param name="wrapperClass" value="editor-theme index-xhtml"/>
+
+  <ui:define name="head">
+    <title>Recursive Loop CMS - Content Editor</title>
+  </ui:define>
+
+  <ui:define name="sidebar">
+    <ul class="tree">
+      <li><span>Node</span><a href="">Click me</a></li>
+      <li><span>Node</span><a href="">Click me</a>
+        <ul>
+          <li><span>Subnode</span><a href="">Click me</a></li>
+          <li><span>Subnode</span><a href="">Click me</a></li>
+          <li><span>Subnode</span><a href="">Click me</a></li>
+        </ul>
+      </li>
+      <li><span>Node</span><a href="">Click me</a>
+        <ul>
+          <li><span>Subnode</span><a href="">Click me</a>
+            <ul>
+              <li><span>Subsubnode</span><a href="">Click me</a></li>
+              <li><span>Subsubnode</span><a href="">Click me</a></li>
+            </ul>
+          </li>
+          <li><span>Subnode</span><a href="">Click me</a></li>
+          <li><span>Subnode</span><a href="">Click me</a></li>
+        </ul>
+      </li>
+    </ul>
+  </ui:define>
+
+  <ui:define name="content">
+    <h1>Content Editor</h1>
+    <p>Welcome to the Recursive Loop CMS Content Editor.</p>
+  </ui:define>
+</ui:composition>
