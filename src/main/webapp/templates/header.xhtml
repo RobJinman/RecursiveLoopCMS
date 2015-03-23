@@ -7,11 +7,19 @@
 
   <body>
     <ui:composition>
-      <p>Referrer=#{ request.getHeader("Referer") }</p>
-      <c:if test="#{ securityBean.isLoggedIn() }">
-        <p>You are logged in</p>
-      </c:if>
-      <rl:logoutButton/>
+      <span class="logout"><rl:logoutButton/></span>
+      <div class="header-right">
+        <span class='role-badge label #{ request.isUserInRole("Administrator") ? "label-success" : "label-default" }'>Administrator</span>
+        <span class='role-badge label #{ request.isUserInRole("Developer") ? "label-success" : "label-default" }'>Developer</span>
+        <span class='role-badge label #{ request.isUserInRole("Author") ? "label-success" : "label-default" }'>Author</span>
+        <span class="username">#{ request.getUserPrincipal().getName() }</span>
+      </div>
+
+      <ui:insert name="breadcrumb">
+        <ol class="rl-nav breadcrumb">
+          <li class="active">CMS Home</li>
+        </ol>
+      </ui:insert>
     </ui:composition>
   </body>
 </html>

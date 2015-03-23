@@ -5,18 +5,7 @@
 
   <body>
     <ui:composition>
-      <div class="debug-panel">
-        <ul>
-          <li>Principal: #{ request.getUserPrincipal().getName() }</li>
-          <li>Roles
-            <ul>
-              <li><span style='color:#{ request.isUserInRole("Administrator") ? "green" : "red" }'>Administrator</span></li>
-              <li><span style='color:#{ request.isUserInRole("Developer") ? "green" : "red" }'>Developer</span></li>
-              <li><span style='color:#{ request.isUserInRole("Author") ? "green" : "red" }'>Author</span></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
+
     </ui:composition>
   </body>
 </html>

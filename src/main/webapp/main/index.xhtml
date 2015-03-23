@@ -13,15 +13,17 @@
   </ui:define>
 
   <ui:define name="content">
-    <h1>Index</h1>
-    <p>Welcome to Recursive Loop CMS.</p>
-    <ul>
-      <li><a href="/editor/index.xhtml">Content Editor</a></li>
-      <li><a href="/devtools/index.xhtml">Developer Tools</a></li>
-    </ul>
-    <p>#{ mySessionBean.getMessage() }</p>
-    <h:form>
-      <h:commandButton value="Click me!" actionListener="#{ mySessionBean.setMessage('Hello world') }"/>
-    </h:form>
+    <div class="btn-wrap">
+      <div class="editor-btn">
+        <a href="/editor/index.xhtml"><span>
+          <h:graphicImage class="editor-icon" library="default" name="img/editor-icon.svg"/>
+        </span></a>
+      </div>
+      <div class="devtools-btn">
+        <a href="/devtools/index.xhtml"><span>
+          <h:graphicImage class="devtools-icon" library="default" name="img/devtools-icon.svg"/>
+        </span></a>
+      </div>
+    </div>
   </ui:define>
 </ui:composition>

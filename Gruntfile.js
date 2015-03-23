@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     appBase: "src/main/webapp",
-    appResources: "src/main/webapp/resources/default",
+    appResources: "src/main/webapp/resources",
     pkg: grunt.file.readJSON("package.json"),
     banner: "/*!\n" +
             " * <%= pkg.name %>\n" +
@@ -24,17 +24,16 @@ module.exports = function(grunt) {
         options: {
           separator: ";"
         },
-        dest: "<%= appResources %>/js/dist/app-compiled.js",
+        dest: "<%= appResources %>/default/js/dist/app-compiled.js",
         src: [
-          "<%= appResources %>/js/dev/*.js",
-          "<%= appResources %>/js/dev/**/*.js",
+          "<%= appResources %>/default/js/dev/**/*.js",
         ],
       }
     },
     uglify: {
       target: {
         files: {
-          "<%= appResources %>/js/dist/app.min.js": ["<%= appResources %>/js/dist/app-compiled.js"]
+          "<%= appResources %>/default/js/dist/app.min.js": ["<%= appResources %>/default/js/dist/app-compiled.js"]
         }
       }
     },
@@ -45,24 +44,23 @@ module.exports = function(grunt) {
           banner: "<%= banner %>",
         },
         files: {
-          "<%= appResources %>/css/styles.css": "<%= appResources %>/scss/styles.scss"
+          "<%= appResources %>/default/css/styles.css": "<%= appResources %>/default/scss/styles.scss"
         }
       }
     },
     jshint: {
       all: [
-        "<%= appResources %>/js/dev/*.js",
-        "<%= appResources %>/js/dev/**/*.js",
+        "<%= appResources %>/default/js/dev/**/*.js",
       ]
     },
     karma: {
       unit: {
-        configFile: "<%= appResources %>/js/test/karma-unit.conf.js",
+        configFile: "<%= appResources %>/default/js/test/karma-unit.conf.js",
         autoWatch: false,
         singleRun: true
       },
       unit_auto: {
-        configFile: "<%= appResources %>/js/test/karma-unit.conf.js",
+        configFile: "<%= appResources %>/default/js/test/karma-unit.conf.js",
         autoWatch: true,
         singleRun: false
       }
@@ -70,57 +68,97 @@ module.exports = function(grunt) {
     watch: {
       js: {
         files: [
-          "<%= appResources %>/js/dev/*.js",
-          "<%= appResources %>/js/dev/**/*.js"
+          "<%= appResources %>/default/js/dev/**/*.js"
         ],
         tasks: ["concat", "uglify:target", "docs"]
       },
       js_compiled: {
         files: [
-          "<%= appResources %>/js/dist/*.js",
-          "<%= appResources %>/js/dist/**/*.js",
+          "<%= appResources %>/default/js/dist/**/*.js",
         ],
         tasks: ["copy:js"]
       },
       scss: {
         files: [
-          "<%= appResources %>/scss/*.scss",
-          "<%= appResources %>/scss/**/*.scss"
+          "<%= appResources %>/default/scss/**/*.scss"
         ],
         tasks: ["sass:dev"]
       },
       css: {
         files: [
-          "<%= appResources %>/css/*.css",
-          "<%= appResources %>/css/**/*.css"
+          "<%= appResources %>/default/css/**/*.css"
         ],
         tasks: ["copy:css"]
+      },
+      img: {
+        files: [
+          "<%= appResources %>/default/img/**"
+        ],
+        tasks: ["copy:img"]
       },
       xhtml: {
         files: [
           "<%= appBase %>/**/*.xhtml"
         ],
         tasks: ["copy:xhtml"]
+      },
+      components: {
+        files: [
+          "<%= appResources %>/components/**/*.xhtml",
+        ],
+        tasks: ["copy:components"]
+      },
+      java: {
+        files: [
+          "build/classes/main/**"
+        ],
+        options: {
+          event: ['added', 'changed'],
+        },
+        tasks: ["copy:java", "shell:glassfishReload"]
       }
     },
     copy: {
       css: {
         expand: true,
-        cwd: "<%= appResources %>/css/",
-        src: "**/*",
+        cwd: "<%= appResources %>/default/css/",
+        src: "**",
         dest: "/tmp/cargo/conf/cargo-domain/applications/ROOT/resources/default/css/"
+      },
+      components: {
+        expand: true,
+        cwd: "<%= appResources %>/components/",
+        src: "**",
+        dest: "/tmp/cargo/conf/cargo-domain/applications/ROOT/resources/components/"
       },
       xhtml: {
         expand: true,
         cwd: "<%= appBase %>/",
-        src: "**/*",
+        src: "**",
         dest: "/tmp/cargo/conf/cargo-domain/applications/ROOT/"
       },
       js: {
         expand: true,
-        cwd: "<%= appResources %>/js/dist/",
-        src: "**/*",
+        cwd: "<%= appResources %>/default/js/dist/",
+        src: "**",
         dest: "/tmp/cargo/conf/cargo-domain/applications/ROOT/resources/default/js/dist/"
+      },
+      img: {
+        expand: true,
+        cwd: "<%= appResources %>/default/img/",
+        src: "**",
+        dest: "/tmp/cargo/conf/cargo-domain/applications/ROOT/resources/default/img/"
+      },
+      java: {
+        expand: true,
+        cwd: "build/classes/main/",
+        src: "**",
+        dest: "/tmp/cargo/conf/cargo-domain/applications/ROOT/WEB-INF/classes/"
+      }
+    },
+    shell: {
+      glassfishReload: {
+        command: "touch /tmp/cargo/conf/cargo-domain/applications/ROOT/.reload"
       }
     },
     yuidoc: {
@@ -130,7 +168,7 @@ module.exports = function(grunt) {
         version: "<%= pkg.version %>",
         url: "<%= pkg.homepage %>",
         options: {
-          paths: ["<%= appResources %>/js/dev"],
+          paths: ["<%= appResources %>/default/js/dev"],
           outdir: "docs"
         }
       }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:rl="http://xmlns.recursiveloop.org/cms"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <body>
+    <ui:composition> 
+      <c:set var="isParent" value="#{ node.children.size() > 0 }"/>
+
+      <li>
+        <span class="node-wrap">
+          <span class="item-data"
+            data-item-name="#{ node.name }"
+            data-item-type="#{ node.typeName }"
+            data-item-path="#{ node.path }"/>
+
+          <span class="node" id="#{ node.name }" onclick="app.trees['#{ id }'].selectItem(this)">
+            <span class="icon"/>
+            #{ node.name }
+          </span>
+          <span class="opts"/>
+        </span>
+        <c:if test="#{ isParent }">
+          <ul>
+            <c:forEach var="child" items="#{ node.children }">
+              <ui:include src="/templates/treeNode.xhtml">
+                <ui:param name="node" value="#{ child }"/>
+              </ui:include>
+            </c:forEach>
+          </ul>
+        </c:if>
+      </li>
+    </ui:composition>
+  </body>
+</html>

@@ -13,18 +13,23 @@
   </ui:define>
 
   <ui:define name="content">
-    <h1>Login</h1>
-    <p>This is the login page.</p>
     <div class="login-box">
-      <h:form>
-        <h:outputLabel for="usernameInput">Username:</h:outputLabel>
-        <h:inputText id="usernameInput" value="#{ securityBean.username }" required="true"/>
-        <br/>
-        <h:outputLabel for="passwordInput">Password:</h:outputLabel>
-        <h:inputSecret id="passwordInput" value="#{ securityBean.password }" required="true"/>
-        <br/>
-        <h:commandButton value="Submit" action="#{ securityBean.login() }"/>
-      </h:form>
+      <div class="top">
+        <h:graphicImage class="login-logo" library="default" name="img/login.svg"/>
+      </div>
+      <div class="bottom">
+        <div class="login-form">
+          <h:form>
+            <h:outputLabel for="usernameInput">Username:</h:outputLabel>
+            <h:inputText id="usernameInput" value="#{ securityBean.username }" required="true"/>
+            <br/><br/>
+            <h:outputLabel for="passwordInput">Password:</h:outputLabel>
+            <h:inputSecret id="passwordInput" value="#{ securityBean.password }" required="true"/>
+            <br/><br/>
+            <h:commandButton value="Login" action="#{ securityBean.login() }"/>
+          </h:form>
+        </div>
+      </div>
     </div>
   </ui:define>
 </ui:composition>

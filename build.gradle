@@ -2,6 +2,7 @@ apply plugin: "war"
 apply plugin: "com.bmuschko.cargo"
 
 def projectRoot = getProjectDir().getAbsolutePath()
+def repo = project.hasProperty("repo") ? project.properties["repo"] : "$projectRoot/storage"
 def servletSpec = "3.0.1"
 
 ext.testVersions = [
@@ -62,7 +63,8 @@ configurations {
     force "com.fasterxml.jackson.core:jackson-annotations:2.+",
       "xml-apis:xml-apis:1.+",
       "org.hamcrest:hamcrest-core:1.+",
-      "commons-beanutils:commons-beanutils:1.+",
+      "org.slf4j:slf4j-api:1.+",
+      "commons-beanutils:commons-beanutils:1.7.+",
       "commons-collections:commons-collections:3.+"
   }
 
@@ -77,11 +79,15 @@ configurations {
 }
 
 dependencies {
-  providedCompile "javax:javaee-api:7.0"
+  providedCompile "javax:javaee-api:7.0",
+    "javax.json:javax.json-api:1.0" // TODO: remove?
 
   compile name: "h2-1.4.186"
   compile name: "webcommon"
-  compile "org.apache:jackrabbit-ocm:2.0.0"
+  compile "javax.jcr:jcr:2.0",
+    "org.apache.jackrabbit:jackrabbit-core:2.8.0",
+    "org.apache:jackrabbit-ocm:2.0.0",
+    "org.slf4j:slf4j-simple:1.7.10"
 
   testCompile "org.mockito:mockito-core:1.10.19",
     "junit:junit:${testVersions.junit}"
@@ -122,6 +128,11 @@ cargo {
     logLevel = "high"
     timeout = 120000
 
+    if (project.hasProperty("debug")) {
+      def port = project.hasProperty("debugPort") ? project.debugPort : 8787
+      jvmArgs = "-Xdebug -Xmx512m -XX:MaxPermSize=128m -Xrunjdwp:transport=dt_socket,address=$port,server=y,suspend=n"
+    }
+
     containerProperties {
       property 'cargo.servlet.users', "Bob:bobpw:Administrator|Sam:sampw:Author|Tim:timpw:Developer"
     }
@@ -136,6 +147,7 @@ cargo {
     systemProperties {
       property "app.name", "recursiveloop-cms"
       property "app.logs", "$projectRoot/build/logs"
+      property "org.apache.jackrabbit.repository.home", repo
     }
   }
 }

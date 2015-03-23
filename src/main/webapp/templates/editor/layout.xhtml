@@ -5,11 +5,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
   <h:head>
-    <h:outputStylesheet library="default" name="css/styles.css"/>
-
-    <h:outputScript library="vendor/jquery" name="dist/jquery.min.js"/>
-    <h:outputScript library="vendor/bootstrap" name="dist/js/bootstrap.min.js"/>
-    <h:outputScript library="default" name="js/dist/app.min.js"/>
+    <ui:include src="/templates/resources.xhtml"/>
 
     <ui:insert name="html-head">
       <title>Recursive Loop CMS</title>
@@ -24,14 +20,16 @@
         </ui:insert>
       </div>
 
-      <div id="sidebar">
-        <ui:insert name="sidebar">Sidebar</ui:insert>
-      </div>
+      <div id="main">
+        <div id="sidebar">
+          <ui:insert name="sidebar">Sidebar</ui:insert>
+        </div>
 
-      <div id="content">
-        <ui:insert name="content">
-          <ui:include src="/templates/content.xhtml"/>
-        </ui:insert>
+        <div id="content">
+          <ui:insert name="content">
+            <ui:include src="/templates/content.xhtml"/>
+          </ui:insert>
+        </div>
       </div>
 
       <div id="footer">

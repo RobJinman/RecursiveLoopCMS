@@ -55,21 +55,22 @@ public class SecurityBean implements Serializable {
     return m_password;
   }
 
-  public void logout() {
+  public void logout() throws IOException {
+    FacesContext context = FacesContext.getCurrentInstance();
+
     try {
       getHttpServletRequest().logout();
       getHttpServletRequest().getSession().invalidate();
+
+      getExternalContext().redirect(context.getViewRoot().getViewId());
     }
     catch (ServletException ex) {
       m_logger.log(Level.INFO, "Logout failed", ex);
-      FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Logout failed"));
+      context.addMessage(null, new FacesMessage("Logout failed"));
     }
   }
 
   public void login() throws IOException {
-    FacesContext context = FacesContext.getCurrentInstance();
-    ExternalContext externalContext = context.getExternalContext();
-
     try {
       if (isLoggedIn()) {
         logout();

@@ -1,25 +1,90 @@
-body.editor-theme {
-  #sidebar {
-    width: 25%;
-    float: left;
-  }
+$headerH: 40px;
 
-  #content {
-    width: 75%;
-    float: right;
+body.editor-theme {
+  #main {
+    #sidebar {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      top: $headerH;
+      width: 25%;
+      overflow: scroll;
+      background-color: white;
+    }
+
+    #content {
+      width: 75%;
+      float: right;
+      padding: 40px 40px 40px 40px;
+
+      #content-panel {
+        height: 100%;
+      }
+    }
+
+    .err-no-type {
+      color: red;
+    }
+
+    div.item-info {
+      width: 100%;
+      border-bottom: 1px solid #999;
+      margin-bottom: 20px;
+      font-size: 1.4em;
+
+      span.lbl-item-info {
+        font-weight: bold;
+      }
+
+      span.item-info-dat {
+      }
+    }
   }
 
   .tree {
+    .parent-li > .node-wrap > .node > .icon {
+      @extend .glyphicon, .glyphicon-folder-open
+    }
+
     li {
       list-style-type: none;
       padding: 10px 5px 0px 5px;
       position: relative;
 
-      span {
-        display: inline-block;
-        border: 1px solid #999;
-        border-radius: 5px;
-        padding: 5px 5px 5px 5px;
+      .node-wrap {
+        .node {
+          display: inline-block;
+          border: 1px solid #999;
+          border-radius: 5px;
+          padding: 5px 5px 5px 5px;
+          cursor: pointer;
+
+          .icon {
+            margin-right: 5px;
+          }
+        }
+
+        .opts {
+          @extend .glyphicon, .glyphicon-menu-down;
+          position: relative;
+          top: -5px;
+          visibility: hidden;
+          opacity: 0.5;
+          color: black;
+        }
+
+        .opts:hover {
+          opacity: 1.0;
+          color: #337ab7;
+        }
+      }
+
+      .node-wrap {
+        padding: 5px 20px 5px 5px;
+      }
+
+      .node-wrap:hover > .opts {
+        visibility: visible;
       }
     }
 
@@ -32,7 +97,7 @@ body.editor-theme {
     li::before {
       width: 1px;
       height: 100%;
-      border-left: 1px solid green;
+      border-left: 1px solid black;
     }
 
     li::after {
@@ -49,19 +114,9 @@ body.editor-theme {
     li:last-child::before {
       height: 30px;
     }
-
-    li.parent-li > span:hover, li.parent-li > span:hover ~ ul li span {
-      background: #eee;
-      border: 1px solid #94a0b4;
-      color: #000;
-    }
   }
 }
 
 body.editor-theme.index-xhtml {
-  p {
-    color: yellow;
-  }
 
-  // ...
 }

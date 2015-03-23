@@ -17,11 +17,55 @@
 }
 
 body {
-  background-color: #dddddd;
+  background-color: white;
+}
+
+#header {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  height: $headerH;
+  background-color: white;
+  border-bottom: 2px solid black;
+
+  .header-right {
+    line-height: $headerH;
+    float: right;
+    padding-right: 5px;
+
+    .username {
+      @extend .text-info;
+      float: right;
+      margin-right: 10px;
+    }
+
+    .role-badge {
+      float: right;
+      margin-right: 3px;
+      margin-top: ($headerH - 16) / 2;
+    }
+  }
+
+  .logout {
+    height: $headerH;
+    margin: 5px 10px 0 10px;
+    float: left;
+  }
+
+  .rl-nav {
+    background-color: transparent;
+    margin: 0;
+  }
+}
+
+#main {
+  position: absolute;
+  top: $headerH;
+  left: 0;
+  width: 100%;
+  min-height: 500px;
 }
 
 .base-theme {
-  p {
-    color: blue;
-  }
+
 }
