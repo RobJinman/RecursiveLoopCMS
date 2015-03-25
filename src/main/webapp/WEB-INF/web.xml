@@ -141,18 +141,10 @@
   <servlet-mapping>
       <servlet-name>Faces Servlet</servlet-name>
       <url-pattern>*.xhtml</url-pattern>
+<!--
+      <url-pattern>/javax.faces.resource/*</url-pattern>-->
   </servlet-mapping>
 
-  <servlet>
-    <servlet-name>Commit</servlet-name>
-    <servlet-class>com.recursiveloop.cms.servlets.Commit</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-      <servlet-name>Commit</servlet-name>
-      <url-pattern>/editor/ajax/commit</url-pattern>
-  </servlet-mapping>
-<!--
   <filter>
     <filter-name>NoCacheFilter</filter-name>
     <filter-class>com.recursiveloop.filters.NoCacheFilter</filter-class>
@@ -160,5 +152,5 @@
   <filter-mapping>
     <filter-name>NoCacheFilter</filter-name>
     <servlet-name>Faces Servlet</servlet-name>
-  </filter-mapping>-->
+  </filter-mapping>
 </web-app>

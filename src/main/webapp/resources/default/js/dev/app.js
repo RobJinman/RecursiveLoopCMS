@@ -6,36 +6,14 @@ var app = app || {};
 (function(ns) {
   "use strict";
 
-  var _initialised = false;
-  var _onLoad = [];
+  ns.init = function() {
+    var self = this;
 
-  /**
-  * When called after page load like so
-  * $(function() { app.onLoad(fn); });
-  * this ensures that app.init() runs before fn.
-  *
-  * @method onLoad
-  */
-  ns.onLoad = function(fn) {
-    if (_initialised = true) {
-      fn();
-    }
-    else {
-      _onLoad.push(fn);
-    }
+    self.Tree.makeTrees();
+    self.page.init();
   };
-
-  var init = function() {
-    // Do stuff ...
-
-    for (fn in _onLoad) {
-      fn();
-    }
-
-    _initialised = true;
-  };
-
-  $(function() {
-    init();
-  });
 })(app);
+
+$(function() {
+  app.init();
+});

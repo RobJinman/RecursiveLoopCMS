@@ -21,6 +21,8 @@
   </ui:define>
 
   <ui:define name="sidebar">
+    <span class="btnRefresh" onclick="app.page.btnRefresh()"></span>
+
     <div id="tree-wrap">
       <ul class="tree" id="itemTree">
         <ui:include src="/templates/treeNode.xhtml">
@@ -31,10 +33,16 @@
     </div>
 
     <ul id="opts-menu" data-item-path="dummy">
-      <li onclick="app.contentEditorXhtml.insertNew()">Insert new</li>
-      <li onclick="app.contentEditorXhtml.rename()">Rename</li>
-      <li onclick="app.contentEditorXhtml.move()">Move</li>
-      <li onclick="app.contentEditorXhtml.delete()">Delete</li>
+      <li>Insert new
+        <ul>
+          <c:forEach var="type" items="#{ jcrBean.typeList }">
+            <li onclick="app.page.mnuInsertNewItem('#{ type }')">#{ type }</li>
+          </c:forEach>
+        </ul>
+      </li>
+      <li onclick="app.page.mnuRenameItem()">Rename</li>
+      <li onclick="app.page.mnuMoveItem()">Move</li>
+      <li onclick="app.page.mnuDeleteItem()">Delete</li>
     </ul>
   </ui:define>
 

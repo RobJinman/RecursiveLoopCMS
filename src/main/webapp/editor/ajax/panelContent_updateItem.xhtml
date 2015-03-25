@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"   
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <c:set var="itemPath" value="#{ request.getParameter('item') }" scope="request"/>
+  <c:set var="item" value="#{ jcrBean.fetchFullItem(itemPath) }" scope="request"/>
+  <c:set var="type" value="#{ jcrBean.fetchType(item.typeName) }" scope="request"/>
+
+  <span id="item-data"
+    data-item-name="#{ item.name }"
+    data-item-path="#{ item.path }"
+    data-item-type="#{ item.typeName }"/>
+
+  <div class="item-info">
+    <span class="lbl-item-info">Name: </span><span class="item-info-dat">#{ item.name }</span>
+    <span class="lbl-item-info">Type: </span><span class="item-info-dat">#{ item.typeName }</span>
+  </div>
+
+  <form id="frm-item-content">
+    <c:if test="#{ !type.isNull() }">
+      <c:forEach var="field" items="#{ type.fields }">
+        <c:set var="content" value="#{ item.content.getProperty(field.name) }"/>
+        <label for="f-#{ field.name }">#{ field.name }</label><br/>
+        <c:choose>
+          <c:when test="#{ field.widget == 'textedit' }">
+            <input id="f-#{ field.name }" name="#{ field.name }" type="text" value="#{ content }"/>
+          </c:when>
+          <c:when test="#{ field.widget == 'textarea' }">
+            <textarea id="f-#{ field.name }" name="#{ field.name }" rows="4" cols="50">#{ content }</textarea>
+          </c:when>
+          <c:when test="#{ field.widget == 'spinbox' }">
+            <input class="spinner" id="f-#{ field.name }" name="#{ field.name }" value="#{ content }"/>
+          </c:when>
+          <c:when test="#{ field.widget == 'datepicker' }">
+            <input class="datepicker" type="text" id="f-#{ field.name }" name="#{ field.name }" value="#{ content }"/>
+          </c:when>
+          <c:otherwise>
+          </c:otherwise>
+        </c:choose>
+        <br/><br/>
+      </c:forEach>
+      <input type="button" value="Save" onclick="app.page.updateItem()"/>
+    </c:if>
+    <c:if test="#{ type.isNull() }">
+      <span class="err-no-type">No type info</span>
+    </c:if>
+  </form>
+</div>

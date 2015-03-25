@@ -9,26 +9,41 @@ import java.util.ArrayList;
 
 
 public class Item {
-  private ItemMetaData m_meta;
-  private ItemContent m_content;
-  private ItemData m_data;
+  private String m_name;
+  private String m_path;
   private List<Item> m_children;
+  private String m_typeName;
+  private ItemContent m_content;
 
-  public Item(ItemMetaData meta) {
-    m_meta = meta;
+  public Item(Node node, boolean populate) throws RepositoryException {
+    m_name = node.getName();
+    m_path = node.getPath();
+    m_children = new ArrayList<Item>();
+    m_typeName = "folder";
+    m_content = new ItemContent();
+
+    if (node.hasProperty("type")) {
+      Property prop = node.getProperty("type");
+      m_typeName = prop.getString();
+    }
+
+    if (populate) {
+      populate(node);
+    }
   }
 
   /**
   * Produces deep copy, excluding content
   */
   public Item(Item cpy) {
+    m_name = cpy.m_name;
+    m_path = cpy.m_path;
     m_children = new ArrayList<Item>();
     for (Item ch : cpy.m_children) {
       m_children.add(new Item(ch));
     }
-    m_meta = new ItemMetaData(cpy.m_meta);
-    m_content = null;
-    m_data = null;
+    m_typeName = cpy.m_typeName;
+    m_content = new ItemContent();
   }
 
   /**

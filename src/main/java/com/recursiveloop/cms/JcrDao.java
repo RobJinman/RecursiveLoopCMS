@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -109,6 +110,11 @@ public class JcrDao {
   }
 
   @Lock(LockType.READ)
+  public Collection<String> getTypeList() {
+    return m_typeMap.keySet();
+  }
+
+  @Lock(LockType.READ)
   public Type fetchType(String name) {
     if (name == "folder") {
       return new Type();
@@ -124,30 +130,69 @@ public class JcrDao {
     return type;
   }
 
+  /**
+  * Verifies that the item is of known type.
+  */
   @Lock(LockType.WRITE)
-  public void commitItem(Item item) {
-    try {
-      Node root = m_session.getRootNode();
-      createNodeIfNotExists(root, item.getPath());
+  public void insertNewItem(Item item)
+    throws RepositoryException, NoSuchItemException, NoSuchTypeException, InvalidItemException {
 
-      Node node = m_session.getNode(item.getPath());
+    m_logger.log(Level.INFO, "Inserting new item");
 
-      ItemContent content = item.getContent();
-      Iterator<Map.Entry<String, String>> i = content.iterator();
-      while (i.hasNext()) {
-        Map.Entry<String, String> pair = i.next();
-        node.setProperty(pair.getKey(), pair.getValue());
+    String path = item.getPath();
+
+    Node root = m_session.getRootNode();
+    createNodeIfNotExists(root, path);
+
+    commitItem(item);
+
+    // Gut the item before stashing it away
+    item.setContent(new ItemContent());
+
+    int i = path.lastIndexOf("/");
+    if (i != -1) {
+      String parent = path.substring(0, i);
+      Item par = m_itemMap.get(parent);
+      if (par != null) {
+        par.addChild(item);
       }
-      m_session.save();
     }
-    catch (RepositoryException ex) {
-      m_logger.log(Level.SEVERE, "Error commiting item to repository", ex);
-    }
+    m_itemMap.put(item.getPath(), item);
+  }
+
+  /**
+  * Verifies that the item to be updated actually exists in addition to
+  * the usual validation check.
+  */
+  @Lock(LockType.WRITE)
+  public void updateItem(Item item)
+    throws RepositoryException, NoSuchItemException, NoSuchTypeException, InvalidItemException {
+
+    m_logger.log(Level.INFO, "Updating item");
+
+    commitItem(item);
   }
 
   @Lock(LockType.WRITE)
-  public void deleteItem(Item item) {
+  public void deleteItem(String path) throws RepositoryException, NoSuchItemException {
+    if (!m_session.nodeExists(path)) {
+      throw new NoSuchItemException();
+    }
 
+    m_session.removeItem(path);
+    m_session.save();
+
+    Item item = m_itemMap.get(path);
+
+    int i = path.lastIndexOf("/");
+    if (i != -1) {
+      String parent = path.substring(0, i);
+      Item par = m_itemMap.get(parent);
+      if (par != null) {
+        par.removeChild(item);
+      }
+    }
+    m_itemMap.remove(path);
   }
 
   @Lock(LockType.WRITE)
@@ -160,11 +205,52 @@ public class JcrDao {
 
   }
 
+  private void commitItem(Item item)
+    throws RepositoryException, NoSuchItemException, NoSuchTypeException, InvalidItemException {
+
+    try {
+      Node root = m_session.getRootNode();
+
+      if (!m_session.nodeExists(item.getPath())) {
+        throw new NoSuchItemException();
+      }
+
+      Type type = m_typeMap.get(item.getTypeName());
+      if (type == null) {
+        throw new NoSuchTypeException();
+      }
+
+      ItemContent content = item.getContent();
+      // TODO: Use ItemParser to convert ItemContent into ItemData
+
+      Node node = m_session.getNode(item.getPath());
+      node.setProperty("type", type.getName());
+
+      Iterator<Map.Entry<String, String>> i = content.iterator();
+      while (i.hasNext()) {
+        Map.Entry<String, String> pair = i.next();
+        node.setProperty(pair.getKey(), pair.getValue());
+      }
+      m_session.save();
+    }
+    catch (RepositoryException ex) {
+      m_logger.log(Level.SEVERE, "Error commiting item to repository", ex);
+      throw ex;
+    }
+  }
+
+  /**
+  * This loads the entire item tree and all types into memory. This could
+  * be improved by loading only a specified sub-tree to a specified depth.
+  */
   private void load() throws RepositoryException {
     Node root = m_session.getRootNode();
 
     createNodeIfNotExists(root, "rlcms/instances");
     createNodeIfNotExists(root, "rlcms/defs");
+
+    m_itemMap.clear();
+    m_typeMap.clear();
 
     extractTypes(root);
 
@@ -215,8 +301,6 @@ public class JcrDao {
         path = path.concat("/");
       }
       path = path.concat(parts[i]);
-
-      m_logger.log(Level.SEVERE, "Adding node: " + path + " relative to node " + node.getPath());
 
       if (!node.hasNode(path)) {
         node.addNode(path);

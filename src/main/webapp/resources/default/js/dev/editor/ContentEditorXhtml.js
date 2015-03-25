@@ -6,20 +6,155 @@ var app = app || {};
   var PANEL_ID = "panel";
   var TREE_WIDGET_ID = "itemTree";
 
-  ns.contentEditorXhtml = {
-    _panel: null,
-    _init: function() {
-      this._panel = new ns.EditorPanel(PANEL_ID, ns.trees[TREE_WIDGET_ID]);
-    },
-    save: function() {
-      this._panel.save();
-    },
-    insertNew: function() {
-      console.log($("#opts-menu").attr("data-item-path"));
-    }
-  };
+  function ContentEditorXhtml() {
+    var self = this;
 
-  $(function() {
-    ns.onLoad(ns.contentEditorXhtml._init.bind(ns.contentEditorXhtml));
-  });
+    var _id = PANEL_ID;
+    var _content = "";
+    var _current = {};
+    var _tree = null;
+
+    var _setCurrentItem = function(name, path, type) {
+      _current = {
+        name: name,
+        path: path,
+        typeName: type
+      };
+    };
+
+    var _update = function() {
+      $("#" + _id).html(_content);
+
+      var data = $("#item-data");
+
+      _current = {
+        name: data.attr("data-item-name"),
+        path: data.attr("data-item-path"),
+        typeName: data.attr("data-item-type")
+      };
+
+      $(".datepicker").datepicker();
+      $(".spinner").spinner();
+    };
+
+    self.init = function() {
+      _tree = ns.trees[TREE_WIDGET_ID];
+
+      if (typeof _tree !== "undefined" && _tree !== null) {
+        _tree.selectItem = function(elem) {
+          var data = $(elem).closest(".node-wrap").find(".item-data");
+          var type = data.attr("data-item-type");
+          var path = data.attr("data-item-path");
+
+          if (type === "folder") {
+            return;
+          }
+
+          $.ajax({
+            url: "ajax/panelContent_updateItem.xhtml?item=" + encodeURIComponent(path)
+          }).done(function(data) {
+            _content = data;
+            _update();
+          });
+
+          _update();
+        };
+      }
+    };
+
+    self.updateItem = function() {
+      var content = {};
+      $.each($("#frm-item-content").serializeArray(), function() {
+        content[this.name] = this.value;
+      });
+
+      var obj = {
+        name: _current.name,
+        path: _current.path,
+        typeName: _current.typeName,
+        data: content
+      };
+
+      console.log(obj);
+
+      $.ajax({
+        url: "/ajax/repository/item?action=update",
+        method: "POST",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify(obj)
+      }).done(function(data) {
+        // TODO
+      });
+    };
+
+    self.newItem = function() {
+      var content = {};
+      $.each($("#frm-item-content").serializeArray(), function() {
+        content[this.name] = this.value;
+      });
+
+      var info = {};
+      $.each($("#frm-item-info").serializeArray(), function() {
+        info[this.name] = this.value;
+      });
+
+      var obj = {
+        name: info.name,
+        path: info.parent + "/" + info.name,
+        typeName: info.type,
+        data: content
+      };
+
+      console.log(obj);
+
+      $.ajax({
+        url: "/ajax/repository/item?action=insert",
+        method: "POST",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify(obj)
+      }).done(function(data) {
+        // TODO
+      });
+    };
+
+    self.mnuInsertNewItem = function(type) {
+      var dat = $("#opts-menu");
+      var path = dat.attr("data-item-path");
+
+      $.ajax({
+        url: "ajax/panelContent_newItem.xhtml?type=" + encodeURIComponent(type) + "&parent=" + encodeURIComponent(path)
+      }).done(function(data) {
+        _content = data;
+        _update();
+      });
+    };
+
+    self.mnuRenameItem = function() {
+
+    };
+
+    self.mnuMoveItem = function() {
+
+    };
+
+    self.mnuDeleteItem = function() {
+      var dat = $("#opts-menu");
+      var path = dat.attr("data-item-path");
+
+      $.ajax({
+        url: "/ajax/repository/item?path=" + encodeURIComponent(path),
+        method: "DELETE"
+      }).done(function(data) {
+        // TODO
+      });
+    };
+
+    self.btnRefresh = function() {
+
+    };
+  }
+
+  ns.page = new ContentEditorXhtml();
 })(app);

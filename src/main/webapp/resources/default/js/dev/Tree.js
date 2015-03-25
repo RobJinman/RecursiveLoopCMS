@@ -8,9 +8,8 @@ var app = app || {};
 
     this.selectItem = function(type, id) {};
   };
-  ns.Tree = Tree;
 
-  var makeTrees = function() {
+  Tree.makeTrees = function() {
     ns.trees = {};
     $(".tree").each(function() {
       ns.trees[this.id] = new ns.Tree(this.id);
@@ -56,7 +55,5 @@ var app = app || {};
     });
   };
 
-  $(function() {
-    ns.onLoad(makeTrees);
-  });
+  ns.Tree = Tree;
 })(app);
