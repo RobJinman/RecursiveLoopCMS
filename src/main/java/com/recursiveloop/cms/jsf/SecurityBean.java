@@ -1,4 +1,4 @@
-package com.recursiveloop.cms;
+package com.recursiveloop.cms.jsf;
 
 import com.recursiveloop.webcommon.annotations.Config;
 import javax.faces.application.FacesMessage;

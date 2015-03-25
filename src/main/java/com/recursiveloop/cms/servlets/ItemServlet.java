@@ -1,7 +1,7 @@
 package com.recursiveloop.cms.servlets;
 
 import com.recursiveloop.cms.JcrDao;
-import com.recursiveloop.cms.Item;
+import com.recursiveloop.cms.StringItem;
 import com.recursiveloop.cms.NoSuchTypeException;
 import com.recursiveloop.cms.NoSuchItemException;
 import com.recursiveloop.cms.InvalidItemException;
@@ -78,8 +78,8 @@ public class ItemServlet extends HttpServlet {
       InputStream is = request.getInputStream();
       JsonReader rdr = Json.createReader(is)) {
 
-      JsonObject root = rdr.readObject();
-      Item item = new Item(root);
+      JsonObject json = rdr.readObject();
+      StringItem item = new StringItem(json);
 
       itemPath = item.getPath();
       itemType = item.getTypeName();
@@ -115,8 +115,8 @@ public class ItemServlet extends HttpServlet {
       InputStream is = request.getInputStream();
       JsonReader rdr = Json.createReader(is)) {
 
-      JsonObject root = rdr.readObject();
-      Item item = new Item(root);
+      JsonObject json = rdr.readObject();
+      StringItem item = new StringItem(json);
 
       itemType = item.getTypeName();
 

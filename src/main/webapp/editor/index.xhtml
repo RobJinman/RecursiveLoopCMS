@@ -21,13 +21,11 @@
   </ui:define>
 
   <ui:define name="sidebar">
-    <span class="btnRefresh" onclick="app.page.btnRefresh()"></span>
-
     <div id="tree-wrap">
       <ul class="tree" id="itemTree">
         <ui:include src="/templates/treeNode.xhtml">
           <ui:param name="id" value="itemTree"/>
-          <ui:param name="node" value="#{ jcrBean.itemTree }"/>
+          <ui:param name="node" value="#{ jcrBean.shallowItemTree }"/>
         </ui:include>
       </ul>
     </div>

@@ -10,7 +10,7 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Value;
-import javax.inject.Named;
+import javax.inject.Inject;
 import javax.annotation.PreDestroy;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -38,11 +38,14 @@ import java.util.logging.Level;
 public class JcrDao {
   private static final Logger m_logger = Logger.getLogger(JcrDao.class.getName());
 
+  @Inject
+  ItemParser m_parser;
+
   private Session m_session;
   private ObjectContentManager m_ocm;
-  private Item m_itemRoot;
-  private Map<String, Item> m_itemMap; // By path
-  private Map<String, Type> m_typeMap; // By name
+  private ShallowItem m_itemRoot;
+  private Map<String, ShallowItem> m_itemMap; // By path
+  private Map<String, Type> m_typeMap;        // By name
 
   @PostConstruct
   public void setup() {
@@ -62,10 +65,11 @@ public class JcrDao {
       Mapper mapper = new AnnotationMapperImpl(classes);
       m_ocm =  new ObjectContentManagerImpl(m_session, mapper);
 
-      m_itemMap = new HashMap<String, Item>();
+      m_itemMap = new HashMap<String, ShallowItem>();
       m_typeMap = new HashMap<String, Type>();
 
-      load();
+      loadShallowItems();
+      loadTypes();
     }
     catch (RepositoryException ex) {
       m_logger.log(Level.SEVERE, "Error accessing repository", ex);
@@ -78,34 +82,43 @@ public class JcrDao {
   }
 
   @Lock(LockType.READ)
-  public Item getItemTree() {
+  public ShallowItem getShallowItemTree() {
     return m_itemRoot;
   }
 
   @Lock(LockType.READ)
-  public Item getItem(String path) {
+  public ShallowItem getShallowItem(String path) {
     return m_itemMap.get(path);
   }
 
   @Lock(LockType.READ)
-  public Item fetchFullItem(String path) {
-    Item item = m_itemMap.get(path);
-    if (item != null) {
-      Item cpy = new Item(m_itemMap.get(path));
+  public StringItem getStringItem(String path)
+    throws RepositoryException, NoSuchItemException, NoSuchTypeException, InvalidItemException {
 
-      try {
-        Node node = m_session.getNode(path);
-        cpy.populate(node);
-      }
-      catch (RepositoryException ex) {
-        m_logger.log(Level.SEVERE, "Error populating item from repository", ex);
-      }
+    ShallowItem item = m_itemMap.get(path);
 
-      return cpy;
+    try {
+      if (item != null) {
+        Node node = m_session.getNode(item.getPath());
+        Type type = m_typeMap.get(item.getTypeName());
+
+        if (type == null) {
+          throw new NoSuchTypeException();
+        }
+
+        BinaryItem binItem = new BinaryItem(node, type);
+        StringItem strItem = m_parser.stringify(binItem, type);
+
+        return strItem;
+      }
+      else {
+        m_logger.log(Level.WARNING, "Error retrieving full item; no such item");
+        throw new NoSuchItemException();
+      }
     }
-    else {
-      m_logger.log(Level.WARNING, "Error retrieving full item; no such item");
-      return null;
+    catch (RepositoryException ex) {
+      m_logger.log(Level.SEVERE, "Error populating item from repository", ex);
+      throw ex;
     }
   }
 
@@ -115,7 +128,7 @@ public class JcrDao {
   }
 
   @Lock(LockType.READ)
-  public Type fetchType(String name) {
+  public Type getType(String name) {
     if (name == "folder") {
       return new Type();
     }
@@ -134,7 +147,7 @@ public class JcrDao {
   * Verifies that the item is of known type.
   */
   @Lock(LockType.WRITE)
-  public void insertNewItem(Item item)
+  public void insertNewItem(StringItem item)
     throws RepositoryException, NoSuchItemException, NoSuchTypeException, InvalidItemException {
 
     m_logger.log(Level.INFO, "Inserting new item");
@@ -144,20 +157,32 @@ public class JcrDao {
     Node root = m_session.getRootNode();
     createNodeIfNotExists(root, path);
 
-    commitItem(item);
+    Type type = m_typeMap.get(item.getTypeName());
+    if (type == null) {
+      throw new NoSuchTypeException();
+    }
 
-    // Gut the item before stashing it away
-    item.setContent(new ItemContent());
+    Node node = m_session.getNode(path);
+
+    BinaryItem binItem = m_parser.parse(item, type);
+    binItem.writeTo(node);
+
+    m_session.save();
+
+
+    // Retain a shallow copy of the new item
+
+    ShallowItem shallowCopy = new ShallowItem(item);
 
     int i = path.lastIndexOf("/");
     if (i != -1) {
       String parent = path.substring(0, i);
-      Item par = m_itemMap.get(parent);
+      ShallowItem par = m_itemMap.get(parent);
       if (par != null) {
-        par.addChild(item);
+        par.addChild(shallowCopy);
       }
     }
-    m_itemMap.put(item.getPath(), item);
+    m_itemMap.put(path, shallowCopy);
   }
 
   /**
@@ -165,12 +190,28 @@ public class JcrDao {
   * the usual validation check.
   */
   @Lock(LockType.WRITE)
-  public void updateItem(Item item)
+  public void updateItem(StringItem item)
     throws RepositoryException, NoSuchItemException, NoSuchTypeException, InvalidItemException {
 
     m_logger.log(Level.INFO, "Updating item");
 
-    commitItem(item);
+    String path = item.getPath();
+
+    if (!m_session.nodeExists(item.getPath())) {
+      throw new NoSuchItemException();
+    }
+
+    Type type = m_typeMap.get(item.getTypeName());
+    if (type == null) {
+      throw new NoSuchTypeException();
+    }
+
+    Node node = m_session.getNode(path);
+
+    BinaryItem binItem = m_parser.parse(item, type);
+    binItem.writeTo(node);
+
+    m_session.save();
   }
 
   @Lock(LockType.WRITE)
@@ -182,12 +223,12 @@ public class JcrDao {
     m_session.removeItem(path);
     m_session.save();
 
-    Item item = m_itemMap.get(path);
+    ShallowItem item = m_itemMap.get(path);
 
     int i = path.lastIndexOf("/");
     if (i != -1) {
       String parent = path.substring(0, i);
-      Item par = m_itemMap.get(parent);
+      ShallowItem par = m_itemMap.get(parent);
       if (par != null) {
         par.removeChild(item);
       }
@@ -196,7 +237,12 @@ public class JcrDao {
   }
 
   @Lock(LockType.WRITE)
-  public void commitType(Type type) {
+  public void insertNewType(Type type) {
+
+  }
+
+  @Lock(LockType.WRITE)
+  public void updateType(Type type) {
 
   }
 
@@ -205,62 +251,20 @@ public class JcrDao {
 
   }
 
-  private void commitItem(Item item)
-    throws RepositoryException, NoSuchItemException, NoSuchTypeException, InvalidItemException {
-
-    try {
-      Node root = m_session.getRootNode();
-
-      if (!m_session.nodeExists(item.getPath())) {
-        throw new NoSuchItemException();
-      }
-
-      Type type = m_typeMap.get(item.getTypeName());
-      if (type == null) {
-        throw new NoSuchTypeException();
-      }
-
-      ItemContent content = item.getContent();
-      // TODO: Use ItemParser to convert ItemContent into ItemData
-
-      Node node = m_session.getNode(item.getPath());
-      node.setProperty("type", type.getName());
-
-      Iterator<Map.Entry<String, String>> i = content.iterator();
-      while (i.hasNext()) {
-        Map.Entry<String, String> pair = i.next();
-        node.setProperty(pair.getKey(), pair.getValue());
-      }
-      m_session.save();
-    }
-    catch (RepositoryException ex) {
-      m_logger.log(Level.SEVERE, "Error commiting item to repository", ex);
-      throw ex;
-    }
-  }
-
-  /**
-  * This loads the entire item tree and all types into memory. This could
-  * be improved by loading only a specified sub-tree to a specified depth.
-  */
-  private void load() throws RepositoryException {
+  private void loadShallowItems() throws RepositoryException {
     Node root = m_session.getRootNode();
 
     createNodeIfNotExists(root, "rlcms/instances");
-    createNodeIfNotExists(root, "rlcms/defs");
 
     m_itemMap.clear();
-    m_typeMap.clear();
 
-    extractTypes(root);
+    Node node = root.getNode("rlcms/instances");
+    m_itemRoot = new ShallowItem(node);
 
-    Node item = root.getNode("rlcms/instances");
-    m_itemRoot = new Item(item, false);
-
-    extractItems_r(item, m_itemRoot);
+    extractItems_r(node, m_itemRoot);
   }
 
-  private void extractItems_r(Node node, Item item) throws RepositoryException {
+  private void extractItems_r(Node node, ShallowItem item) throws RepositoryException {
     m_itemMap.put(item.getPath(), item);
 
     NodeIterator children = node.getNodes();
@@ -268,11 +272,21 @@ public class JcrDao {
     while (children.hasNext()) {
       Node chNode = children.nextNode();
 
-      Item chInst = new Item(chNode, false);
+      ShallowItem chInst = new ShallowItem(chNode);
       item.addChild(chInst);
 
       extractItems_r(chNode, chInst);
     }
+  }
+
+  private void loadTypes() throws RepositoryException {
+    Node root = m_session.getRootNode();
+
+    createNodeIfNotExists(root, "rlcms/defs");
+
+    m_typeMap.clear();
+
+    extractTypes(root);
   }
 
   private void extractTypes(Node root) throws RepositoryException {

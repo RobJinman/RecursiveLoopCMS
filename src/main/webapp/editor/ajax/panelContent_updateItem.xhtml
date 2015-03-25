@@ -6,8 +6,8 @@
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
   <c:set var="itemPath" value="#{ request.getParameter('item') }" scope="request"/>
-  <c:set var="item" value="#{ jcrBean.fetchFullItem(itemPath) }" scope="request"/>
-  <c:set var="type" value="#{ jcrBean.fetchType(item.typeName) }" scope="request"/>
+  <c:set var="item" value="#{ jcrBean.getStringItem(itemPath) }" scope="request"/>
+  <c:set var="type" value="#{ jcrBean.getType(item.typeName) }" scope="request"/>
 
   <span id="item-data"
     data-item-name="#{ item.name }"
@@ -22,7 +22,7 @@
   <form id="frm-item-content">
     <c:if test="#{ !type.isNull() }">
       <c:forEach var="field" items="#{ type.fields }">
-        <c:set var="content" value="#{ item.content.getProperty(field.name) }"/>
+        <c:set var="content" value="#{ item.getProperty(field.name) }"/>
         <label for="f-#{ field.name }">#{ field.name }</label><br/>
         <c:choose>
           <c:when test="#{ field.widget == 'textedit' }">

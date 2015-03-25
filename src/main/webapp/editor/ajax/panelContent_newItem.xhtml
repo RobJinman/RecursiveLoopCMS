@@ -7,7 +7,7 @@
 
   <c:set var="parent" value="#{ request.getParameter('parent') }" scope="request"/>
   <c:set var="typeName" value="#{ request.getParameter('type') }" scope="request"/>
-  <c:set var="type" value="#{ jcrBean.fetchType(typeName) }" scope="request"/>
+  <c:set var="type" value="#{ jcrBean.getType(typeName) }" scope="request"/>
 
   <div class="item-info">
     <span class="lbl-item-info">Parent: </span><span class="item-info-dat">#{ parent }</span>
@@ -23,7 +23,7 @@
   <form id="frm-item-content">
     <c:if test="#{ !type.isNull() }">
       <c:forEach var="field" items="#{ type.fields }">
-        <c:set var="content" value="#{ item.content.getProperty(field.name) }"/>
+        <c:set var="content" value="#{ item.getProperty(field.name) }"/>
         <label for="f-#{ field.name }">#{ field.name }</label><br/>
         <c:choose>
           <c:when test="#{ field.widget == 'textedit' }">

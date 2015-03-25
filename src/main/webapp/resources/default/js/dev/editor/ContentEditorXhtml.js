@@ -150,10 +150,6 @@ var app = app || {};
         // TODO
       });
     };
-
-    self.btnRefresh = function() {
-
-    };
   }
 
   ns.page = new ContentEditorXhtml();

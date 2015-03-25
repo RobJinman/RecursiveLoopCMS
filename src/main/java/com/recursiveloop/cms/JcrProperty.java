@@ -1,9 +1,12 @@
 package com.recursiveloop.cms;
 
-import javax.jcr.PropertyType;
-
 
 public class JcrProperty {
-  PropertyType type;
-  Object data;
+  public int type;    // Values defined in javax.jcr.PropertyType
+  public Object data;
+
+  JcrProperty(int type, Object data) {
+    this.type = type;
+    this.data = data;
+  }
 }

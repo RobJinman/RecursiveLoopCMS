@@ -1,6 +1,10 @@
-package com.recursiveloop.cms;
+package com.recursiveloop.cms.jsf;
 
-import javax.jcr.RepositoryException;
+import com.recursiveloop.cms.JcrDao;
+import com.recursiveloop.cms.ShallowItem;
+import com.recursiveloop.cms.StringItem;
+import com.recursiveloop.cms.Type;
+
 import javax.inject.Named;
 import javax.inject.Inject;
 import javax.enterprise.context.RequestScoped;
@@ -17,23 +21,30 @@ public class JcrBean {
   @Inject
   JcrDao m_dao;
 
-  public Item getItemTree() {
-    return m_dao.getItemTree();
+  public ShallowItem getShallowItemTree() {
+    return m_dao.getShallowItemTree();
   }
 
-  public Item getItem(String path) {
-    return m_dao.getItem(path);
+  public ShallowItem getShallowItem(String path) {
+    return m_dao.getShallowItem(path);
   }
 
-  public Item fetchFullItem(String path) {
-    return m_dao.fetchFullItem(path);
+  public StringItem getStringItem(String path) {
+    try {
+      return m_dao.getStringItem(path);
+    }
+    catch (Exception ex) {
+      m_logger.log(Level.WARNING, "Error retrieving item from repository", ex);
+    }
+
+    return null;
   }
 
   public Collection<String> getTypeList() {
     return m_dao.getTypeList();
   }
 
-  public Type fetchType(String name) {
-    return m_dao.fetchType(name);
+  public Type getType(String name) {
+    return m_dao.getType(name);
   }
 }
