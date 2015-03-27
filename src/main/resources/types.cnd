@@ -1,0 +1,23 @@
+<rl = 'http://recursiveloop.org/cms/main-ns'>
+<rlt = 'http://recursiveloop.org/cms/types-ns'>
+[rlt:item] > nt:unstructured
+  - rl:type (string) mandatory
+  - rl:status (long) = '0' mandatory
+  + rl:parseParams
+[rlt:fieldType]
+  - rl:name (string) mandatory
+  - rl:jcrType (string) mandatory
+  - rl:required (boolean) = true mandatory
+  - rl:default
+  - rl:widget (string)
+  - ocm_classname (string)
+[rlt:fieldTypeGroup]
+  + rl:field (rlt:fieldType) multiple
+[rlt:itemType]
+  + rl:fields (rlt:fieldTypeGroup) mandatory
+  - ocm_classname (string)
+[rlt:itemTypeGroup]
+  + * (rlt:itemType) multiple
+[rlt:folder]
+  + * (rlt:item) multiple
+  + * (rlt:folder) multiple

@@ -1,30 +1,37 @@
 package com.recursiveloop.cms;
 
+import com.recursiveloop.jcrutils.RlJcrItem;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.json.JsonObject;
 import java.util.List;
 import java.util.ArrayList;
 
 
-public class ShallowItem {
+public class ShallowItem extends RlJcrItem {
   private String m_name;
-  private String m_path;
-  private String m_typeName;
   private List<ShallowItem> m_children;
 
   /**
   * Does not add children
   */
-  public ShallowItem(Node node) throws RepositoryException {
-    m_name = node.getName();
-    m_path = node.getPath();
-    m_typeName = "folder";
+  public ShallowItem(Node node) throws RepositoryException, InvalidItemException {
+    super("folder");
+    super.setPath(node.getPath());
 
-    if (node.hasProperty("type")) {
-      Property prop = node.getProperty("type");
-      m_typeName = prop.getString();
+    m_name = node.getName();
+
+    if (node.hasProperty("rl:type")) {
+      try {
+        Property prop = node.getProperty("rl:type");
+        super.setTypeName(prop.getString());
+      }
+      catch (PathNotFoundException ex) {
+        throw new InvalidItemException("Error constucting item from JCR node; property missing", ex);
+      }
     }
 
     m_children = new ArrayList<ShallowItem>();
@@ -33,17 +40,23 @@ public class ShallowItem {
   /**
   * Does not add children
   */
-  public ShallowItem(JsonObject json) {
-    m_name = json.getString("name");
-    m_path = json.getString("path");
-    m_typeName = json.getString("typeName");
-    m_children = new ArrayList<ShallowItem>();
+  public ShallowItem(JsonObject json) throws InvalidItemException {
+    try {
+      super.setPath(json.getString("path"));
+      super.setTypeName(json.getString("typeName"));
+
+      m_name = json.getString("name");
+      m_children = new ArrayList<ShallowItem>();
+    }
+    catch (NullPointerException|ClassCastException ex) {
+      throw new InvalidItemException("Error constructing item from JSON object; property missing?", ex);
+    }
   }
 
   public ShallowItem(ShallowItem cpy) {
+    super(cpy);
+
     m_name = cpy.m_name;
-    m_path = cpy.m_path;
-    m_typeName = cpy.m_typeName;
     m_children = new ArrayList<ShallowItem>();
 
     for (ShallowItem ch : cpy.m_children) {
@@ -51,20 +64,8 @@ public class ShallowItem {
     }
   }
 
-  public void writeTo(Node node) throws InvalidItemException, RepositoryException {
-    node.setProperty("type", m_typeName);
-  }
-
   public final String getName() {
     return m_name;
-  }
-
-  public final String getPath() {
-    return m_path;
-  }
-
-  public final String getTypeName() {
-    return m_typeName;
   }
 
   public final List<ShallowItem> getChildren() {
@@ -77,7 +78,7 @@ public class ShallowItem {
 
   public final void removeChild(ShallowItem item) {
     for (int i = 0; i < m_children.size(); ++i) {
-      if (m_children.get(i).m_path.equals(item.m_path)) {
+      if (m_children.get(i).getPath().equals(item.getPath())) {
         m_children.remove(i);
         break;
       }

@@ -1,7 +1,7 @@
 package com.recursiveloop.cms;
 
-import com.recursiveloop.cms.jcrbeans.Definition;
-import com.recursiveloop.cms.jcrbeans.FieldDef;
+import com.recursiveloop.jcrutils.RlJcrItemType;
+import com.recursiveloop.jcrutils.RlJcrFieldType;
 
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -10,6 +10,9 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Value;
+import javax.jcr.Workspace;
+import javax.jcr.NamespaceRegistry;
+import javax.jcr.nodetype.NodeTypeManager;
 import javax.inject.Inject;
 import javax.annotation.PreDestroy;
 import javax.annotation.PostConstruct;
@@ -23,6 +26,11 @@ import org.apache.jackrabbit.ocm.manager.ObjectContentManager;
 import org.apache.jackrabbit.ocm.manager.impl.ObjectContentManagerImpl;
 import org.apache.jackrabbit.ocm.mapper.Mapper;
 import org.apache.jackrabbit.ocm.mapper.impl.annotation.AnnotationMapperImpl;
+import org.apache.jackrabbit.commons.cnd.CndImporter;
+import org.apache.jackrabbit.commons.cnd.ParseException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -45,7 +53,7 @@ public class JcrDao {
   private ObjectContentManager m_ocm;
   private ShallowItem m_itemRoot;
   private Map<String, ShallowItem> m_itemMap; // By path
-  private Map<String, Type> m_typeMap;        // By name
+  private Map<String, ItemType> m_typeMap;    // By name
 
   @PostConstruct
   public void setup() {
@@ -59,20 +67,30 @@ public class JcrDao {
       }
 
       List<Class> classes = new ArrayList<Class>();	
-      classes.add(Definition.class);
-      classes.add(FieldDef.class);
+      classes.add(RlJcrItemType.class);
+      classes.add(RlJcrFieldType.class);
 
       Mapper mapper = new AnnotationMapperImpl(classes);
       m_ocm =  new ObjectContentManagerImpl(m_session, mapper);
 
       m_itemMap = new HashMap<String, ShallowItem>();
-      m_typeMap = new HashMap<String, Type>();
+      m_typeMap = new HashMap<String, ItemType>();
 
-      loadShallowItems();
+      loadJcrTypes();
       loadTypes();
+      loadShallowItems();
+    }
+    catch (InvalidItemException ex) {
+      m_logger.log(Level.SEVERE, "Error initialising repository", ex);
     }
     catch (RepositoryException ex) {
-      m_logger.log(Level.SEVERE, "Error accessing repository", ex);
+      m_logger.log(Level.SEVERE, "Error initialising repository", ex);
+    }
+    catch (IOException ex) {
+      m_logger.log(Level.SEVERE, "Error initialising repository", ex);
+    }
+    catch (ParseException ex) {
+      m_logger.log(Level.SEVERE, "Error initialising repository", ex);
     }
   }
 
@@ -100,10 +118,10 @@ public class JcrDao {
     try {
       if (item != null) {
         Node node = m_session.getNode(item.getPath());
-        Type type = m_typeMap.get(item.getTypeName());
+        ItemType type = m_typeMap.get(item.getTypeName());
 
         if (type == null) {
-          throw new NoSuchTypeException();
+          throw new NoSuchTypeException(item.getTypeName());
         }
 
         BinaryItem binItem = new BinaryItem(node, type);
@@ -113,7 +131,7 @@ public class JcrDao {
       }
       else {
         m_logger.log(Level.WARNING, "Error retrieving full item; no such item");
-        throw new NoSuchItemException();
+        throw new NoSuchItemException(path);
       }
     }
     catch (RepositoryException ex) {
@@ -128,16 +146,16 @@ public class JcrDao {
   }
 
   @Lock(LockType.READ)
-  public Type getType(String name) {
+  public ItemType getType(String name) {
     if (name == "folder") {
-      return new Type();
+      return new ItemType("folder");
     }
 
-    Type type = m_typeMap.get(name);
+    ItemType type = m_typeMap.get(name);
 
     if (type == null) {
       m_logger.log(Level.WARNING, "Error fetching type '" + name + "'; no such type");
-      return new Type();
+      return new ItemType();
     }
 
     return type;
@@ -155,11 +173,11 @@ public class JcrDao {
     String path = item.getPath();
 
     Node root = m_session.getRootNode();
-    createNodeIfNotExists(root, path);
+    createNodeIfNotExists(root, path, "rlt:item");
 
-    Type type = m_typeMap.get(item.getTypeName());
+    ItemType type = m_typeMap.get(item.getTypeName());
     if (type == null) {
-      throw new NoSuchTypeException();
+      throw new NoSuchTypeException(item.getTypeName());
     }
 
     Node node = m_session.getNode(path);
@@ -198,12 +216,12 @@ public class JcrDao {
     String path = item.getPath();
 
     if (!m_session.nodeExists(item.getPath())) {
-      throw new NoSuchItemException();
+      throw new NoSuchItemException(item.getPath());
     }
 
-    Type type = m_typeMap.get(item.getTypeName());
+    ItemType type = m_typeMap.get(item.getTypeName());
     if (type == null) {
-      throw new NoSuchTypeException();
+      throw new NoSuchTypeException(item.getTypeName());
     }
 
     Node node = m_session.getNode(path);
@@ -217,7 +235,7 @@ public class JcrDao {
   @Lock(LockType.WRITE)
   public void deleteItem(String path) throws RepositoryException, NoSuchItemException {
     if (!m_session.nodeExists(path)) {
-      throw new NoSuchItemException();
+      throw new NoSuchItemException(path);
     }
 
     m_session.removeItem(path);
@@ -237,28 +255,28 @@ public class JcrDao {
   }
 
   @Lock(LockType.WRITE)
-  public void insertNewType(Type type) {
+  public void insertNewType(ItemType type) {
 
   }
 
   @Lock(LockType.WRITE)
-  public void updateType(Type type) {
+  public void updateType(ItemType type) {
 
   }
 
   @Lock(LockType.WRITE)
-  public void deleteType(Type type) {
+  public void deleteType(ItemType type) {
 
   }
 
-  private void loadShallowItems() throws RepositoryException {
+  private void loadShallowItems() throws RepositoryException, InvalidItemException {
     Node root = m_session.getRootNode();
 
-    createNodeIfNotExists(root, "rlcms/instances");
+    createNodeIfNotExists(root, "rl:items");
 
     m_itemMap.clear();
 
-    Node node = root.getNode("rlcms/instances");
+    Node node = root.getNode("rl:items");
     m_itemRoot = new ShallowItem(node);
 
     extractItems_r(node, m_itemRoot);
@@ -272,17 +290,36 @@ public class JcrDao {
     while (children.hasNext()) {
       Node chNode = children.nextNode();
 
-      ShallowItem chInst = new ShallowItem(chNode);
-      item.addChild(chInst);
+      ShallowItem chInst;
+      try {
+        chInst = new ShallowItem(chNode);
+      }
+      catch (InvalidItemException ex) {
+        m_logger.log(Level.WARNING, "Repository contains invalid item at '" + item.getPath() + "'");
+        continue;
+      }
 
+      item.addChild(chInst);
       extractItems_r(chNode, chInst);
     }
+  }
+
+  private void loadJcrTypes() throws RepositoryException, IOException, ParseException {
+    ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+    InputStream is = classloader.getResourceAsStream("types.cnd");
+    InputStreamReader rdr = new InputStreamReader(is);
+
+    Workspace workspace = m_session.getWorkspace();
+    NodeTypeManager manager = workspace.getNodeTypeManager();
+    NamespaceRegistry nsReg = workspace.getNamespaceRegistry();
+
+    CndImporter.registerNodeTypes(rdr, "types.cnd", manager, nsReg, m_session.getValueFactory(), true);
   }
 
   private void loadTypes() throws RepositoryException {
     Node root = m_session.getRootNode();
 
-    createNodeIfNotExists(root, "rlcms/defs");
+    createNodeIfNotExists(root, "rl:types");
 
     m_typeMap.clear();
 
@@ -290,20 +327,31 @@ public class JcrDao {
   }
 
   private void extractTypes(Node root) throws RepositoryException {
-    Node defs = root.getNode("rlcms/defs");
+    Node defs = root.getNode("rl:types");
     NodeIterator children = defs.getNodes();
 
     while (children.hasNext()) {
       Node node = children.nextNode();
 
-      Definition def = (Definition)m_ocm.getObject(node.getPath());
-      Type type = new Type(def);
+      RlJcrItemType def = (RlJcrItemType)m_ocm.getObject(node.getPath());
+      ItemType type = new ItemType(node.getName(), def);
 
       m_typeMap.put(type.getName(), type);
     }
   }
 
-  private void createNodeIfNotExists(Node node, String relPath) throws RepositoryException {
+  private void createNodeIfNotExists(Node node, String relPath)
+    throws RepositoryException {
+
+    createNodeIfNotExists(node, relPath, "rlt:folder");
+  }
+
+  /**
+  * Intermediate nodes are given type rlt:folder
+  */
+  private void createNodeIfNotExists(Node node, String relPath, String typeName)
+    throws RepositoryException {
+
     if (relPath.startsWith("/")) {
       relPath = relPath.substring(1);
     }
@@ -317,7 +365,7 @@ public class JcrDao {
       path = path.concat(parts[i]);
 
       if (!node.hasNode(path)) {
-        node.addNode(path);
+        node.addNode(path, i + 1 == parts.length ? typeName : "rlt:folder");
       }
     }
   }

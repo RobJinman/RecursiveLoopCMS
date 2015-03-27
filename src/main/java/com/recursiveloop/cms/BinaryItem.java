@@ -1,6 +1,6 @@
 package com.recursiveloop.cms;
 
-import com.recursiveloop.cms.jcrbeans.FieldDef;
+import com.recursiveloop.jcrutils.RlJcrFieldType;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -16,16 +16,16 @@ import java.util.Calendar;
 public class BinaryItem extends ShallowItem {
   private Map<String, JcrProperty> m_data;
 
-  public BinaryItem(Node node, Type itemType) throws RepositoryException, InvalidItemException {
+  public BinaryItem(Node node, ItemType itemType) throws RepositoryException, InvalidItemException {
     super(node);
 
     // TODO: Validation checks ...
 
     m_data = new HashMap<String, JcrProperty>();
 
-    for (FieldDef field : itemType.getFields()) {
+    for (RlJcrFieldType field : itemType.getFields()) {
       String name = field.getName();
-      String type = field.getType();
+      String type = field.getJcrType();
 
       if (type.equals(PropertyType.TYPENAME_BINARY)) {
         Binary data = node.getProperty(name).getBinary();
@@ -61,7 +61,7 @@ public class BinaryItem extends ShallowItem {
   }
 
   @Override
-  public void writeTo(Node node) throws InvalidItemException, RepositoryException {
+  public void writeTo(Node node) throws /*InvalidItemException,*/ RepositoryException {
     super.writeTo(node);
 
     Iterator<Map.Entry<String, JcrProperty>> i = m_data.entrySet().iterator();
@@ -85,7 +85,8 @@ public class BinaryItem extends ShallowItem {
       }
     }
     catch (ValueFormatException ex) {
-      throw new InvalidItemException("Error committing item", ex);
+//      throw new InvalidItemException("Error committing item", ex);
+      throw ex;
     }
   }
 

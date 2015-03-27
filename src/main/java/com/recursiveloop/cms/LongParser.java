@@ -8,7 +8,7 @@ public class LongParser implements FieldParser {
       return new Long(str);
     }
     catch (NumberFormatException ex) {
-      throw new InvalidItemException("Error parsing string as Long", ex);
+      throw new InvalidItemException("Error parsing string '" + str + "' as Long", ex);
     }
   }
 

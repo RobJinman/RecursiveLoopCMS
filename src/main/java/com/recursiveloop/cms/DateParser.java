@@ -13,14 +13,10 @@ public class DateParser implements FieldParser {
       SimpleDateFormat sdf = new SimpleDateFormat(); // TODO: Specify format
       calendar.setTime(sdf.parse(str));
 
-      if (calendar == null) {
-        throw new InvalidItemException();
-      }
-
       return calendar;
     }
     catch (ParseException ex) {
-      throw new InvalidItemException("Error parsing string into Calendar", ex);
+      throw new InvalidItemException("Error parsing string '" + str + "' into Calendar", ex);
     }
   }
 

@@ -1,7 +1,6 @@
 package com.recursiveloop.cms.servlets;
 
 import com.recursiveloop.cms.JcrDao;
-import com.recursiveloop.cms.ItemType;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,9 +14,9 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 
-@WebServlet(name = "TypeServlet", urlPatterns = {"/ajax/repository/type"})
-public class TypeServlet extends HttpServlet {
-  private static final Logger m_logger = Logger.getLogger(TypeServlet.class.getName());
+@WebServlet(name = "UploadServlet", urlPatterns = {"/upload"})
+public class UploadServlet extends HttpServlet {
+  private static final Logger m_logger = Logger.getLogger(UploadServlet.class.getName());
 
   @Inject
   JcrDao m_dao;

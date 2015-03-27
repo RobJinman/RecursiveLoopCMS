@@ -8,7 +8,7 @@ public class DoubleParser implements FieldParser {
       return new Double(str);
     }
     catch (NumberFormatException ex) {
-      throw new InvalidItemException("Error parsing string as Double", ex);
+      throw new InvalidItemException("Error parsing string '" + str + "' as Double", ex);
     }
   }
 

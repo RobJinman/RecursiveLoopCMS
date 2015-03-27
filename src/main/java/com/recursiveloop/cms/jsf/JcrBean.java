@@ -3,7 +3,7 @@ package com.recursiveloop.cms.jsf;
 import com.recursiveloop.cms.JcrDao;
 import com.recursiveloop.cms.ShallowItem;
 import com.recursiveloop.cms.StringItem;
-import com.recursiveloop.cms.Type;
+import com.recursiveloop.cms.ItemType;
 
 import javax.inject.Named;
 import javax.inject.Inject;
@@ -44,7 +44,7 @@ public class JcrBean {
     return m_dao.getTypeList();
   }
 
-  public Type getType(String name) {
+  public ItemType getType(String name) {
     return m_dao.getType(name);
   }
 }

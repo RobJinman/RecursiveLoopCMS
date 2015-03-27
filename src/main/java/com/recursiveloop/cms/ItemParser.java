@@ -1,6 +1,6 @@
 package com.recursiveloop.cms;
 
-import com.recursiveloop.cms.jcrbeans.FieldDef;
+import com.recursiveloop.jcrutils.RlJcrFieldType;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -24,14 +24,14 @@ public class ItemParser {
   @Inject
   LongParser m_longParser;
 
-  public BinaryItem parse(StringItem strItem, Type itemType)
+  public BinaryItem parse(StringItem strItem, ItemType itemType)
     throws InvalidItemException, NoSuchTypeException {
 
     BinaryItem binItem = new BinaryItem(strItem);
 
-    for (FieldDef field : itemType.getFields()) {
+    for (RlJcrFieldType field : itemType.getFields()) {
       String name = field.getName();
-      String type = field.getType();
+      String type = field.getJcrType();
       String strVal = strItem.getProperty(name);
       JcrProperty prop = null;
 
@@ -54,7 +54,7 @@ public class ItemParser {
         prop = new JcrProperty(PropertyType.STRING, strVal);
       }
       else {
-        throw new NoSuchTypeException();
+        throw new NoSuchTypeException(type);
       }
 
       binItem.addProperty(name, prop);
@@ -63,14 +63,14 @@ public class ItemParser {
     return binItem;
   }
 
-  public StringItem stringify(BinaryItem binItem, Type itemType)
+  public StringItem stringify(BinaryItem binItem, ItemType itemType)
     throws InvalidItemException, NoSuchTypeException {
 
     StringItem strItem = new StringItem(binItem);
 
-    for (FieldDef field : itemType.getFields()) {
+    for (RlJcrFieldType field : itemType.getFields()) {
       String name = field.getName();
-      String type = field.getType();
+      String type = field.getJcrType();
       Object binVal = binItem.getProperty(name).data;
       String prop = null;
 
@@ -93,7 +93,7 @@ public class ItemParser {
         prop = (String)binVal;
       }
       else {
-        throw new NoSuchTypeException();
+        throw new NoSuchTypeException(type);
       }
 
       strItem.addProperty(name, prop);

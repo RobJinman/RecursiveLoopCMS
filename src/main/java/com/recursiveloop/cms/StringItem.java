@@ -14,17 +14,22 @@ public class StringItem extends ShallowItem {
   * JSON object should not contain child data. It is a flat
   * list of key-value pairs.
   */
-  public StringItem(JsonObject json) {
+  public StringItem(JsonObject json) throws InvalidItemException {
     super(json);
 
     m_data = new HashMap<String, String>();
 
-    JsonObject data = json.getJsonObject("data");
-    Iterator<Map.Entry<String, JsonValue>> i = data.entrySet().iterator();
+    try {
+      JsonObject data = json.getJsonObject("data");
+      Iterator<Map.Entry<String, JsonValue>> i = data.entrySet().iterator();
 
-    while (i.hasNext()) {
-      Map.Entry<String, JsonValue> pair = i.next();
-      m_data.put(pair.getKey(), data.getString(pair.getKey()));
+      while (i.hasNext()) {
+        Map.Entry<String, JsonValue> pair = i.next();
+        m_data.put(pair.getKey(), data.getString(pair.getKey()));
+      }
+    }
+    catch (NullPointerException|ClassCastException ex) {
+      throw new InvalidItemException("Error constructing item from JSON object; property missing?", ex);
     }
   }
 

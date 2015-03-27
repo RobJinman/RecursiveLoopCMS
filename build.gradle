@@ -25,16 +25,16 @@ buildscript {
 }
 
 repositories {
+  flatDir {
+    dirs(libs.split(","))
+  }
+
   jcenter()
   mavenCentral()
 
   maven { url "http://repository.jboss.org/nexus/content/groups/public" }
   maven { url "http://repository.jboss.org/nexus/content/repositories/deprecated" }
   maven { url "http://repo.jfrog.org/artifactory/repo" }
-
-  flatDir {
-    dirs(libs.split(","))
-  }
 }
 
 sourceSets {
@@ -83,6 +83,7 @@ dependencies {
 
   compile name: "h2-1.4.186"
   compile name: "webcommon"
+  compile name: "jcrutils"
   compile "javax.jcr:jcr:2.0",
     "org.apache.jackrabbit:jackrabbit-core:2.8.0",
     "org.apache:jackrabbit-ocm:2.0.0"
