@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class RlJcrFieldType {
   private String m_rlPath;
   private String m_rlName;
-  private String m_rlJcrType; // TODO: Change type to PropertyType ?
+  private int m_rlJcrType;
   private String m_rlWidget;
   private boolean m_rlRequired;
   private String m_rlDefault;
@@ -28,7 +28,7 @@ public class RlJcrFieldType {
 
   public RlJcrFieldType() {}
 
-  public RlJcrFieldType(String name, String type, boolean required) {
+  public RlJcrFieldType(String name, int type, boolean required) {
     m_rlPath = null;
     m_rlName = name;
     m_rlJcrType = type;
@@ -38,7 +38,7 @@ public class RlJcrFieldType {
     this.parserParams = new ArrayList<RlJcrParserParam>();
   }
 
-  public RlJcrFieldType(String name, String type, boolean required, String def) {
+  public RlJcrFieldType(String name, int type, boolean required, String def) {
     m_rlPath = null;
     m_rlName = name;
     m_rlJcrType = type;
@@ -48,7 +48,7 @@ public class RlJcrFieldType {
     this.parserParams = new ArrayList<RlJcrParserParam>();
   }
 
-  public RlJcrFieldType(String name, String type, boolean required, String def, String widget) {
+  public RlJcrFieldType(String name, int type, boolean required, String def, String widget) {
     m_rlPath = null;
     m_rlName = name;
     m_rlJcrType = type;
@@ -91,11 +91,11 @@ public class RlJcrFieldType {
   }
 
   @Field(jcrName = "rl:jcrType")
-  public String getJcrType() {
+  public int getJcrType() {
     return m_rlJcrType;
   }
 
-  public void setJcrType(String jcrType) {
+  public void setJcrType(int jcrType) {
     m_rlJcrType = jcrType;
   }
 

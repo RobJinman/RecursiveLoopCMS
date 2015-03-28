@@ -23,38 +23,41 @@ import java.util.Calendar;
 public class BinaryItem extends ShallowItem {
   private Map<String, JcrProperty> m_data;
 
-  public BinaryItem(Node node, ItemType itemType) throws RepositoryException, InvalidItemException {
+  public BinaryItem(Node node, ItemType itemType)
+    throws RepositoryException, InvalidItemException {
+
     super(node);
 
     m_data = new HashMap<String, JcrProperty>();
 
     for (RlJcrFieldType field : itemType.getFields()) {
       String name = field.getName();
-      String type = field.getJcrType();
+      int type = field.getJcrType();
+      Object data = null;
 
-      if (type.equals(PropertyType.TYPENAME_BINARY)) {
-        Binary data = node.getProperty(name).getBinary();
-        m_data.put(name, new JcrProperty(PropertyType.BINARY, data));
+      switch (type) {
+        case PropertyType.BINARY:
+          data = node.getProperty(name).getBinary();
+          break;
+        case PropertyType.BOOLEAN:
+          data = new Boolean(node.getProperty(name).getBoolean());
+          break;
+        case PropertyType.DATE:
+          data = node.getProperty(name).getDate();
+          break;
+        case PropertyType.DOUBLE:
+          data = new Double(node.getProperty(name).getDouble());
+          break;
+        case PropertyType.LONG:
+          data = new Long(node.getProperty(name).getLong());
+          break;
+        case PropertyType.STRING:
+          data = node.getProperty(name).getString();
+          break;
       }
-      else if (type.equals(PropertyType.TYPENAME_BOOLEAN)) {
-        Boolean data = new Boolean(node.getProperty(name).getBoolean());
-        m_data.put(name, new JcrProperty(PropertyType.BOOLEAN, data));
-      }
-      else if (type.equals(PropertyType.TYPENAME_DATE)) {
-        Calendar data = node.getProperty(name).getDate();
-        m_data.put(name, new JcrProperty(PropertyType.DATE, data));
-      }
-      else if (type.equals(PropertyType.TYPENAME_DOUBLE)) {
-        Double data = new Double(node.getProperty(name).getDouble());
-        m_data.put(name, new JcrProperty(PropertyType.DOUBLE, data));
-      }
-      else if (type.equals(PropertyType.TYPENAME_LONG)) {
-        Long data = new Long(node.getProperty(name).getLong());
-        m_data.put(name, new JcrProperty(PropertyType.LONG, data));
-      }
-      else if (type.equals(PropertyType.TYPENAME_STRING)) {
-        String data = node.getProperty(name).getString();
-        m_data.put(name, new JcrProperty(PropertyType.STRING, data));
+
+      if (data != null) {
+        m_data.put(name, new JcrProperty(type, data));
       }
     }
   }
@@ -80,12 +83,24 @@ public class BinaryItem extends ShallowItem {
         Object data = pair.getValue().data;
 
         switch (type) {
-          case PropertyType.BINARY:   node.setProperty(name, (Binary)data);                   break;
-          case PropertyType.BOOLEAN:  node.setProperty(name, ((Boolean)data).booleanValue()); break;
-          case PropertyType.DATE:     node.setProperty(name, (Calendar)data);                 break;
-          case PropertyType.DOUBLE:   node.setProperty(name, ((Double)data).doubleValue());   break;
-          case PropertyType.LONG:     node.setProperty(name, ((Long)data).longValue());       break;
-          case PropertyType.STRING:   node.setProperty(name, (String)data);                   break;
+          case PropertyType.BINARY:
+            node.setProperty(name, (Binary)data);
+            break;
+          case PropertyType.BOOLEAN:
+            node.setProperty(name, ((Boolean)data).booleanValue());
+            break;
+          case PropertyType.DATE:
+            node.setProperty(name, (Calendar)data);
+            break;
+          case PropertyType.DOUBLE:
+            node.setProperty(name, ((Double)data).doubleValue());
+            break;
+          case PropertyType.LONG:
+            node.setProperty(name, ((Long)data).longValue());
+            break;
+          case PropertyType.STRING:
+            node.setProperty(name, (String)data);
+            break;
         }
       }
     }

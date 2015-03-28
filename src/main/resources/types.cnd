@@ -1,3 +1,10 @@
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
+
 <rl = 'http://recursiveloop.org/cms/main-ns'>
 <rlt = 'http://recursiveloop.org/cms/types-ns'>
 [rlt:item] > nt:unstructured
@@ -11,7 +18,7 @@
   + rl:parserParam (rlt:parserParam) multiple
 [rlt:fieldType]
   - rl:name (string) mandatory
-  - rl:jcrType (string) mandatory
+  - rl:jcrType (long) mandatory
   - rl:required (boolean) = true mandatory
   - rl:default
   - rl:widget (string)

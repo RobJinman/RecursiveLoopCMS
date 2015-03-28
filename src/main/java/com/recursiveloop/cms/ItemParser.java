@@ -34,77 +34,75 @@ public class ItemParser {
   LongParser m_longParser;
 
   public BinaryItem parse(StringItem strItem, ItemType itemType)
-    throws InvalidItemException, NoSuchTypeException {
+    throws InvalidItemException {
 
     BinaryItem binItem = new BinaryItem(strItem);
 
     for (RlJcrFieldType field : itemType.getFields()) {
       List<RlJcrParserParam> params = field.getParserParams();
       String name = field.getName();
-      String type = field.getJcrType();
+      int type = field.getJcrType();
       String strVal = strItem.getProperty(name);
-      JcrProperty prop = null;
+      Object data = null;
 
-      if (type.equals(PropertyType.TYPENAME_BINARY)) {
-        prop = new JcrProperty(PropertyType.BINARY, m_binaryParser.parse(strVal, params));
-      }
-      else if (type.equals(PropertyType.TYPENAME_BOOLEAN)) {
-        prop = new JcrProperty(PropertyType.BOOLEAN, m_booleanParser.parse(strVal, params));
-      }
-      else if (type.equals(PropertyType.TYPENAME_DATE)) {
-        prop = new JcrProperty(PropertyType.DATE, m_dateParser.parse(strVal, params));
-      }
-      else if (type.equals(PropertyType.TYPENAME_DOUBLE)) {
-        prop = new JcrProperty(PropertyType.DOUBLE, m_doubleParser.parse(strVal, params));
-      }
-      else if (type.equals(PropertyType.TYPENAME_LONG)) {
-        prop = new JcrProperty(PropertyType.LONG, m_longParser.parse(strVal, params));
-      }
-      else if (type.equals(PropertyType.TYPENAME_STRING)) {
-        prop = new JcrProperty(PropertyType.STRING, strVal);
-      }
-      else {
-        throw new NoSuchTypeException(type);
+      switch (type) {
+        case PropertyType.BINARY:
+          data = m_binaryParser.parse(strVal, params);
+          break;
+        case PropertyType.BOOLEAN:
+          data = m_booleanParser.parse(strVal, params);
+          break;
+        case PropertyType.DATE:
+          data = m_dateParser.parse(strVal, params);
+          break;
+        case PropertyType.DOUBLE:
+          data = m_doubleParser.parse(strVal, params);
+          break;
+        case PropertyType.LONG:
+          data = m_longParser.parse(strVal, params);
+          break;
+        case PropertyType.STRING:
+          data = strVal;
+          break;
       }
 
-      binItem.addProperty(name, prop);
+      binItem.addProperty(name, new JcrProperty(type, data));
     }
 
     return binItem;
   }
 
   public StringItem stringify(BinaryItem binItem, ItemType itemType)
-    throws InvalidItemException, NoSuchTypeException {
+    throws InvalidItemException {
 
     StringItem strItem = new StringItem(binItem);
 
     for (RlJcrFieldType field : itemType.getFields()) {
       List<RlJcrParserParam> params = field.getParserParams();
       String name = field.getName();
-      String type = field.getJcrType();
+      int type = field.getJcrType();
       Object binVal = binItem.getProperty(name).data;
       String prop = null;
 
-      if (type.equals(PropertyType.TYPENAME_BINARY)) {
-        prop = m_binaryParser.stringify(binVal, params);
-      }
-      else if (type.equals(PropertyType.TYPENAME_BOOLEAN)) {
-        prop = m_booleanParser.stringify(binVal, params);
-      }
-      else if (type.equals(PropertyType.TYPENAME_DATE)) {
-        prop = m_dateParser.stringify(binVal, params);
-      }
-      else if (type.equals(PropertyType.TYPENAME_DOUBLE)) {
-        prop = m_doubleParser.stringify(binVal, params);
-      }
-      else if (type.equals(PropertyType.TYPENAME_LONG)) {
-        prop = m_longParser.stringify(binVal, params);
-      }
-      else if (type.equals(PropertyType.TYPENAME_STRING)) {
-        prop = (String)binVal;
-      }
-      else {
-        throw new NoSuchTypeException(type);
+      switch (type) {
+        case PropertyType.BINARY:
+          prop = m_binaryParser.stringify(binVal, params);
+          break;
+        case PropertyType.BOOLEAN:
+          prop = m_booleanParser.stringify(binVal, params);
+          break;
+        case PropertyType.DATE:
+          prop = m_dateParser.stringify(binVal, params);
+          break;
+        case PropertyType.DOUBLE:
+          prop = m_doubleParser.stringify(binVal, params);
+          break;
+        case PropertyType.LONG:
+          prop = m_longParser.stringify(binVal, params);
+          break;
+        case PropertyType.STRING:
+          prop = (String)binVal;
+          break;
       }
 
       strItem.addProperty(name, prop);
