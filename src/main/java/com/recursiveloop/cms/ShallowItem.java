@@ -1,7 +1,14 @@
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
+
+
 package com.recursiveloop.cms;
 
-import com.recursiveloop.jcrutils.RlJcrItem;
-
+import com.recursiveloop.cms.jcrmodel.RlJcrItem;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.PathNotFoundException;
@@ -83,5 +90,9 @@ public class ShallowItem extends RlJcrItem {
         break;
       }
     }
+  }
+
+  public void writeTo(Node node) throws InvalidItemException, RepositoryException {
+    write(node);
   }
 }

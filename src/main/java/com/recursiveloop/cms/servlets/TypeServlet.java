@@ -1,8 +1,15 @@
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
+
+
 package com.recursiveloop.cms.servlets;
 
 import com.recursiveloop.cms.JcrDao;
 import com.recursiveloop.cms.ItemType;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

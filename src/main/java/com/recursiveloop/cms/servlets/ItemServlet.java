@@ -1,3 +1,11 @@
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
+
+
 package com.recursiveloop.cms.servlets;
 
 import com.recursiveloop.cms.JcrDao;
@@ -5,7 +13,6 @@ import com.recursiveloop.cms.StringItem;
 import com.recursiveloop.cms.NoSuchTypeException;
 import com.recursiveloop.cms.NoSuchItemException;
 import com.recursiveloop.cms.InvalidItemException;
-
 import javax.json.JsonReader;
 import javax.json.JsonObject;
 import javax.json.Json;

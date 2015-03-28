@@ -1,8 +1,15 @@
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
+
+
 package com.recursiveloop.cms;
 
-import com.recursiveloop.jcrutils.RlJcrItemType;
-import com.recursiveloop.jcrutils.RlJcrFieldType;
-
+import com.recursiveloop.cms.jcrmodel.RlJcrItemType;
+import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
 import java.util.List;
 
 

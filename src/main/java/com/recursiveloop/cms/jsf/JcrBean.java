@@ -1,10 +1,17 @@
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
+
+
 package com.recursiveloop.cms.jsf;
 
 import com.recursiveloop.cms.JcrDao;
 import com.recursiveloop.cms.ShallowItem;
 import com.recursiveloop.cms.StringItem;
 import com.recursiveloop.cms.ItemType;
-
 import javax.inject.Named;
 import javax.inject.Inject;
 import javax.enterprise.context.RequestScoped;

@@ -3,13 +3,19 @@
 [rlt:item] > nt:unstructured
   - rl:type (string) mandatory
   - rl:status (long) = '0' mandatory
-  + rl:parseParams
+[rlt:parserParam]
+  - rl:name (string) mandatory
+  - rl:value (string) mandatory
+  - ocm_classname (string)
+[rlt:parserParams]
+  + rl:parserParam (rlt:parserParam) multiple
 [rlt:fieldType]
   - rl:name (string) mandatory
   - rl:jcrType (string) mandatory
   - rl:required (boolean) = true mandatory
   - rl:default
   - rl:widget (string)
+  + rl:parserParams (rlt:parserParams)
   - ocm_classname (string)
 [rlt:fieldTypeGroup]
   + rl:field (rlt:fieldType) multiple

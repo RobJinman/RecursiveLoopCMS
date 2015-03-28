@@ -1,8 +1,17 @@
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
+
+
 package com.recursiveloop.cms;
 
-import com.recursiveloop.jcrutils.RlJcrItemType;
-import com.recursiveloop.jcrutils.RlJcrFieldType;
-
+import com.recursiveloop.cms.jcrmodel.RlJcrItemType;
+import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
+import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
+import com.recursiveloop.cms.jcrmodel.RlJcrItem;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -69,6 +78,8 @@ public class JcrDao {
       List<Class> classes = new ArrayList<Class>();	
       classes.add(RlJcrItemType.class);
       classes.add(RlJcrFieldType.class);
+      classes.add(RlJcrParserParam.class);
+      classes.add(RlJcrItem.class);
 
       Mapper mapper = new AnnotationMapperImpl(classes);
       m_ocm =  new ObjectContentManagerImpl(m_session, mapper);

@@ -1,7 +1,14 @@
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
+
+
 package com.recursiveloop.cms;
 
-import com.recursiveloop.jcrutils.RlJcrFieldType;
-
+import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,8 +25,6 @@ public class BinaryItem extends ShallowItem {
 
   public BinaryItem(Node node, ItemType itemType) throws RepositoryException, InvalidItemException {
     super(node);
-
-    // TODO: Validation checks ...
 
     m_data = new HashMap<String, JcrProperty>();
 
@@ -61,7 +66,7 @@ public class BinaryItem extends ShallowItem {
   }
 
   @Override
-  public void writeTo(Node node) throws /*InvalidItemException,*/ RepositoryException {
+  public void writeTo(Node node) throws InvalidItemException, RepositoryException {
     super.writeTo(node);
 
     Iterator<Map.Entry<String, JcrProperty>> i = m_data.entrySet().iterator();
@@ -85,8 +90,7 @@ public class BinaryItem extends ShallowItem {
       }
     }
     catch (ValueFormatException ex) {
-//      throw new InvalidItemException("Error committing item", ex);
-      throw ex;
+      throw new InvalidItemException("Error committing item", ex);
     }
   }
 
