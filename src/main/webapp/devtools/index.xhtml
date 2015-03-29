@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
-<ui:composition template="/templates/layout.xhtml"
+<ui:composition template="/templates/devtools/layout.xhtml"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://xmlns.jcp.org/jsf/html"
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:rl="http://xmlns.recursiveloop.org/cms">
+  xmlns:rl="http://xmlns.recursiveloop.org/cms"
+  xmlns:rlc="http://java.sun.com/jsf/composite/components">
 
   <ui:param name="wrapperClass" value="devtools-theme index-xhtml"/>
 
@@ -19,8 +20,40 @@
     </ol>
   </ui:define>
 
+  <ui:define name="sidebar">
+    <div class="list-group">
+      <a href="" class="list-group-item">Cras justo odio</a>
+      <a href="" class="list-group-item">Dapibus ac facilisis in</a>
+      <a href="" class="list-group-item">Morbi leo risus</a>
+      <a href="" class="list-group-item">Porta ac consectetur ac</a>
+      <a href="" class="list-group-item">Vestibulum at eros</a>
+    </div>
+  </ui:define>
+
   <ui:define name="content">
-    <h1>Developer Tools</h1>
-    <p>Welcome to the Recursive Loop CMS Developer Tools.</p>
+    <div id="panel">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th><th>JcrType</th><th>Widget</th><th>Required</th><th>Default</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>title</td><td>string</td><td>textedit</td><td>true</td><td></td><td><i class="glyphicon glyphicon-edit"/></td>
+          </tr>
+          <tr>
+            <td>pubDate</td><td>date</td><td>datepicker</td><td>true</td><td></td><td><i class="glyphicon glyphicon-edit"/></td>
+          </tr>
+          <tr>
+            <td>content</td><td>string</td><td>textarea</td><td>true</td><td></td><td><i class="glyphicon glyphicon-edit"/></td>
+          </tr>
+          <tr>
+            <td><i class="glyphicon glyphicon-plus"/></td><td colspan="5"></td>
+          </tr>
+        </tbody>
+      </table>
+      <rl:fieldDefinition/>
+    </div>
   </ui:define>
 </ui:composition>

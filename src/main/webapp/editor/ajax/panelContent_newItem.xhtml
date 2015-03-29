@@ -14,36 +14,66 @@
     <span class="lbl-item-info">Type: </span><span class="item-info-dat">#{ typeName }</span>
   </div>
 
-  <form id="frm-item-info">
-    <label for="txt-item-type">Type</label><input id="txt-item-type" type="text" name="type" value="#{ typeName }"/>
-    <label for="txt-item-parent">Parent</label><input id="txt-item-parent" type="text" name="parent" value="#{ parent }"/>
-    <label for="txt-item-name">Name</label><input id="txt-item-name" name="name" type="text"/>
+  <form id="frm-item-info" class="col-sm-offset-1">
+    <div class="form-group col-sm-4">
+      <label for="txt-item-type">Type</label>
+      <input id="txt-item-type" class="form-control" type="text" name="type" value="#{ typeName }"/>
+    </div>
+    <div class="form-group col-sm-4">
+      <label for="txt-item-parent">Parent</label>
+      <input id="txt-item-parent" class="form-control" type="text" name="parent" value="#{ parent }"/>
+    </div>
+    <div class="form-group col-sm-4">
+      <label for="txt-item-name">Name</label>
+      <input id="txt-item-name" class="form-control" name="name" type="text"/>
+    </div>
   </form>
 
-  <form id="frm-item-content">
+  <form id="frm-item-content" class="form-horizontal">
     <c:if test="#{ !type.isNull() }">
       <c:forEach var="field" items="#{ type.fields }">
-        <c:set var="content" value="#{ item.getProperty(field.name) }"/>
-        <label for="f-#{ field.name }">#{ field.name }</label><br/>
         <c:choose>
           <c:when test="#{ field.widget == 'textedit' }">
-            <input id="f-#{ field.name }" name="#{ field.name }" type="text" value="#{ content }"/>
+            <div class="form-group">
+              <label class="col-sm-1 control-label" for="f-#{ field.name }">#{ field.name }</label>
+              <div class="col-sm-11">
+                <input id="f-#{ field.name }" class="form-control" name="#{ field.name }" type="text"/>
+              </div>
+            </div>
           </c:when>
           <c:when test="#{ field.widget == 'textarea' }">
-            <textarea id="f-#{ field.name }" name="#{ field.name }" rows="4" cols="50">#{ content }</textarea>
+            <div class="form-group">
+              <label class="col-sm-1 control-label" for="f-#{ field.name }">#{ field.name }</label>
+              <div class="col-sm-11">
+                <textarea id="f-#{ field.name }" class="form-control" name="#{ field.name }" rows="4" cols="50"></textarea>
+              </div>
+            </div>
           </c:when>
           <c:when test="#{ field.widget == 'spinbox' }">
-            <input class="spinner" id="f-#{ field.name }" name="#{ field.name }" value="#{ content }"/>
+            <div class="form-group">
+              <label class="col-sm-1 control-label" for="f-#{ field.name }">#{ field.name }</label>
+              <div class="col-sm-11">
+                <input class="spinner" id="f-#{ field.name }" name="#{ field.name }"/>
+              </div>
+            </div>
           </c:when>
           <c:when test="#{ field.widget == 'datepicker' }">
-            <input class="datepicker" type="text" id="f-#{ field.name }" name="#{ field.name }" value="#{ content }"/>
+            <div class="form-group">
+              <label class="col-sm-1 control-label" for="f-#{ field.name }">#{ field.name }</label>
+              <div class="col-sm-11">
+                <input class="datepicker form-control" type="text" id="f-#{ field.name }" name="#{ field.name }"/>
+              </div>
+            </div>
           </c:when>
           <c:otherwise>
           </c:otherwise>
         </c:choose>
-        <br/><br/>
       </c:forEach>
-      <input type="button" value="Save" onclick="app.page.newItem()"/>
+      <div class="form-group">
+        <div class="col-sm-offset-1 col-sm-11">
+          <button type="button" class="btn btn-default" onclick="app.page.newItem()">Save</button>
+        </div>
+      </div>
     </c:if>
     <c:if test="#{ type.isNull() }">
       <span class="err-no-type">No type info</span>

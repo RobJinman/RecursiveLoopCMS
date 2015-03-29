@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<div xmlns="http://www.w3.org/1999/xhtml"
+<div xmlns="http://www.w3.org/1999/xhtml"   
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
-  <ui:composition> 
-    <c:if test="#{ securityBean.isLoggedIn() }">
-      <h:form>
-        <h:commandButton value="Logout" action="#{ securityBean.logout() }"/>
-      </h:form>
-    </c:if>
-  </ui:composition>
 </div>

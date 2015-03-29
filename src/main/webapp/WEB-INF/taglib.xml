@@ -6,4 +6,8 @@
     <tag-name>logoutButton</tag-name>
     <source>components/logoutButton.xhtml</source>
   </tag>
+  <tag>
+    <tag-name>fieldDefinition</tag-name>
+    <source>components/devtools/fieldDefinition.xhtml</source>
+  </tag>
 </facelet-taglib>

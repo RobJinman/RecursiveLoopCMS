@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <ui:composition>
+    <form class="frm-field-type form-horizontal">
+      <div class="form-group">
+        <label class="col-sm-1 control-label">Name</label>
+        <div class="col-sm-11">
+          <input class="form-control" type="text" name="name"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-1 control-label">jcrType</label>
+        <div class="col-sm-11">
+          <select class="form-control">
+            <option value="binary">binary</option>
+            <option value="boolean">boolean</option>
+            <option value="date">date</option>
+            <option value="double">double</option>
+            <option value="long">long</option>
+            <option value="string">string</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-1 control-label">Widget</label>
+        <div class="col-sm-11">
+          <select class="form-control">
+            <option value="textedit">textedit</option>
+            <option value="textarea">textarea</option>
+            <option value="datepicker">datepicker</option>
+            <option value="spinbox">spinbox</option>
+            <option value="checkbox">checkbox</option>
+            <option value="selector">selector</option>
+            <option value="radiobuttons">radio buttons</option>
+            <option value="wysiwyg">WYSIWYG editor</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-1 col-sm-11">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="required"/>Required
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-1 control-label">Default</label>
+        <div class="col-sm-11">
+          <input class="form-control" type="text" name="default"/>
+        </div>
+      </div>
+    </form>
+  </ui:composition>
+</div>

@@ -1,7 +1,29 @@
-body.devtools-theme.index-xhtml {
-  p {
-    color: tomato;
-  }
+$headerH: 40px;
 
-  // ...
+body.devtools-theme {
+  #main {
+    #sidebar {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      top: $headerH;
+      width: 25%;
+      overflow: scroll;
+      background-color: white;
+    }
+
+    #content {
+      width: 75%;
+      float: right;
+      padding: 40px 40px 40px 40px;
+
+      #content-panel {
+        height: 100%;
+      }
+    }
+  }
+}
+
+body.devtools-theme.index-xhtml {
+
 }

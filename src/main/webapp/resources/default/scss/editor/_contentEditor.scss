@@ -10,10 +10,6 @@ body.editor-theme {
       width: 25%;
       overflow: scroll;
       background-color: white;
-
-      .btnRefresh {
-        @extend .glyphicon, .glyphicon-refresh
-      }
     }
 
     #content {
