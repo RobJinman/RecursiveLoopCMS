@@ -10,6 +10,12 @@ body.devtools-theme {
       width: 25%;
       overflow: scroll;
       background-color: white;
+
+      .list-group {
+        .mnu-new-type {
+          cursor: pointer;
+        }
+      }
     }
 
     #content {
@@ -17,8 +23,38 @@ body.devtools-theme {
       float: right;
       padding: 40px 40px 40px 40px;
 
-      #content-panel {
+      #panel {
         height: 100%;
+
+        #tbl-fields {
+          .field-buttons {
+            text-align: right;
+
+            .btn-edit-field {
+              cursor: pointer;
+
+              &:hover {
+                color: green;
+              }
+            }
+
+            .btn-delete-field {
+              cursor: pointer;
+              padding: 0 0 0 20px;
+
+              &:hover {
+                color: red;
+              }
+            }
+          }
+
+          .btn-new-field {
+            cursor: pointer;
+            &:hover {
+              color: green;
+            }
+          }
+        }
       }
     }
   }

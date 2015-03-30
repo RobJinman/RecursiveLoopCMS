@@ -6,30 +6,30 @@
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
   <ui:composition>
-    <form class="frm-field-type form-horizontal">
+    <form id="frm-field-def" class="form-horizontal">
       <div class="form-group">
         <label class="col-sm-1 control-label">Name</label>
         <div class="col-sm-11">
-          <input class="form-control" type="text" name="name"/>
+          <input id="field-def-name" class="form-control" type="text" name="name"/>
         </div>
       </div>
       <div class="form-group">
-        <label class="col-sm-1 control-label">jcrType</label>
+        <label class="col-sm-1 control-label">Type</label>
         <div class="col-sm-11">
-          <select class="form-control">
-            <option value="binary">binary</option>
-            <option value="boolean">boolean</option>
-            <option value="date">date</option>
-            <option value="double">double</option>
-            <option value="long">long</option>
-            <option value="string">string</option>
+          <select id="field-def-type" class="form-control">
+            <option value="#{ jcrBean.binary }">binary</option>
+            <option value="#{ jcrBean.boolean }">boolean</option>
+            <option value="#{ jcrBean.date }">date</option>
+            <option value="#{ jcrBean.double }">double</option>
+            <option value="#{ jcrBean.long }">long</option>
+            <option value="#{ jcrBean.string }">string</option>
           </select>
         </div>
       </div>
       <div class="form-group">
         <label class="col-sm-1 control-label">Widget</label>
         <div class="col-sm-11">
-          <select class="form-control">
+          <select id="field-def-widget" class="form-control">
             <option value="textedit">textedit</option>
             <option value="textarea">textarea</option>
             <option value="datepicker">datepicker</option>
@@ -45,7 +45,7 @@
         <div class="col-sm-offset-1 col-sm-11">
           <div class="checkbox">
             <label>
-              <input type="checkbox" name="required"/>Required
+              <input id="field-def-required" type="checkbox" name="required"/>Required
             </label>
           </div>
         </div>
@@ -53,7 +53,7 @@
       <div class="form-group">
         <label class="col-sm-1 control-label">Default</label>
         <div class="col-sm-11">
-          <input class="form-control" type="text" name="default"/>
+          <input id="field-def-default" class="form-control" type="text" name="default"/>
         </div>
       </div>
     </form>

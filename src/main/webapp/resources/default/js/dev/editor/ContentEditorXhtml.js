@@ -62,7 +62,7 @@ var app = app || {};
       }
     };
 
-    self.updateItem = function() {
+    self.btnUpdateItemClick = function() {
       var content = {};
       $.each($("#frm-item-content").serializeArray(), function() {
         content[this.name] = this.value;
@@ -88,7 +88,7 @@ var app = app || {};
       });
     };
 
-    self.newItem = function() {
+    self.btnNewItemClick = function() {
       var content = {};
       $.each($("#frm-item-content").serializeArray(), function() {
         content[this.name] = this.value;
@@ -106,8 +106,6 @@ var app = app || {};
         data: content
       };
 
-      console.log(obj);
-
       $.ajax({
         url: "/ajax/repository/item?action=insert",
         method: "POST",
@@ -119,7 +117,7 @@ var app = app || {};
       });
     };
 
-    self.mnuInsertNewItem = function(type) {
+    self.mnuInsertNewItemClick = function(type) {
       var dat = $("#opts-menu");
       var path = dat.attr("data-item-path");
 
@@ -131,15 +129,15 @@ var app = app || {};
       });
     };
 
-    self.mnuRenameItem = function() {
+    self.mnuRenameItemClick = function() {
 
     };
 
-    self.mnuMoveItem = function() {
+    self.mnuMoveItemClick = function() {
 
     };
 
-    self.mnuDeleteItem = function() {
+    self.mnuDeleteItemClick = function() {
       var dat = $("#opts-menu");
       var path = dat.attr("data-item-path");
 
@@ -152,5 +150,5 @@ var app = app || {};
     };
   }
 
-  ns.page = new ContentEditorXhtml();
+  ns.contentEditorXhtml = new ContentEditorXhtml();
 })(app);

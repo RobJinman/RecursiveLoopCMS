@@ -10,7 +10,11 @@ var app = app || {};
     var self = this;
 
     self.Tree.makeTrees();
-    self.page.init();
+
+    if (typeof self.current !== "undefined") {
+      self.page = self[self.current];
+      self.page.init();
+    }
   };
 })(app);
 

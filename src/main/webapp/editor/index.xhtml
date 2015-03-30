@@ -9,8 +9,15 @@
 
   <ui:param name="wrapperClass" value="editor-theme index-xhtml"/>
 
-  <ui:define name="head">
+  <ui:define name="html-head">
     <title>Recursive Loop CMS - Content Editor</title>
+
+    <script>
+    //<![CDATA[
+      var app = app || {};
+      app.current = "contentEditorXhtml";
+    //]]>
+    </script>
   </ui:define>
 
   <ui:define name="breadcrumb">
@@ -34,13 +41,13 @@
       <li>Insert new
         <ul>
           <c:forEach var="type" items="#{ jcrBean.typeList }">
-            <li onclick="app.page.mnuInsertNewItem('#{ type }')">#{ type }</li>
+            <li onclick="app.page.mnuInsertNewItemClick('#{ type }')">#{ type }</li>
           </c:forEach>
         </ul>
       </li>
-      <li onclick="app.page.mnuRenameItem()">Rename</li>
-      <li onclick="app.page.mnuMoveItem()">Move</li>
-      <li onclick="app.page.mnuDeleteItem()">Delete</li>
+      <li onclick="app.page.mnuRenameItemClick()">Rename</li>
+      <li onclick="app.page.mnuMoveItemClick()">Move</li>
+      <li onclick="app.page.mnuDeleteItemClick()">Delete</li>
     </ul>
   </ui:define>
 

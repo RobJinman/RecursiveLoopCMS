@@ -9,8 +9,15 @@
 
   <ui:param name="wrapperClass" value="devtools-theme index-xhtml"/>
 
-  <ui:define name="head">
+  <ui:define name="html-head">
     <title>Recursive Loop CMS - Developer Tools</title>
+
+    <script>
+    //<![CDATA[
+      var app = app || {};
+      app.current = "developerToolsXhtml";
+    //]]>
+    </script>
   </ui:define>
 
   <ui:define name="breadcrumb">
@@ -22,37 +29,18 @@
 
   <ui:define name="sidebar">
     <div class="list-group">
-      <a href="" class="list-group-item">Cras justo odio</a>
-      <a href="" class="list-group-item">Dapibus ac facilisis in</a>
-      <a href="" class="list-group-item">Morbi leo risus</a>
-      <a href="" class="list-group-item">Porta ac consectetur ac</a>
-      <a href="" class="list-group-item">Vestibulum at eros</a>
+      <c:forEach var="typeName" items="#{ jcrBean.typeList }">
+        <a class="list-group-item" href="#" onclick='app.page.mnuTypeClick("#{ typeName }"); return false'>#{ typeName }</a>
+      </c:forEach>
+      <a class="list-group-item" href="#" onclick="app.page.mnuNewTypeClick(); return false">
+        <i class="mnu-new-type glyphicon glyphicon-plus"/>
+      </a>
     </div>
   </ui:define>
 
   <ui:define name="content">
-    <div id="panel">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Name</th><th>JcrType</th><th>Widget</th><th>Required</th><th>Default</th><th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>title</td><td>string</td><td>textedit</td><td>true</td><td></td><td><i class="glyphicon glyphicon-edit"/></td>
-          </tr>
-          <tr>
-            <td>pubDate</td><td>date</td><td>datepicker</td><td>true</td><td></td><td><i class="glyphicon glyphicon-edit"/></td>
-          </tr>
-          <tr>
-            <td>content</td><td>string</td><td>textarea</td><td>true</td><td></td><td><i class="glyphicon glyphicon-edit"/></td>
-          </tr>
-          <tr>
-            <td><i class="glyphicon glyphicon-plus"/></td><td colspan="5"></td>
-          </tr>
-        </tbody>
-      </table>
+    <div id="panel"></div>
+    <div id="field-def">
       <rl:fieldDefinition/>
     </div>
   </ui:define>

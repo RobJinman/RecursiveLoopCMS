@@ -12,6 +12,7 @@ import com.recursiveloop.cms.JcrDao;
 import com.recursiveloop.cms.ShallowItem;
 import com.recursiveloop.cms.StringItem;
 import com.recursiveloop.cms.ItemType;
+import javax.jcr.PropertyType;
 import javax.inject.Named;
 import javax.inject.Inject;
 import javax.enterprise.context.RequestScoped;
@@ -23,6 +24,13 @@ import java.util.logging.Level;
 @Named(value = "jcrBean")
 @RequestScoped
 public class JcrBean {
+  public int getBinary() { return PropertyType.BINARY; }
+  public int getBoolean() { return PropertyType.BOOLEAN; }
+  public int getDate() { return PropertyType.DATE; }
+  public int getDouble() { return PropertyType.DOUBLE; }
+  public int getLong() { return PropertyType.LONG; }
+  public int getString() { return PropertyType.STRING; }
+
   private static final Logger m_logger = Logger.getLogger(JcrBean.class.getName());
 
   @Inject
