@@ -81,7 +81,7 @@ public class ItemParser {
       List<RlJcrParserParam> params = field.getParserParams();
       String name = field.getName();
       int type = field.getJcrType();
-      Object binVal = binItem.getProperty(name).data;
+      Object binVal = binItem.getProperty(name).data; // May be null
       String prop = null;
 
       switch (type) {

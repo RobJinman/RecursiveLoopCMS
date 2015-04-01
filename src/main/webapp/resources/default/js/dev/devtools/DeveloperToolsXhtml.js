@@ -10,49 +10,173 @@ var app = app || {};
 
     var _id = PANEL_ID;
     var _content = "";
-    var _fieldDef = null;
+    var _fieldDefNew = null;
+    var _fieldDefUpdate = null;
+    var _typeName = null;
 
     var _update = function() {
       $("#" + _id).html(_content);
     };
 
+    var _extractFieldData = function(datElem) {
+      return {
+        name: datElem.attr("data-field-name"),
+        type: parseInt(datElem.attr("data-field-type")),
+        widget: datElem.attr("data-field-widget"),
+        required: (datElem.attr("data-field-required") === "true"),
+        default: datElem.attr("data-field-default") || ""
+      };
+    };
+
+    var _loadPanel = function() {
+      $.ajax({
+        url: "/devtools/ajax/panelContent_updateType.xhtml?type=" + encodeURIComponent(_typeName)
+      }).done(function(data) {
+        _content = data;
+        _update();
+        _fieldDefNew.hide();
+        _fieldDefUpdate.hide();
+      }).fail(function(xhr, status, error){
+        console.log("Status: " + status + " Error: " + error);
+        console.log(xhr);
+      });
+    };
+
+    /**
+    * @method init
+    */
     self.init = function() {
-      _fieldDef = $("#field-def");
-      _fieldDef.hide();
+      _fieldDefUpdate = new ns.FieldDef($("#field-def-update"));
+      _fieldDefNew = new ns.FieldDef($("#field-def-new"));
+
+      _fieldDefUpdate.hide();
+      _fieldDefNew.hide();
     };
 
+    /**
+    * @method btnNewFieldClick
+    */
     self.btnNewFieldClick = function() {
-      _fieldDef.show();
+      _fieldDefUpdate.hide();
+
+      _fieldDefNew.populate({});
+      _fieldDefNew.show();
     };
 
+    /**
+    * @method btnEditFieldClick
+    */
     self.btnEditFieldClick = function(elem) {
-      var data = $(elem).closest(".field-buttons").find(".field-data");
-      var name = data.attr("data-field-name");
-      var type = data.attr("data-field-type");
-      var widget = data.attr("data-field-widget");
-      var required = data.attr("data-field-required");
-      var def = data.attr("data-field-default");
+      _fieldDefNew.hide();
 
-      console.log("Edit field: " + name + ", " + type + ", " + widget + ", " + required + ", " + def);
+      var data = _extractFieldData($(elem).closest("tr").find(".field-data"));
+
+      _fieldDefUpdate.populate(data);
+      _fieldDefUpdate.show();
     };
 
+    /**
+    * @method btnDeleteFieldClick
+    */
     self.btnDeleteFieldClick = function(elem) {
-      console.log("Delete field. " + elem.id);
+      var data = _extractFieldData($(elem).closest("tr").find(".field-data"));
+
+      $.ajax({
+        url: "/ajax/repository/type/" + encodeURIComponent(_typeName) + "/field/" + encodeURIComponent(data.name),
+        method: "DELETE"
+      }).done(function(data) {
+        _loadPanel();
+      }).fail(function(xhr, status, error){
+        console.log("Status: " + status + " Error: " + error);
+        console.log(xhr);
+      });
     };
 
+    /**
+    * @method btnUpdateFieldClick
+    */
+    self.btnUpdateFieldClick = function() {
+      var data = {
+        name: _typeName,
+        fields: {}
+      };
+
+      $("tr .field-data").each(function() {
+        var d = _extractFieldData($(this));
+        data.fields[d.name] = d;
+      });
+
+      var field = _fieldDefUpdate.getData();
+      data.fields[field.name] = field;
+
+      console.log(data);
+
+      $.ajax({
+        url: "/ajax/repository/type",
+        method: "PUT",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(data)
+      }).done(function() {
+        _loadPanel();
+      }).fail(function(xhr, status, error){
+        console.log("Status: " + status + " Error: " + error);
+        console.log(xhr);
+      });
+    };
+
+    /**
+    * @method btnCancelFieldClick
+    */
+    self.btnCancelFieldClick = function () {
+      _fieldDefNew.hide();
+      _fieldDefUpdate.hide();
+    };
+
+    /**
+    * @method btnSaveNewFieldClick
+    */
+    self.btnSaveNewFieldClick = function() {
+      var data = {
+        name: _typeName,
+        fields: {}
+      };
+
+      $("tr .field-data").each(function() {
+        var d = _extractFieldData($(this));
+        data.fields[d.name] = d;
+      });
+
+      var field = _fieldDefNew.getData();
+      data.fields[field.name] = field;
+
+      console.log(data);
+
+      $.ajax({
+        url: "/ajax/repository/type",
+        method: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(data)
+      }).done(function() {
+        _loadPanel();
+      }).fail(function(xhr, status, error){
+        console.log("Status: " + status + " Error: " + error);
+        console.log(xhr);
+      });
+    };
+
+    /**
+    * @method mnuNewTypeClick
+    */
     self.mnuNewTypeClick = function() {
       console.log("New type");
     };
 
+    /**
+    * @method mnuTypeClick
+    */
     self.mnuTypeClick = function(type) {
-      console.log("type: " + type);
-
-      $.ajax({
-        url: "/devtools/ajax/panelContent_updateType.xhtml?type=" + encodeURIComponent(type)
-      }).done(function(data) {
-        _content = data;
-        _update();
-      });
+      _typeName = type;
+      _loadPanel();
     };
   }
 

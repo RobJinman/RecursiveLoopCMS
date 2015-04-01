@@ -25,6 +25,10 @@ public class LongParser extends FieldParser {
 
   @Override
   public String stringify(Object obj, List<RlJcrParserParam> paramList) throws InvalidItemException {
+    if (obj == null) {
+      return "";
+    }
+
     return ((Long)(obj)).toString();
   }
 }

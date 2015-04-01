@@ -16,6 +16,10 @@ import java.util.HashMap;
 
 public abstract class FieldParser {
   public abstract Object parse(String str, List<RlJcrParserParam> paramList) throws InvalidItemException;
+
+  /**
+  * Must handle null values appropriately (e.g. return empty string)
+  */
   public abstract String stringify(Object obj, List<RlJcrParserParam> paramList) throws InvalidItemException;
 
   protected Map<String, String> paramsAsMap(List<RlJcrParserParam> paramList) {

@@ -21,7 +21,8 @@ body {
 }
 
 #header {
-  position: absolute;
+  position: fixed;
+  z-index: 2;
   top: 0px;
   width: 100%;
   height: $headerH;
@@ -60,6 +61,7 @@ body {
 
 #main {
   position: absolute;
+  z-index: 1;
   top: $headerH;
   left: 0;
   width: 100%;

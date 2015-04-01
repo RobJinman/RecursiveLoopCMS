@@ -26,7 +26,9 @@ public class RlJcrFieldType {
   @Collection(jcrName = "rl:parserParams", jcrType = "rlt:parserParams", jcrElementName = "rl:parserParam")
   public List<RlJcrParserParam> parserParams;
 
-  public RlJcrFieldType() {}
+  public RlJcrFieldType() {
+    this.parserParams = new ArrayList<RlJcrParserParam>();
+  }
 
   public RlJcrFieldType(String name, int type, boolean required) {
     m_rlPath = null;

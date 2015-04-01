@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"   
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+  xmlns:rl="http://xmlns.recursiveloop.org/cms"
+  xmlns:rlc="http://java.sun.com/jsf/composite/components">
+
+  <c:set var="widget" value="#{ request.getParameter('widget') }" scope="request"/>
+
+  <form id="frm-widget-params" class="form-horizontal">
+    <c:choose>
+      <c:when test='#{ widget eq "textedit" }'>
+        <h3>Widget parameters for widget: Textedit</h3>
+      </c:when>
+      <c:when test='#{ widget eq "textarea" }'>
+        <h3>Widget parameters for widget: Textarea</h3>
+      </c:when>
+      <c:when test='#{ widget eq "datepicker" }'>
+        <h3>Widget parameters for widget: Datepicker</h3>
+      </c:when>
+      <c:when test='#{ widget eq "spinbox" }'>
+        <h3>Widget parameters for widget: Spinbox</h3>
+      </c:when>
+      <c:when test='#{ widget eq "selector" }'>
+        <h3>Widget parameters for widget: Selector</h3>
+      </c:when>
+      <c:when test='#{ widget eq "checkbox" }'>
+        <h3>Widget parameters for widget: Checkbox</h3>
+      </c:when>
+      <c:when test='#{ widget eq "radiobuttons" }'>
+        <h3>Widget parameters for widget: Radio buttons</h3>
+      </c:when>
+      <c:when test='#{ widget eq "wysiwyg" }'>
+        <h3>Widget parameters for widget: WYSIWYG editor</h3>
+      </c:when>
+    </c:choose>
+  </form>
+</div>

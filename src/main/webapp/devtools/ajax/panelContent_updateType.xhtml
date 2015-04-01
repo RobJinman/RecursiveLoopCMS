@@ -10,6 +10,8 @@
   <c:set var="typeName" value="#{ request.getParameter('type') }" scope="request"/>
   <c:set var="type" value="#{ jcrBean.getType(typeName) }" scope="request"/>
 
+  <span id="type-data" data-type-name="#{ typeName }"/>
+
   <table id="tbl-fields" class="table table-striped">
     <thead>
       <tr>

@@ -37,6 +37,9 @@ var app = app || {};
       $(".spinner").spinner();
     };
 
+    /**
+    * @method init
+    */
     self.init = function() {
       _tree = ns.trees[TREE_WIDGET_ID];
 
@@ -62,6 +65,9 @@ var app = app || {};
       }
     };
 
+    /**
+    * @method btnUpdateItemClick
+    */
     self.btnUpdateItemClick = function() {
       var content = {};
       $.each($("#frm-item-content").serializeArray(), function() {
@@ -78,8 +84,8 @@ var app = app || {};
       console.log(obj);
 
       $.ajax({
-        url: "/ajax/repository/item?action=update",
-        method: "POST",
+        url: "/ajax/repository/item",
+        method: "PUT",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         data: JSON.stringify(obj)
@@ -88,6 +94,9 @@ var app = app || {};
       });
     };
 
+    /**
+    * @method btnNewItemClick
+    */
     self.btnNewItemClick = function() {
       var content = {};
       $.each($("#frm-item-content").serializeArray(), function() {
@@ -107,7 +116,7 @@ var app = app || {};
       };
 
       $.ajax({
-        url: "/ajax/repository/item?action=insert",
+        url: "/ajax/repository/item",
         method: "POST",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -117,6 +126,9 @@ var app = app || {};
       });
     };
 
+    /**
+    * @method mnuInsertItemClick
+    */
     self.mnuInsertNewItemClick = function(type) {
       var dat = $("#opts-menu");
       var path = dat.attr("data-item-path");
@@ -129,20 +141,29 @@ var app = app || {};
       });
     };
 
+    /**
+    * @method mnuRenameItemClick
+    */
     self.mnuRenameItemClick = function() {
 
     };
 
+    /**
+    * @method mnuMoveItemClick
+    */
     self.mnuMoveItemClick = function() {
 
     };
 
+    /**
+    * @method mnuDeleteItemClick
+    */
     self.mnuDeleteItemClick = function() {
       var dat = $("#opts-menu");
       var path = dat.attr("data-item-path");
 
       $.ajax({
-        url: "/ajax/repository/item?path=" + encodeURIComponent(path),
+        url: "/ajax/repository/item/" + encodeURIComponent(path),
         method: "DELETE"
       }).done(function(data) {
         // TODO

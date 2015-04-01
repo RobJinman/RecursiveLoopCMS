@@ -21,7 +21,9 @@ public class RlJcrItemType {
   @Collection(jcrName = "rl:fields", jcrType = "rlt:fieldTypeGroup", jcrElementName = "rl:field")
   public List<RlJcrFieldType> fields;
 
-  public RlJcrItemType() {}
+  public RlJcrItemType() {
+    this.fields = new ArrayList<RlJcrFieldType>();
+  }
 
   public RlJcrItemType(List<RlJcrFieldType> fields) {
     this.fields = fields;

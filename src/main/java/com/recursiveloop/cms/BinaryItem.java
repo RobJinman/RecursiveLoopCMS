@@ -35,30 +35,31 @@ public class BinaryItem extends ShallowItem {
       int type = field.getJcrType();
       Object data = null;
 
-      switch (type) {
-        case PropertyType.BINARY:
-          data = node.getProperty(name).getBinary();
-          break;
-        case PropertyType.BOOLEAN:
-          data = new Boolean(node.getProperty(name).getBoolean());
-          break;
-        case PropertyType.DATE:
-          data = node.getProperty(name).getDate();
-          break;
-        case PropertyType.DOUBLE:
-          data = new Double(node.getProperty(name).getDouble());
-          break;
-        case PropertyType.LONG:
-          data = new Long(node.getProperty(name).getLong());
-          break;
-        case PropertyType.STRING:
-          data = node.getProperty(name).getString();
-          break;
+      if (node.hasProperty(name)) {
+        switch (type) {
+          case PropertyType.BINARY:
+            data = node.getProperty(name).getBinary();
+            break;
+          case PropertyType.BOOLEAN:
+            data = new Boolean(node.getProperty(name).getBoolean());
+            break;
+          case PropertyType.DATE:
+            data = node.getProperty(name).getDate();
+            break;
+          case PropertyType.DOUBLE:
+            data = new Double(node.getProperty(name).getDouble());
+            break;
+          case PropertyType.LONG:
+            data = new Long(node.getProperty(name).getLong());
+            break;
+          case PropertyType.STRING:
+            data = node.getProperty(name).getString();
+            break;
+        }
       }
 
-      if (data != null) {
-        m_data.put(name, new JcrProperty(type, data));
-      }
+      // data may be null
+      m_data.put(name, new JcrProperty(type, data));
     }
   }
 
@@ -69,7 +70,7 @@ public class BinaryItem extends ShallowItem {
   }
 
   @Override
-  public void writeTo(Node node) throws InvalidItemException, RepositoryException {
+  public void writeTo(Node node) throws InvalidItemException, RepositoryException { // TODO: Validation check
     super.writeTo(node);
 
     Iterator<Map.Entry<String, JcrProperty>> i = m_data.entrySet().iterator();

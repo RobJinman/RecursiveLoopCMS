@@ -6,5 +6,54 @@
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
   xmlns:rl="http://xmlns.recursiveloop.org/cms"
   xmlns:rlc="http://java.sun.com/jsf/composite/components">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"   
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+  xmlns:rl="http://xmlns.recursiveloop.org/cms"
+  xmlns:rlc="http://java.sun.com/jsf/composite/components">
 
+  <table id="tbl-fields" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Widget</th>
+        <th>Required</th>
+        <th>Default</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <c:forEach var="field" items="#{ type.fields }">
+        <tr>
+          <td>#{ field.name }</td>
+          <td>#{ field.jcrType }</td>
+          <td>#{ field.widget }</td>
+          <td>#{ field.required }</td>
+          <td>#{ field.default }</td>
+          <td class="field-buttons">
+            <span class="field-data"
+              data-field-name="#{ field.name }"
+              data-field-type="#{ field.jcrType }"
+              data-field-widget="#{ field.widget }"
+              data-field-required="#{ field.required }"
+              data-field-default="#{ field.default }"/>
+
+            <i class="btn-edit-field glyphicon glyphicon-edit" onclick="app.page.btnEditFieldClick(this)"/>
+            <i class="btn-delete-field glyphicon glyphicon-remove" onclick="app.page.btnDeleteFieldClick(this)"/>
+          </td>
+        </tr>
+      </c:forEach>
+      <tr>
+        <td>
+          <i class="btn-new-field glyphicon glyphicon-plus" onclick="app.page.btnNewFieldClick()"/>
+        </td>
+        <td colspan="5"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 </div>

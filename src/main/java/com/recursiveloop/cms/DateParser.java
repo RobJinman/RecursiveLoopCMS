@@ -38,6 +38,10 @@ public class DateParser extends FieldParser {
 
   @Override
   public String stringify(Object obj, List<RlJcrParserParam> paramList) throws InvalidItemException {
+    if (obj == null) {
+      return "";
+    }
+
     Map<String, String> params = paramsAsMap(paramList);
 
     String dateFormat = params.get("dateFormat");

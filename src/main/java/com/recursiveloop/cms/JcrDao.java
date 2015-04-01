@@ -14,6 +14,7 @@ import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
 import com.recursiveloop.cms.jcrmodel.RlJcrItem;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.Node;
@@ -173,7 +174,7 @@ public class JcrDao {
   }
 
   /**
-  * Verifies that the item is of known type.
+  * Verifies that the item is of known type
   */
   @Lock(LockType.WRITE)
   public void insertNewItem(StringItem item)
@@ -215,8 +216,7 @@ public class JcrDao {
   }
 
   /**
-  * Verifies that the item to be updated actually exists in addition to
-  * the usual validation check.
+  * Verifies that the item to be updated actually exists
   */
   @Lock(LockType.WRITE)
   public void updateItem(StringItem item)
@@ -266,18 +266,67 @@ public class JcrDao {
   }
 
   @Lock(LockType.WRITE)
-  public void insertNewType(ItemType type) {
+  public void insertNewType(ItemType type) throws RepositoryException {
+    RlJcrItemType jcrType = type.getType();
+    jcrType.setPath("/rl:types/" + type.getName());
 
+    m_ocm.insert(jcrType);
+    m_session.save();
+
+    m_typeMap.put(type.getName(), type);
   }
 
   @Lock(LockType.WRITE)
-  public void updateType(ItemType type) {
-
+  public void updateType(ItemType type) throws RepositoryException, NoSuchTypeException {
+    deleteType(type.getName());
+    insertNewType(type);
   }
 
   @Lock(LockType.WRITE)
-  public void deleteType(ItemType type) {
+  public void deleteType(String typeName) throws RepositoryException, NoSuchTypeException {
+    try {
+      ItemType type = m_typeMap.get(typeName);
+      if (type == null) {
+        throw new NoSuchTypeException(typeName);
+      }
 
+      m_session.removeItem(type.getPath());
+      m_session.save();
+
+      m_typeMap.remove(typeName);
+    }
+    catch (PathNotFoundException ex) {
+      throw new NoSuchTypeException(typeName);
+    }
+  }
+
+  @Lock(LockType.WRITE)
+  public void deleteField(String typeName, String fieldName)
+    throws RepositoryException, NoSuchTypeException, NoSuchFieldException {
+
+    String fieldPath = "";
+
+    try {
+      ItemType type = m_typeMap.get(typeName);
+      if (type == null) {
+        throw new NoSuchTypeException(typeName);
+      }
+
+      RlJcrFieldType field = type.getField(fieldName);
+      if (field == null) {
+        throw new NoSuchFieldException(typeName, fieldName);
+      }
+
+      fieldPath = field.getPath();
+      m_session.removeItem(fieldPath);
+      m_session.save();
+
+      type.removeField(fieldName);
+    }
+    catch (PathNotFoundException ex) {
+      m_logger.log(Level.WARNING, "Failed to delete field at " + fieldPath);
+      throw new NoSuchFieldException(typeName, fieldName);
+    }
   }
 
   private void loadShallowItems() throws RepositoryException, InvalidItemException {

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"   
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+  xmlns:rl="http://xmlns.recursiveloop.org/cms"
+  xmlns:rlc="http://java.sun.com/jsf/composite/components">
+
+  <c:set var="jcrType" value="#{ request.getParameter('type') }" scope="request"/>
+
+  <form id="frm-parser-params" class="form-horizontal">
+    <c:choose>
+      <c:when test="#{ jcrType eq jcrBean.binary }">
+        <h3>Parser parameters for type: Binary</h3>
+      </c:when>
+      <c:when test="#{ jcrType eq jcrBean.boolean }">
+        <h3>Parser parameters for type: Boolean</h3>
+      </c:when>
+      <c:when test="#{ jcrType eq jcrBean.date }">
+        <h3>Parser parameters for type: Date</h3>
+        <div class="form-group">
+          <label class="col-sm-1 control-label">Format</label>
+          <div class="col-sm-11">
+            <input class="form-control" type="text" name="dateFormat" value="dd/MM/yyyy"/>
+          </div>
+        </div>
+      </c:when>
+      <c:when test="#{ jcrType eq jcrBean.double }">
+        <h3>Parser parameters for type: Double</h3>
+      </c:when>
+      <c:when test="#{ jcrType eq jcrBean.long }">
+        <h3>Parser parameters for type: Long</h3>
+      </c:when>
+      <c:when test="#{ jcrType eq jcrBean.string }">
+        <h3>Parser parameters for type: String</h3>
+      </c:when>
+    </c:choose>
+  </form>
+</div>
