@@ -8,6 +8,7 @@
 
 package com.recursiveloop.cms;
 
+import com.recursiveloop.cms.exceptions.InvalidItemException;
 import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
 import java.util.Map;
 import java.util.HashMap;

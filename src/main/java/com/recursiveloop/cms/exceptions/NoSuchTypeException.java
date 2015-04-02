@@ -6,7 +6,7 @@
 // Copyright Rob Jinman 2015
 
 
-package com.recursiveloop.cms;
+package com.recursiveloop.cms.exceptions;
 
 import java.io.Serializable;
 

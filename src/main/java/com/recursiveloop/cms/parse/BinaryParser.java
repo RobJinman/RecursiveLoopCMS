@@ -6,29 +6,23 @@
 // Copyright Rob Jinman 2015
 
 
-package com.recursiveloop.cms;
+package com.recursiveloop.cms.parse;
 
+import com.recursiveloop.cms.exceptions.InvalidItemException;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
 import java.util.List;
 
 
-public class DoubleParser extends FieldParser {
+public class BinaryParser extends FieldParser {
   @Override
   public Object parse(String str, List<RlJcrParserParam> paramList) throws InvalidItemException {
-    try {
-      return new Double(str);
-    }
-    catch (NumberFormatException ex) {
-      throw new InvalidItemException("Error parsing string '" + str + "' as Double", ex);
-    }
+    // TODO
+    return str;
   }
 
   @Override
   public String stringify(Object obj, List<RlJcrParserParam> paramList) throws InvalidItemException {
-    if (obj == null) {
-      return "";
-    }
-
-    return ((Double)(obj)).toString();
+    // TODO
+    return "binary object";
   }
 }

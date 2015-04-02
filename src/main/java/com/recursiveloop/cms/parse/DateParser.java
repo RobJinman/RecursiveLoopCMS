@@ -6,8 +6,9 @@
 // Copyright Rob Jinman 2015
 
 
-package com.recursiveloop.cms;
+package com.recursiveloop.cms.parse;
 
+import com.recursiveloop.cms.exceptions.InvalidItemException;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
 import java.util.List;
 import java.util.Map;

@@ -13,7 +13,14 @@ body.devtools-theme {
 
       .list-group {
         .mnu-new-type {
+          line-height: 20px;
+
           cursor: pointer;
+          float: right;
+
+          &:hover {
+            color: green;
+          }
         }
       }
     }
@@ -55,10 +62,6 @@ body.devtools-theme {
             }
           }
         }
-      }
-
-      #frm-parser-params-wrap {
-        background-color: #f9f9f9;
       }
     }
   }

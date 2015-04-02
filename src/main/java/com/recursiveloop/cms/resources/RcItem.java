@@ -18,7 +18,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
-import javax.servlet.ServletException;
 
 
 @Path("/repository/item")
@@ -26,12 +25,12 @@ import javax.servlet.ServletException;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface RcItem {
   @POST
-  public Response insertItem(JsonObject json) throws ServletException;
+  public Response insertItem(JsonObject json) throws Exception;
 
   @PUT
-  public Response updateItem(JsonObject json) throws ServletException;
+  public Response updateItem(JsonObject json) throws Exception;
 
   @DELETE
   @Path("{path}")
-  public Response deleteItem(@PathParam("path") String path) throws ServletException;
+  public Response deleteItem(@PathParam("path") String path) throws Exception;
 }

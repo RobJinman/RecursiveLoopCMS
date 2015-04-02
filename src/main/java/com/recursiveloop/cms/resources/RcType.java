@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -26,16 +27,25 @@ import javax.servlet.ServletException;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface RcType {
   @POST
-  public Response insertType(JsonObject json) throws ServletException;
+  public Response insertType(JsonObject json) throws Exception;
 
-  @PUT
-  public Response updateType(JsonObject json) throws ServletException;
+  @GET
+  @Path("{name}")
+  public JsonObject getType(@PathParam("name") String name) throws Exception;
 
   @DELETE
   @Path("{name}")
-  public Response deleteType(@PathParam("name") String name) throws ServletException;
+  public Response deleteType(@PathParam("name") String name) throws Exception;
+
+  @PUT
+  @Path("{name}/field/{field}")
+  public Response updateField(@PathParam("name") String name, @PathParam("field") String field, JsonObject json) throws Exception;
+
+  @POST
+  @Path("{name}/field")
+  public Response insertField(@PathParam("name") String name, JsonObject json) throws Exception;
 
   @DELETE
   @Path("{name}/field/{field}")
-  public Response deleteField(@PathParam("name") String name, @PathParam("field") String field) throws ServletException;
+  public Response deleteField(@PathParam("name") String name, @PathParam("field") String field) throws Exception;
 }

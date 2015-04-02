@@ -8,8 +8,11 @@
 
 package com.recursiveloop.cms;
 
+import com.recursiveloop.cms.exceptions.InvalidTypeException;
 import com.recursiveloop.cms.jcrmodel.RlJcrItemType;
 import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 import java.util.Map;
@@ -59,28 +62,31 @@ public class ItemType {
 
         String fieldName = pair.getKey();
         JsonObject fieldData = fieldsData.getJsonObject(fieldName);
-
-        RlJcrFieldType field = new RlJcrFieldType();
-        field.setName(fieldName);
-        field.setJcrType(fieldData.getInt("type"));
-        field.setWidget(fieldData.getString("widget"));
-        field.setRequired(fieldData.getBoolean("required"));
-        field.setDefault(fieldData.getString("default"));
-
-        JsonObject parserParamsData = fieldData.getJsonObject("parserParams");
-        Iterator<Map.Entry<String, JsonValue>> j = parserParamsData.entrySet().iterator();
-
-        while (j.hasNext()) {
-          Map.Entry<String, JsonValue> pair_ = j.next();
-          field.setParserParam(pair_.getKey(), parserParamsData.getString(pair_.getKey()));
-        }
-
-        m_type.addField(field);
+        addField(fieldData);
       }
     }
     catch (NullPointerException|ClassCastException ex) {
       throw new InvalidTypeException("Error constructing type from JSON object; property missing?", ex);
     }
+  }
+
+  public JsonObject toJson() {
+    JsonObjectBuilder fields = Json.createObjectBuilder();
+    for (RlJcrFieldType f : m_type.getFields()) {
+      fields.add(f.getName(), Json.createObjectBuilder()
+        .add("name", f.getName())
+        .add("type", f.getJcrType())
+        .add("widget", f.getWidget())
+        .add("required", f.getRequired())
+        .add("default", f.getDefault()));
+    }
+
+    JsonObject data = Json.createObjectBuilder()
+      .add("name", m_name)
+      .add("fields", fields)
+      .build();
+
+    return data;
   }
 
   public boolean isNull() {
@@ -127,6 +133,37 @@ public class ItemType {
     }
 
     return null;
+  }
+
+  public void addField(RlJcrFieldType field) {
+    if (isNull()) {
+      m_type = new RlJcrItemType();
+    }
+
+    m_type.addField(field);
+  }
+
+  public void addField(JsonObject json) {
+    if (isNull()) {
+      m_type = new RlJcrItemType();
+    }
+
+    RlJcrFieldType field = new RlJcrFieldType();
+    field.setName(json.getString("name"));
+    field.setJcrType(json.getInt("type"));
+    field.setWidget(json.getString("widget"));
+    field.setRequired(json.getBoolean("required"));
+    field.setDefault(json.getString("default"));
+
+    JsonObject parserParamsData = json.getJsonObject("parserParams");
+    Iterator<Map.Entry<String, JsonValue>> j = parserParamsData.entrySet().iterator();
+
+    while (j.hasNext()) {
+      Map.Entry<String, JsonValue> pair_ = j.next();
+      field.setParserParam(pair_.getKey(), parserParamsData.getString(pair_.getKey()));
+    }
+
+    m_type.addField(field);
   }
 
   public void removeField(String name) {

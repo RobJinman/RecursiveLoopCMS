@@ -8,6 +8,7 @@
 
 package com.recursiveloop.cms;
 
+import com.recursiveloop.cms.exceptions.InvalidItemException;
 import com.recursiveloop.cms.jcrmodel.RlJcrItem;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;

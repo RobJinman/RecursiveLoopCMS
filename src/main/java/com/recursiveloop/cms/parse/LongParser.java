@@ -6,24 +6,30 @@
 // Copyright Rob Jinman 2015
 
 
-package com.recursiveloop.cms;
+package com.recursiveloop.cms.parse;
 
+import com.recursiveloop.cms.exceptions.InvalidItemException;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
 import java.util.List;
 
 
-public class BooleanParser extends FieldParser {
+public class LongParser extends FieldParser {
   @Override
   public Object parse(String str, List<RlJcrParserParam> paramList) throws InvalidItemException {
-    return new Boolean(str);
+    try {
+      return new Long(str);
+    }
+    catch (NumberFormatException ex) {
+      throw new InvalidItemException("Error parsing string '" + str + "' as Long", ex);
+    }
   }
 
   @Override
   public String stringify(Object obj, List<RlJcrParserParam> paramList) throws InvalidItemException {
     if (obj == null) {
-      return "false";
+      return "";
     }
 
-    return ((Boolean)(obj)).toString();
+    return ((Long)(obj)).toString();
   }
 }

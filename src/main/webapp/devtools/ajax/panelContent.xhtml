@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"   
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+  xmlns:rl="http://xmlns.recursiveloop.org/cms"
+  xmlns:rlc="http://java.sun.com/jsf/composite/components">
+
+  <!-- query parameters -->
+  <c:set var="pType" value="#{ request.getParameter('type') }" scope="request"/> <!-- optional -->
+  <c:set var="pField" value="#{ request.getParameter('field') }" scope="request"/> <!-- optional -->
+  <c:set var="pWidget" value="#{ request.getParameter('widget') }" scope="request"/> <!-- optional -->
+  <c:set var="pJcrType" value="#{ request.getParameter('jcrtype') }" scope="request"/> <!-- optional -->
+
+  <c:if test="#{ pType != null }">
+    <c:set var="type" value="#{ jcrBean.getType(pType) }" scope="request"/>
+
+    <c:if test="#{ pField != null and pField != '[new]' }">
+      <c:set var="activeField" value="#{ type.getField(pField) }"/>
+    </c:if>
+
+    <span id="type-data" data-type-name="#{ pType }"/>
+
+    <table id="tbl-fields" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Widget</th>
+          <th>Required</th>
+          <th>Default</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <c:forEach var="field" items="#{ type.fields }">
+          <tr>
+            <td>#{ field.name }</td>
+            <td>#{ field.jcrType }</td>
+            <td>#{ field.widget }</td>
+            <td>#{ field.required }</td>
+            <td>#{ field.default }</td>
+            <td class="field-buttons">
+              <i class="btn-edit-field glyphicon glyphicon-edit" onclick="app.page.btnEditFieldClick('#{ field.name }')"/>
+              <i class="btn-delete-field glyphicon glyphicon-remove" onclick="app.page.btnDeleteFieldClick('#{ field.name }')"/>
+            </td>
+          </tr>
+        </c:forEach>
+        <tr>
+          <td>
+            <i class="btn-new-field glyphicon glyphicon-plus" onclick="app.page.btnNewFieldClick()"/>
+          </td>
+          <td colspan="5"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <c:if test="#{ pField != null }">
+      <form id="frm-field-def" class="form-horizontal">
+        <div class="form-group">
+          <label class="col-sm-1 control-label">Name</label>
+          <div class="col-sm-11">
+            <input id="field-def-name" class="form-control" type="text" name="name" data-bind="value: fName"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-1 control-label">Type</label>
+          <div class="col-sm-11">
+            <select id="field-def-type" class="form-control" name="type" onchange="app.page.onJcrTypeSelection(this)" data-bind="value: fType">
+              <option value="#{ jcrBean.binary }">binary</option>
+              <option value="#{ jcrBean.boolean }">boolean</option>
+              <option value="#{ jcrBean.date }">date</option>
+              <option value="#{ jcrBean.double }">double</option>
+              <option value="#{ jcrBean.long }">long</option>
+              <option value="#{ jcrBean.string }">string</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-1 control-label">Widget</label>
+          <div class="col-sm-11">
+            <select id="field-def-widget" class="form-control" name="widget" onchange="app.page.onWidgetSelection(this)" data-bind="value: fWidget">
+              <option value="textedit">textedit</option>
+              <option value="textarea">textarea</option>
+              <option value="datepicker">datepicker</option>
+              <option value="spinbox">spinbox</option>
+              <option value="checkbox">checkbox</option>
+              <option value="selector">selector</option>
+              <option value="radiobuttons">radio buttons</option>
+              <option value="wysiwyg">WYSIWYG editor</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-1 col-sm-11">
+            <div class="checkbox">
+              <label>
+                <input id="field-def-required" type="checkbox" name="required" data-bind="checked: fRequired"/>Required
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-1 control-label">Default</label>
+          <div class="col-sm-11">
+            <input id="field-def-default" class="form-control" type="text" name="default" data-bind="value: fDefault"/>
+          </div>
+        </div>
+      </form>
+      <c:if test="#{ pJcrType != null }">
+        <form id="frm-parser-params" class="form-horizontal">
+          <c:choose>
+            <c:when test="#{ pJcrType eq jcrBean.binary }">
+              <h3>Parser parameters for type: Binary</h3>
+            </c:when>
+            <c:when test="#{ pJcrType eq jcrBean.boolean }">
+              <h3>Parser parameters for type: Boolean</h3>
+            </c:when>
+            <c:when test="#{ pJcrType eq jcrBean.date }">
+              <h3>Parser parameters for type: Date</h3>
+              <div class="form-group">
+                <label class="col-sm-1 control-label">Format</label>
+                <div class="col-sm-11">
+                  <input class="form-control" type="text" name="dateFormat" value="dd/MM/yyyy"/>
+                </div>
+              </div>
+            </c:when>
+            <c:when test="#{ pJcrType eq jcrBean.double }">
+              <h3>Parser parameters for type: Double</h3>
+            </c:when>
+            <c:when test="#{ pJcrType eq jcrBean.long }">
+              <h3>Parser parameters for type: Long</h3>
+            </c:when>
+            <c:when test="#{ pJcrType eq jcrBean.string }">
+              <h3>Parser parameters for type: String</h3>
+            </c:when>
+          </c:choose>
+        </form>
+      </c:if>
+      <c:if test="#{ pWidget != null }">
+        <form id="frm-widget-params" class="form-horizontal">
+          <c:choose>
+            <c:when test="#{ pWidget eq 'textedit' }">
+              <h3>Widget parameters for widget: Textedit</h3>
+            </c:when>
+            <c:when test="#{ pWidget eq 'textarea' }">
+              <h3>Widget parameters for widget: Textarea</h3>
+            </c:when>
+            <c:when test="#{ pWidget eq 'datepicker' }">
+              <h3>Widget parameters for widget: Datepicker</h3>
+            </c:when>
+            <c:when test="#{ pWidget eq 'spinbox' }">
+              <h3>Widget parameters for widget: Spinbox</h3>
+            </c:when>
+            <c:when test="#{ pWidget eq 'selector' }">
+              <h3>Widget parameters for widget: Selector</h3>
+            </c:when>
+            <c:when test="#{ pWidget eq 'checkbox' }">
+              <h3>Widget parameters for widget: Checkbox</h3>
+            </c:when>
+            <c:when test="#{ pWidget eq 'radiobuttons' }">
+              <h3>Widget parameters for widget: Radio buttons</h3>
+            </c:when>
+            <c:when test="#{ pWidget eq 'wysiwyg' }">
+              <h3>Widget parameters for widget: WYSIWYG editor</h3>
+            </c:when>
+          </c:choose>
+        </form>
+      </c:if>
+      <form>
+        <div class="form-group">
+          <div class="col-sm-offset-1 col-sm-11">
+            <c:if test='#{ pField != null and pField != "[new]" }'>
+              <button type="button" class="btn btn-default" onclick="app.page.btnUpdateFieldClick()">Save changes</button>
+              <button type="button" class="btn btn-default" onclick="app.page.btnCancelFieldClick()">Cancel</button>
+            </c:if>
+            <c:if test='#{ pField == "[new]" }'>
+              <button type="button" class="btn btn-default" onclick="app.page.btnSaveNewFieldClick()">Save new</button>
+              <button type="button" class="btn btn-default" onclick="app.page.btnCancelFieldClick()">Cancel</button>
+            </c:if>
+          </div>
+        </div>
+      </form>
+    </c:if>
+  </c:if>
+</div>

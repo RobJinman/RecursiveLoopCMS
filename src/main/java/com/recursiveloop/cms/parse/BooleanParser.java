@@ -6,22 +6,25 @@
 // Copyright Rob Jinman 2015
 
 
-package com.recursiveloop.cms;
+package com.recursiveloop.cms.parse;
 
+import com.recursiveloop.cms.exceptions.InvalidItemException;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
 import java.util.List;
 
 
-public class BinaryParser extends FieldParser {
+public class BooleanParser extends FieldParser {
   @Override
   public Object parse(String str, List<RlJcrParserParam> paramList) throws InvalidItemException {
-    // TODO
-    return str;
+    return new Boolean(str);
   }
 
   @Override
   public String stringify(Object obj, List<RlJcrParserParam> paramList) throws InvalidItemException {
-    // TODO
-    return "binary object";
+    if (obj == null) {
+      return "false";
+    }
+
+    return ((Boolean)(obj)).toString();
   }
 }

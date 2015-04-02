@@ -10,81 +10,116 @@ var app = app || {};
 
     var _id = PANEL_ID;
     var _content = "";
-    var _fieldDefNew = null;
-    var _fieldDefUpdate = null;
-    var _typeName = null;
+    var _current = {
+      type: null,
+      field: null,
+
+      fieldData: {
+        fName: ko.observable(null),
+        fType: ko.observable(0),
+        fWidget: ko.observable("textedit"),
+        fRequired: ko.observable(false),
+        fDefault: ko.observable("")
+      }
+    };
 
     var _update = function() {
       $("#" + _id).html(_content);
-    };
 
-    var _extractFieldData = function(datElem) {
-      return {
-        name: datElem.attr("data-field-name"),
-        type: parseInt(datElem.attr("data-field-type")),
-        widget: datElem.attr("data-field-widget"),
-        required: (datElem.attr("data-field-required") === "true"),
-        default: datElem.attr("data-field-default") || ""
-      };
+      var frmFieldDef = $("#frm-field-def");
+      if (frmFieldDef.length > 0) {
+        ko.applyBindings(_current.fieldData, frmFieldDef[0]);
+      }
     };
 
     var _loadPanel = function() {
+      var url = "/devtools/ajax/panelContent.xhtml";
+
+      if (_current.type != null) {
+        url += "?type=" + encodeURIComponent(_current.type);
+      }
+
+      if (_current.field !== null) {
+        url += "&field=" + encodeURIComponent(_current.field);
+      }
+
+      if (_current.fieldData.fType() != null) {
+        url += "&jcrtype=" + encodeURIComponent(_current.fieldData.fType());
+      }
+
+      if (_current.fieldData.fWidget() !== null) {
+        url += "&widget=" + encodeURIComponent(_current.fieldData.fWidget());
+      }
+
+      console.log("url: " + url);
+
       $.ajax({
-        url: "/devtools/ajax/panelContent_updateType.xhtml?type=" + encodeURIComponent(_typeName)
+        url: url
       }).done(function(data) {
         _content = data;
         _update();
-        _fieldDefNew.hide();
-        _fieldDefUpdate.hide();
       }).fail(function(xhr, status, error){
         console.log("Status: " + status + " Error: " + error);
         console.log(xhr);
       });
     };
 
+    var _extractData = function() {
+      var data = {
+        name: _current.fieldData.fName(),
+        type: parseInt(_current.fieldData.fType()),
+        widget: _current.fieldData.fWidget(),
+        required: _current.fieldData.fRequired(),
+        default: _current.fieldData.fDefault(),
+
+        parserParams: {},
+        widgetParams: {}
+      };
+
+      $.each($("#frm-parser-params").serializeArray(), function() {
+        data.parserParams[this.name] = this.value;
+      });
+
+      $.each($("#frm-widget-params").serializeArray(), function() {
+        data.widgetParams[this.name] = this.value;
+      });
+
+      return data;
+    };
+
     /**
     * @method init
     */
     self.init = function() {
-      _fieldDefUpdate = new ns.FieldDef($("#field-def-update"));
-      _fieldDefNew = new ns.FieldDef($("#field-def-new"));
-
-      _fieldDefUpdate.hide();
-      _fieldDefNew.hide();
     };
 
     /**
     * @method btnNewFieldClick
     */
     self.btnNewFieldClick = function() {
-      _fieldDefUpdate.hide();
-
-      _fieldDefNew.populate({});
-      _fieldDefNew.show();
+      _current.field = "[new]";
+      _loadPanel();
     };
 
     /**
     * @method btnEditFieldClick
     */
-    self.btnEditFieldClick = function(elem) {
-      _fieldDefNew.hide();
-
-      var data = _extractFieldData($(elem).closest("tr").find(".field-data"));
-
-      _fieldDefUpdate.populate(data);
-      _fieldDefUpdate.show();
+    self.btnEditFieldClick = function(field) {
+      _current.field = field;
+      _loadPanel();
     };
 
     /**
     * @method btnDeleteFieldClick
     */
-    self.btnDeleteFieldClick = function(elem) {
-      var data = _extractFieldData($(elem).closest("tr").find(".field-data"));
-
+    self.btnDeleteFieldClick = function(field) {
       $.ajax({
-        url: "/ajax/repository/type/" + encodeURIComponent(_typeName) + "/field/" + encodeURIComponent(data.name),
+        url: "/ajax/repository/type/" + encodeURIComponent(_current.type) + "/field/" + encodeURIComponent(field),
         method: "DELETE"
       }).done(function(data) {
+        if (field === _current.field) {
+          _current.field = null;
+        }
         _loadPanel();
       }).fail(function(xhr, status, error){
         console.log("Status: " + status + " Error: " + error);
@@ -96,27 +131,17 @@ var app = app || {};
     * @method btnUpdateFieldClick
     */
     self.btnUpdateFieldClick = function() {
-      var data = {
-        name: _typeName,
-        fields: {}
-      };
-
-      $("tr .field-data").each(function() {
-        var d = _extractFieldData($(this));
-        data.fields[d.name] = d;
-      });
-
-      var field = _fieldDefUpdate.getData();
-      data.fields[field.name] = field;
+      var data = _extractData();
 
       console.log(data);
 
       $.ajax({
-        url: "/ajax/repository/type",
+        url: "/ajax/repository/type/" + encodeURIComponent(_current.type) + "/field/" + encodeURIComponent(_current.field),
         method: "PUT",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(data)
       }).done(function() {
+        _current.field = null;
         _loadPanel();
       }).fail(function(xhr, status, error){
         console.log("Status: " + status + " Error: " + error);
@@ -125,38 +150,44 @@ var app = app || {};
     };
 
     /**
+    * @method onJcrTypeSelection
+    */
+    self.onJcrTypeSelection = function(elem) {
+      _current.fieldData.fType($(elem).val());
+      _loadPanel();
+    };
+
+    /**
+    * @method onWidgetSelection
+    */
+    self.onWidgetSelection = function(elem) {
+      _current.fieldData.fWidget($(elem).val());
+      _loadPanel();
+    };
+
+    /**
     * @method btnCancelFieldClick
     */
     self.btnCancelFieldClick = function () {
-      _fieldDefNew.hide();
-      _fieldDefUpdate.hide();
+      _current.field = null;
+      _loadPanel();
     };
 
     /**
     * @method btnSaveNewFieldClick
     */
     self.btnSaveNewFieldClick = function() {
-      var data = {
-        name: _typeName,
-        fields: {}
-      };
-
-      $("tr .field-data").each(function() {
-        var d = _extractFieldData($(this));
-        data.fields[d.name] = d;
-      });
-
-      var field = _fieldDefNew.getData();
-      data.fields[field.name] = field;
+      var data = _extractData();
 
       console.log(data);
 
       $.ajax({
-        url: "/ajax/repository/type",
+        url: "/ajax/repository/type/" + encodeURIComponent(_current.type) + "/field",
         method: "POST",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(data)
       }).done(function() {
+        _current.field = null;
         _loadPanel();
       }).fail(function(xhr, status, error){
         console.log("Status: " + status + " Error: " + error);
@@ -168,14 +199,31 @@ var app = app || {};
     * @method mnuNewTypeClick
     */
     self.mnuNewTypeClick = function() {
-      console.log("New type");
+      var typeName = $("#txtNewType").val();
+      var data = {
+        name: typeName,
+        fields: {}
+      };
+
+      $.ajax({
+        url: "/ajax/repository/type",
+        method: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(data)
+      }).done(function() {
+        _current.type = typeName;
+        _loadPanel();
+      }).fail(function(xhr, status, error){
+        console.log("Status: " + status + " Error: " + error);
+        console.log(xhr);
+      });
     };
 
     /**
     * @method mnuTypeClick
     */
     self.mnuTypeClick = function(type) {
-      _typeName = type;
+      _current.type = type;
       _loadPanel();
     };
   }

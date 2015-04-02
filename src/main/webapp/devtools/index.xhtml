@@ -32,19 +32,14 @@
       <c:forEach var="typeName" items="#{ jcrBean.typeList }">
         <a class="list-group-item" href="#" onclick='app.page.mnuTypeClick("#{ typeName }"); return false'>#{ typeName }</a>
       </c:forEach>
-      <a class="list-group-item" href="#" onclick="app.page.mnuNewTypeClick(); return false">
-        <i class="mnu-new-type glyphicon glyphicon-plus"/>
-      </a>
+      <div class="list-group-item">
+        <input id="txtNewType" type="text"/>
+        <i class="mnu-new-type glyphicon glyphicon-plus" onclick="app.page.mnuNewTypeClick(); return false"/>
+      </div>
     </div>
   </ui:define>
 
   <ui:define name="content">
     <div id="panel"></div>
-    <div id="field-def-update">
-      <rlc:fieldDefinition status="update"/>
-    </div>
-    <div id="field-def-new">
-      <rlc:fieldDefinition status="new"/>
-    </div>
   </ui:define>
 </ui:composition>

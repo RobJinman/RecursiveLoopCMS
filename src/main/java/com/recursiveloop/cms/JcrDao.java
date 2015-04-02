@@ -8,6 +8,11 @@
 
 package com.recursiveloop.cms;
 
+import com.recursiveloop.cms.exceptions.InvalidItemException;
+import com.recursiveloop.cms.exceptions.InvalidTypeException;
+import com.recursiveloop.cms.exceptions.NoSuchItemException;
+import com.recursiveloop.cms.exceptions.NoSuchTypeException;
+import com.recursiveloop.cms.exceptions.NoSuchFieldException;
 import com.recursiveloop.cms.jcrmodel.RlJcrItemType;
 import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
