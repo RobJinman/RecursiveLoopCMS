@@ -3,44 +3,54 @@ var app = app || {};
 (function(ns) {
   "use strict";
 
-  var PANEL_ID = "panel";
   var TREE_WIDGET_ID = "itemTree";
 
   function ContentEditorXhtml() {
     var self = this;
 
-    var _id = PANEL_ID;
+    var _sidebarContent = "";
     var _content = "";
     var _current = {};
     var _tree = null;
 
-    var _setCurrentItem = function(name, path, type) {
+    var _setCurrentItem = function(itemName, path, type) {
       _current = {
-        name: name,
+        itemName: itemName,
         path: path,
         typeName: type
       };
     };
 
+    var _reloadSidebar = function() {
+      $.ajax({
+        url: "ajax/sidebarContent.xhtml"
+      }).done(function(data) {
+        _sidebarContent = data;
+        _update();
+      }).fail(function(xhr, status, error){
+        console.log("Status: " + status + " Error: " + error);
+        console.log(xhr);
+      });
+    };
+
     var _update = function() {
-      $("#" + _id).html(_content);
+      $("#panel").html(_content);
+      $("#sidebar").html(_sidebarContent);
 
       var data = $("#item-data");
 
       _current = {
-        name: data.attr("data-item-name"),
+        itemName: data.attr("data-item-name"),
         path: data.attr("data-item-path"),
         typeName: data.attr("data-item-type")
       };
 
       $(".datepicker").datepicker();
       $(".spinner").spinner();
-    };
+      $('[data-toggle="popover"]').popover();
 
-    /**
-    * @method init
-    */
-    self.init = function() {
+      ns.Tree.makeTrees();
+
       _tree = ns.trees[TREE_WIDGET_ID];
 
       if (typeof _tree !== "undefined" && _tree !== null) {
@@ -66,6 +76,13 @@ var app = app || {};
     };
 
     /**
+    * @method init
+    */
+    self.init = function() {
+      _reloadSidebar();
+    };
+
+    /**
     * @method btnUpdateItemClick
     */
     self.btnUpdateItemClick = function() {
@@ -75,7 +92,7 @@ var app = app || {};
       });
 
       var obj = {
-        name: _current.name,
+        itemName: _current.itemName,
         path: _current.path,
         typeName: _current.typeName,
         data: content
@@ -91,6 +108,9 @@ var app = app || {};
         data: JSON.stringify(obj)
       }).done(function(data) {
         // TODO
+      }).fail(function(xhr, status, error){
+        console.log("Status: " + status + " Error: " + error);
+        console.log(xhr);
       });
     };
 
@@ -109,8 +129,8 @@ var app = app || {};
       });
 
       var obj = {
-        name: info.name,
-        path: info.parent + "/" + info.name,
+        itemName: info.itemName,
+        path: info.parent + "/" + info.itemName,
         typeName: info.type,
         data: content
       };
@@ -119,15 +139,45 @@ var app = app || {};
         url: "/ajax/repository/item",
         method: "POST",
         contentType: "application/json; charset=utf-8",
-        dataType: "json",
         data: JSON.stringify(obj)
       }).done(function(data) {
         // TODO
+      }).fail(function(xhr, status, error){
+        console.log("Status: " + status + " Error: " + error);
+        console.log(xhr);
       });
     };
 
     /**
-    * @method mnuInsertItemClick
+    * @method insertNewFolder
+    */
+    self.insertNewFolder = function() {
+      var dat = $("#opts-menu");
+      var path = dat.attr("data-item-path");
+      var folderName = $("#txt-folder-name").val();
+
+      var obj = {
+        itemName: folderName,
+        path: path + "/" + folderName,
+        typeName: "folder",
+        data: {}
+      };
+
+      $.ajax({
+        url: "/ajax/repository/item",
+        method: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(obj)
+      }).done(function(data) {
+        // TODO
+      }).fail(function(xhr, status, error){
+        console.log("Status: " + status + " Error: " + error);
+        console.log(xhr);
+      });
+    };
+
+    /**
+    * @method mnuInsertNewItemClick
     */
     self.mnuInsertNewItemClick = function(type) {
       var dat = $("#opts-menu");
@@ -167,6 +217,9 @@ var app = app || {};
         method: "DELETE"
       }).done(function(data) {
         // TODO
+      }).fail(function(xhr, status, error){
+        console.log("Status: " + status + " Error: " + error);
+        console.log(xhr);
       });
     };
   }

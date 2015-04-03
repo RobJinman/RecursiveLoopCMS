@@ -53,7 +53,7 @@ public class ShallowItem extends RlJcrItem {
       super.setPath(json.getString("path"));
       super.setTypeName(json.getString("typeName"));
 
-      m_name = json.getString("name");
+      m_name = json.getString("itemName");
       m_children = new ArrayList<ShallowItem>();
     }
     catch (NullPointerException|ClassCastException ex) {

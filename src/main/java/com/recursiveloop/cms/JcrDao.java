@@ -190,17 +190,23 @@ public class JcrDao {
     String path = item.getPath();
 
     Node root = m_session.getRootNode();
-    createNodeIfNotExists(root, path, "rlt:item");
 
-    ItemType type = m_typeMap.get(item.getTypeName());
-    if (type == null) {
-      throw new NoSuchTypeException(item.getTypeName());
+    if (item.getTypeName().equals("folder")) {
+      createNodeIfNotExists(root, path, "rlt:folder");
     }
+    else {
+      createNodeIfNotExists(root, path, "rlt:item");
 
-    Node node = m_session.getNode(path);
+      ItemType type = m_typeMap.get(item.getTypeName());
+      if (type == null) {
+        throw new NoSuchTypeException(item.getTypeName());
+      }
 
-    BinaryItem binItem = m_parser.parse(item, type);
-    binItem.writeTo(node);
+      Node node = m_session.getNode(path);
+
+      BinaryItem binItem = m_parser.parse(item, type);
+      binItem.writeTo(node);
+    }
 
     m_session.save();
 

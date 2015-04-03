@@ -15,7 +15,7 @@ body.editor-theme {
     #content {
       width: 75%;
       float: right;
-      padding: 40px 40px 40px 40px;
+      padding: 20px 40px 40px 40px;
     }
 
     .err-no-type {
@@ -38,8 +38,12 @@ body.editor-theme {
   }
 
   .tree {
-    .parent-li > .node-wrap > .node > .icon {
+    .icon.folder-open {
       @extend .glyphicon, .glyphicon-folder-open
+    }
+
+    .icon.folder-closed {
+      @extend .glyphicon, .glyphicon-folder-close
     }
 
     li {

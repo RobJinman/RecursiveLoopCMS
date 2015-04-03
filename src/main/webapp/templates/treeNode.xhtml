@@ -8,6 +8,7 @@
   <body>
     <ui:composition> 
       <c:set var="isParent" value="#{ node.children.size() > 0 }"/>
+      <c:set var="isFolder" value="#{ node.typeName eq 'folder' }"/>
 
       <li>
         <span class="node-wrap">
@@ -17,7 +18,17 @@
             data-item-path="#{ node.path }"/>
 
           <span class="node" id="#{ node.name }" onclick="app.trees['#{ id }'].selectItem(this)">
-            <span class="icon"/>
+            <c:choose>
+              <c:when test="#{ isFolder and isParent }">
+                <span class="icon folder-open"/>
+              </c:when>
+              <c:when test="#{ isFolder and !isParent }">
+                <span class="icon folder-closed"/>
+              </c:when>
+              <c:otherwise>
+                <span class="icon"/>
+              </c:otherwise>
+            </c:choose>
             #{ node.name }
           </span>
           <span class="opts"/>

@@ -3,60 +3,77 @@ var app = app || {};
 (function(ns) {
   "use strict";
 
-  var PANEL_ID = "panel";
-
   function DeveloperToolsXhtml() {
     var self = this;
 
-    var _id = PANEL_ID;
-    var _content = "";
-    var _current = {
-      type: null,
-      field: null,
+    var _panelContent = "";
 
-      fieldData: {
-        fName: ko.observable(null),
-        fType: ko.observable(0),
-        fWidget: ko.observable("textedit"),
-        fRequired: ko.observable(false),
-        fDefault: ko.observable("")
-      }
+    var _view = ko.mapping.fromJS({
+      fieldName: null,
+      type: 0,
+      widget: "textedit",
+      required: false,
+      defaultValue: "",
+
+      parserParams: {},
+      widgetParams: {}
+    });
+
+    var _current = {
+      itemType: null,
+      fieldName: null
     };
 
     var _update = function() {
-      $("#" + _id).html(_content);
+      $("#panel").html(_panelContent);
 
-      var frmFieldDef = $("#frm-field-def");
-      if (frmFieldDef.length > 0) {
-        ko.applyBindings(_current.fieldData, frmFieldDef[0]);
+      $("#tab-parser-params").css("min-height", $("#tab-field-def").height());
+      $("#tab-widget-params").css("min-height", $("#tab-field-def").height());
+
+      if ($("#frm-field-def").length > 0 && !ko.dataFor($("#frm-field-def")[0])) {
+        ko.applyBindings(_view, $("#frm-field-def")[0]);
+      }
+      if ($("#frm-parser-params").length > 0 && !ko.dataFor($("#frm-parser-params")[0])) {
+        ko.applyBindings(_view, $("#frm-parser-params")[0]);
+      }
+      if ($("#frm-widget-params").length > 0 && !ko.dataFor($("#frm-widget-params")[0])) {
+        ko.applyBindings(_view, $("#frm-widget-params")[0]);
       }
     };
 
-    var _loadPanel = function() {
+    /**
+    * Each argument is optional, but preceeding arguments must be given.
+    *
+    * itemType: Only the field list is displayed
+    * itemType, fieldName: The form is displayed with the correct tabs visible
+    * itemType, fieldName, fieldType: The tab for type fieldType is displayed instead
+    * itemType, fieldName, fieldType, fieldWidget: The tab for fieldWidget is displayed instead
+    */
+    var _loadPanel = function(itemType, fieldName, fieldType, fieldWidget) {
       var url = "/devtools/ajax/panelContent.xhtml";
 
-      if (_current.type != null) {
-        url += "?type=" + encodeURIComponent(_current.type);
+      if (itemType != null) {
+        url += "?type=" + encodeURIComponent(itemType);
       }
 
-      if (_current.field !== null) {
-        url += "&field=" + encodeURIComponent(_current.field);
+      if (fieldName !== null) {
+        url += "&field=" + encodeURIComponent(fieldName);
       }
 
-      if (_current.fieldData.fType() != null) {
-        url += "&jcrtype=" + encodeURIComponent(_current.fieldData.fType());
+      if (fieldType != null) {
+        url += "&jcrtype=" + encodeURIComponent(fieldType);
       }
 
-      if (_current.fieldData.fWidget() !== null) {
-        url += "&widget=" + encodeURIComponent(_current.fieldData.fWidget());
+      if (fieldWidget !== null) {
+        url += "&widget=" + encodeURIComponent(fieldWidget);
       }
 
-      console.log("url: " + url);
+      console.log(url);
 
       $.ajax({
         url: url
       }).done(function(data) {
-        _content = data;
+        _panelContent = data;
         _update();
       }).fail(function(xhr, status, error){
         console.log("Status: " + status + " Error: " + error);
@@ -65,16 +82,12 @@ var app = app || {};
     };
 
     var _extractData = function() {
-      var data = {
-        name: _current.fieldData.fName(),
-        type: parseInt(_current.fieldData.fType()),
-        widget: _current.fieldData.fWidget(),
-        required: _current.fieldData.fRequired(),
-        default: _current.fieldData.fDefault(),
+      var data = ko.mapping.toJS(_view);
 
-        parserParams: {},
-        widgetParams: {}
-      };
+      data.type = parseInt(data.type);
+/*
+      data.parserParams = {};
+      data.widgetParams = {};
 
       $.each($("#frm-parser-params").serializeArray(), function() {
         data.parserParams[this.name] = this.value;
@@ -82,31 +95,46 @@ var app = app || {};
 
       $.each($("#frm-widget-params").serializeArray(), function() {
         data.widgetParams[this.name] = this.value;
-      });
+      });*/
 
       return data;
+    };
+
+    var _populate = function(data) {
+      var field = data.fields[_current.fieldName];
+      ko.mapping.fromJS(field, _view);
     };
 
     /**
     * @method init
     */
     self.init = function() {
+
     };
 
     /**
     * @method btnNewFieldClick
     */
     self.btnNewFieldClick = function() {
-      _current.field = "[new]";
-      _loadPanel();
+      _current.fieldName = "[new]";
+      _loadPanel(_current.itemType, _current.fieldName, null, null);
     };
 
     /**
     * @method btnEditFieldClick
     */
     self.btnEditFieldClick = function(field) {
-      _current.field = field;
-      _loadPanel();
+      $.ajax({
+        url: "/ajax/repository/type/" + encodeURIComponent(_current.itemType),
+        method: "GET"
+      }).done(function(data) {
+        _current.fieldName = field;
+        _loadPanel(_current.itemType, _current.fieldName, null, null);
+        _populate(data);
+      }).fail(function(xhr, status, error){
+        console.log("Status: " + status + " Error: " + error);
+        console.log(xhr);
+      });
     };
 
     /**
@@ -114,13 +142,16 @@ var app = app || {};
     */
     self.btnDeleteFieldClick = function(field) {
       $.ajax({
-        url: "/ajax/repository/type/" + encodeURIComponent(_current.type) + "/field/" + encodeURIComponent(field),
+        url: "/ajax/repository/type/" + encodeURIComponent(_current.itemType) + "/field/" + encodeURIComponent(field),
         method: "DELETE"
       }).done(function(data) {
-        if (field === _current.field) {
-          _current.field = null;
+        if (field === _current.fieldName) {
+          _current.fieldName = null;
+          _loadPanel(_current.itemType, _current.fieldName, null, null);
         }
-        _loadPanel();
+        else {
+          _loadPanel(_current.itemType, _current.fieldName, _view.type(), _view.widget());
+        }
       }).fail(function(xhr, status, error){
         console.log("Status: " + status + " Error: " + error);
         console.log(xhr);
@@ -132,45 +163,20 @@ var app = app || {};
     */
     self.btnUpdateFieldClick = function() {
       var data = _extractData();
-
       console.log(data);
-
+/*
       $.ajax({
-        url: "/ajax/repository/type/" + encodeURIComponent(_current.type) + "/field/" + encodeURIComponent(_current.field),
+        url: "/ajax/repository/type/" + encodeURIComponent(_current.itemType) + "/field/" + encodeURIComponent(_current.fieldName),
         method: "PUT",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(data)
       }).done(function() {
-        _current.field = null;
-        _loadPanel();
+        _current.fieldName = null;
+        _loadPanel(_current.itemType, _current.fieldName, null, null);
       }).fail(function(xhr, status, error){
         console.log("Status: " + status + " Error: " + error);
         console.log(xhr);
-      });
-    };
-
-    /**
-    * @method onJcrTypeSelection
-    */
-    self.onJcrTypeSelection = function(elem) {
-      _current.fieldData.fType($(elem).val());
-      _loadPanel();
-    };
-
-    /**
-    * @method onWidgetSelection
-    */
-    self.onWidgetSelection = function(elem) {
-      _current.fieldData.fWidget($(elem).val());
-      _loadPanel();
-    };
-
-    /**
-    * @method btnCancelFieldClick
-    */
-    self.btnCancelFieldClick = function () {
-      _current.field = null;
-      _loadPanel();
+      });*/
     };
 
     /**
@@ -178,21 +184,42 @@ var app = app || {};
     */
     self.btnSaveNewFieldClick = function() {
       var data = _extractData();
-
       console.log(data);
-
+/*
       $.ajax({
-        url: "/ajax/repository/type/" + encodeURIComponent(_current.type) + "/field",
+        url: "/ajax/repository/type/" + encodeURIComponent(_current.itemType) + "/field",
         method: "POST",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(data)
       }).done(function() {
-        _current.field = null;
-        _loadPanel();
+        _current.fieldName = null;
+        _loadPanel(_current.itemType, null, null, null);
       }).fail(function(xhr, status, error){
         console.log("Status: " + status + " Error: " + error);
         console.log(xhr);
-      });
+      });*/
+    };
+
+    /**
+    * @method onJcrTypeSelection
+    */
+    self.onJcrTypeSelection = function(elem) { // TODO Subscribe to observer instead of using onchange
+      _loadPanel(_current.itemType, _current.fieldName, _view.type(), _view.widget());
+    };
+
+    /**
+    * @method onWidgetSelection
+    */
+    self.onWidgetSelection = function(elem) {
+      _loadPanel(_current.itemType, _current.fieldName, _view.type(), _view.widget());
+    };
+
+    /**
+    * @method btnCancelFieldClick
+    */
+    self.btnCancelFieldClick = function () {
+      _current.fieldName = null;
+      _loadPanel(_current.itemType, null, null, null);
     };
 
     /**
@@ -201,7 +228,7 @@ var app = app || {};
     self.mnuNewTypeClick = function() {
       var typeName = $("#txtNewType").val();
       var data = {
-        name: typeName,
+        typeName: typeName,
         fields: {}
       };
 
@@ -211,8 +238,9 @@ var app = app || {};
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(data)
       }).done(function() {
-        _current.type = typeName;
-        _loadPanel();
+        _current.itemType = typeName;
+        _current.fieldName = null;
+        _loadPanel(_current.itemType, null, null, null);
       }).fail(function(xhr, status, error){
         console.log("Status: " + status + " Error: " + error);
         console.log(xhr);
@@ -223,8 +251,9 @@ var app = app || {};
     * @method mnuTypeClick
     */
     self.mnuTypeClick = function(type) {
-      _current.type = type;
-      _loadPanel();
+      _current.itemType = type;
+      _current.fieldName = null;
+      _loadPanel(_current.itemType, null, null, null);
     };
   }
 

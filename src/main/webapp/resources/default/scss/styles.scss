@@ -68,6 +68,15 @@ body {
   min-height: 500px;
 }
 
+.modal {
+  z-index: 9;
+
+  .modal-dialog {
+    top: 100px;
+    outline: none;
+  }
+}
+
 .base-theme {
 
 }

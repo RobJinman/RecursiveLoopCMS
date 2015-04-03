@@ -11,6 +11,7 @@ package com.recursiveloop.cms;
 import com.recursiveloop.cms.exceptions.InvalidTypeException;
 import com.recursiveloop.cms.jcrmodel.RlJcrItemType;
 import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
+import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonObject;
@@ -52,7 +53,7 @@ public class ItemType {
     m_type = new RlJcrItemType();
 
     try {
-      m_name = data.getString("name");
+      m_name = data.getString("typeName");
 
       JsonObject fieldsData = data.getJsonObject("fields");
       Iterator<Map.Entry<String, JsonValue>> i = fieldsData.entrySet().iterator();
@@ -73,16 +74,29 @@ public class ItemType {
   public JsonObject toJson() {
     JsonObjectBuilder fields = Json.createObjectBuilder();
     for (RlJcrFieldType f : m_type.getFields()) {
+      JsonObjectBuilder parserParams = Json.createObjectBuilder();
+      for (RlJcrParserParam pp : f.getParserParams()) {
+        parserParams.add(pp.getName(), pp.getValue());
+      }
+
+      JsonObjectBuilder widgetParams = Json.createObjectBuilder();
+/*
+      for (RlJcrParserParam wp : f.getWidgetParams()) {
+        widgetParams.add(wp.getName(), wp.getValue());
+      }
+*/
       fields.add(f.getName(), Json.createObjectBuilder()
-        .add("name", f.getName())
+        .add("fieldName", f.getName())
         .add("type", f.getJcrType())
         .add("widget", f.getWidget())
         .add("required", f.getRequired())
-        .add("default", f.getDefault()));
+        .add("defaultValue", f.getDefault())
+        .add("parserParams", parserParams)
+        .add("widgetParams", widgetParams));
     }
 
     JsonObject data = Json.createObjectBuilder()
-      .add("name", m_name)
+      .add("typeName", m_name)
       .add("fields", fields)
       .build();
 
@@ -149,11 +163,11 @@ public class ItemType {
     }
 
     RlJcrFieldType field = new RlJcrFieldType();
-    field.setName(json.getString("name"));
+    field.setName(json.getString("fieldName"));
     field.setJcrType(json.getInt("type"));
     field.setWidget(json.getString("widget"));
     field.setRequired(json.getBoolean("required"));
-    field.setDefault(json.getString("default"));
+    field.setDefault(json.getString("defaultValue"));
 
     JsonObject parserParamsData = json.getJsonObject("parserParams");
     Iterator<Map.Entry<String, JsonValue>> j = parserParamsData.entrySet().iterator();

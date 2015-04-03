@@ -18,9 +18,69 @@
 
     <c:if test="#{ pField != null and pField != '[new]' }">
       <c:set var="activeField" value="#{ type.getField(pField) }"/>
+
+      <c:if test="#{ pWidget == null }">
+        <c:set var="pWidget" value="#{ activeField.widget }"/>
+      </c:if>
+
+      <c:if test="#{ pJcrType == null }">
+        <c:set var="pJcrType" value="#{ activeField.jcrType }"/>
+      </c:if>
     </c:if>
 
+    <c:choose>
+      <c:when test="#{ pJcrType eq jcrBean.binary }">
+        <c:set var="jcrTypeName" value="#{ 'Binary' }"/>
+      </c:when>
+      <c:when test="#{ pJcrType eq jcrBean.boolean }">
+        <c:set var="jcrTypeName" value="#{ 'Boolean' }"/>
+      </c:when>
+      <c:when test="#{ pJcrType eq jcrBean.date }">
+        <c:set var="jcrTypeName" value="#{ 'Date' }"/>
+      </c:when>
+      <c:when test="#{ pJcrType eq jcrBean.double }">
+        <c:set var="jcrTypeName" value="#{ 'Double' }"/>
+      </c:when>
+      <c:when test="#{ pJcrType eq jcrBean.long }">
+        <c:set var="jcrTypeName" value="#{ 'Long' }"/>
+      </c:when>
+      <c:when test="#{ pJcrType eq jcrBean.string }">
+        <c:set var="jcrTypeName" value="#{ 'String' }"/>
+      </c:when>
+    </c:choose>
+
+    <c:choose>
+      <c:when test="#{ pWidget eq 'textedit' }">
+        <c:set var="widgetName" value="#{ 'Textedit' }"/>
+      </c:when>
+      <c:when test="#{ pWidget eq 'textarea' }">
+        <c:set var="widgetName" value="#{ 'Textarea' }"/>
+      </c:when>
+      <c:when test="#{ pWidget eq 'datepicker' }">
+        <c:set var="widgetName" value="#{ 'Datepicker' }"/>
+      </c:when>
+      <c:when test="#{ pWidget eq 'spinbox' }">
+        <c:set var="widgetName" value="#{ 'Spinbox' }"/>
+      </c:when>
+      <c:when test="#{ pWidget eq 'selector' }">
+        <c:set var="widgetName" value="#{ 'Selector' }"/>
+      </c:when>
+      <c:when test="#{ pWidget eq 'checkbox' }">
+        <c:set var="widgetName" value="#{ 'Checkbox' }"/>
+      </c:when>
+      <c:when test="#{ pWidget eq 'radiobuttons' }">
+        <c:set var="widgetName" value="#{ 'Radio buttons' }"/>
+      </c:when>
+      <c:when test="#{ pWidget eq 'wysiwyg' }">
+        <c:set var="widgetName" value="#{ 'WYSIWYG editor' }"/>
+      </c:when>
+    </c:choose>
+
     <span id="type-data" data-type-name="#{ pType }"/>
+
+    <div class="type-info">
+      <span class="lbl-type-info">Type: </span><span class="type-info-dat">#{ pType }</span>
+    </div>
 
     <table id="tbl-fields" class="table table-striped">
       <thead>
@@ -57,131 +117,147 @@
     </table>
 
     <c:if test="#{ pField != null }">
-      <form id="frm-field-def" class="form-horizontal">
-        <div class="form-group">
-          <label class="col-sm-1 control-label">Name</label>
-          <div class="col-sm-11">
-            <input id="field-def-name" class="form-control" type="text" name="name" data-bind="value: fName"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-1 control-label">Type</label>
-          <div class="col-sm-11">
-            <select id="field-def-type" class="form-control" name="type" onchange="app.page.onJcrTypeSelection(this)" data-bind="value: fType">
-              <option value="#{ jcrBean.binary }">binary</option>
-              <option value="#{ jcrBean.boolean }">boolean</option>
-              <option value="#{ jcrBean.date }">date</option>
-              <option value="#{ jcrBean.double }">double</option>
-              <option value="#{ jcrBean.long }">long</option>
-              <option value="#{ jcrBean.string }">string</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-1 control-label">Widget</label>
-          <div class="col-sm-11">
-            <select id="field-def-widget" class="form-control" name="widget" onchange="app.page.onWidgetSelection(this)" data-bind="value: fWidget">
-              <option value="textedit">textedit</option>
-              <option value="textarea">textarea</option>
-              <option value="datepicker">datepicker</option>
-              <option value="spinbox">spinbox</option>
-              <option value="checkbox">checkbox</option>
-              <option value="selector">selector</option>
-              <option value="radiobuttons">radio buttons</option>
-              <option value="wysiwyg">WYSIWYG editor</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="col-sm-offset-1 col-sm-11">
-            <div class="checkbox">
-              <label>
-                <input id="field-def-required" type="checkbox" name="required" data-bind="checked: fRequired"/>Required
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-1 control-label">Default</label>
-          <div class="col-sm-11">
-            <input id="field-def-default" class="form-control" type="text" name="default" data-bind="value: fDefault"/>
-          </div>
-        </div>
-      </form>
-      <c:if test="#{ pJcrType != null }">
-        <form id="frm-parser-params" class="form-horizontal">
-          <c:choose>
-            <c:when test="#{ pJcrType eq jcrBean.binary }">
-              <h3>Parser parameters for type: Binary</h3>
-            </c:when>
-            <c:when test="#{ pJcrType eq jcrBean.boolean }">
-              <h3>Parser parameters for type: Boolean</h3>
-            </c:when>
-            <c:when test="#{ pJcrType eq jcrBean.date }">
-              <h3>Parser parameters for type: Date</h3>
+      <div role="tabpanel">
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active"><a href="#tab-field-def" role="tab" data-toggle="tab">Field</a></li>
+          <li role="presentation"><a href="#tab-parser-params" role="tab" data-toggle="tab">#{ jcrTypeName } parser</a></li>
+          <li role="presentation"><a href="#tab-widget-params" role="tab" data-toggle="tab">#{ widgetName } widget</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="tab-field-def">
+            <form id="frm-field-def" class="form-horizontal">
               <div class="form-group">
-                <label class="col-sm-1 control-label">Format</label>
+                <label class="col-sm-1 control-label">Name</label>
                 <div class="col-sm-11">
-                  <input class="form-control" type="text" name="dateFormat" value="dd/MM/yyyy"/>
+                  <input id="field-def-name" class="form-control" type="text" name="fieldName" data-bind="value: fieldName"/>
                 </div>
               </div>
-            </c:when>
-            <c:when test="#{ pJcrType eq jcrBean.double }">
-              <h3>Parser parameters for type: Double</h3>
-            </c:when>
-            <c:when test="#{ pJcrType eq jcrBean.long }">
-              <h3>Parser parameters for type: Long</h3>
-            </c:when>
-            <c:when test="#{ pJcrType eq jcrBean.string }">
-              <h3>Parser parameters for type: String</h3>
-            </c:when>
-          </c:choose>
-        </form>
-      </c:if>
-      <c:if test="#{ pWidget != null }">
-        <form id="frm-widget-params" class="form-horizontal">
-          <c:choose>
-            <c:when test="#{ pWidget eq 'textedit' }">
-              <h3>Widget parameters for widget: Textedit</h3>
-            </c:when>
-            <c:when test="#{ pWidget eq 'textarea' }">
-              <h3>Widget parameters for widget: Textarea</h3>
-            </c:when>
-            <c:when test="#{ pWidget eq 'datepicker' }">
-              <h3>Widget parameters for widget: Datepicker</h3>
-            </c:when>
-            <c:when test="#{ pWidget eq 'spinbox' }">
-              <h3>Widget parameters for widget: Spinbox</h3>
-            </c:when>
-            <c:when test="#{ pWidget eq 'selector' }">
-              <h3>Widget parameters for widget: Selector</h3>
-            </c:when>
-            <c:when test="#{ pWidget eq 'checkbox' }">
-              <h3>Widget parameters for widget: Checkbox</h3>
-            </c:when>
-            <c:when test="#{ pWidget eq 'radiobuttons' }">
-              <h3>Widget parameters for widget: Radio buttons</h3>
-            </c:when>
-            <c:when test="#{ pWidget eq 'wysiwyg' }">
-              <h3>Widget parameters for widget: WYSIWYG editor</h3>
-            </c:when>
-          </c:choose>
-        </form>
-      </c:if>
-      <form>
-        <div class="form-group">
-          <div class="col-sm-offset-1 col-sm-11">
-            <c:if test='#{ pField != null and pField != "[new]" }'>
-              <button type="button" class="btn btn-default" onclick="app.page.btnUpdateFieldClick()">Save changes</button>
-              <button type="button" class="btn btn-default" onclick="app.page.btnCancelFieldClick()">Cancel</button>
+              <div class="form-group">
+                <label class="col-sm-1 control-label">Type</label>
+                <div class="col-sm-11">
+                  <select id="field-def-type" class="form-control" name="type" onchange="app.page.onJcrTypeSelection(this)" data-bind="value: type">
+                    <option value="#{ jcrBean.binary }">binary</option>
+                    <option value="#{ jcrBean.boolean }">boolean</option>
+                    <option value="#{ jcrBean.date }">date</option>
+                    <option value="#{ jcrBean.double }">double</option>
+                    <option value="#{ jcrBean.long }">long</option>
+                    <option value="#{ jcrBean.string }">string</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-1 control-label">Widget</label>
+                <div class="col-sm-11">
+                  <select id="field-def-widget" class="form-control" name="widget" onchange="app.page.onWidgetSelection(this)" data-bind="value: widget">
+                    <option value="textedit">textedit</option>
+                    <option value="textarea">textarea</option>
+                    <option value="datepicker">datepicker</option>
+                    <option value="spinbox">spinbox</option>
+                    <option value="checkbox">checkbox</option>
+                    <option value="selector">selector</option>
+                    <option value="radiobuttons">radio buttons</option>
+                    <option value="wysiwyg">WYSIWYG editor</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-1 col-sm-11">
+                  <div class="checkbox">
+                    <label>
+                      <input id="field-def-required" type="checkbox" name="required" data-bind="checked: required"/>Required
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-1 control-label">Default</label>
+                <div class="col-sm-11">
+                  <input id="field-def-default" class="form-control" type="text" name="defaultValue" data-bind="value: defaultValue"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-1 col-sm-11">
+                  <c:if test='#{ pField != null and pField != "[new]" }'>
+                    <button type="button" class="btn btn-default" onclick="app.page.btnUpdateFieldClick()">Save changes</button>
+                    <button type="button" class="btn btn-default" onclick="app.page.btnCancelFieldClick()">Cancel</button>
+                  </c:if>
+                  <c:if test='#{ pField == "[new]" }'>
+                    <button type="button" class="btn btn-default" onclick="app.page.btnSaveNewFieldClick()">Save new</button>
+                    <button type="button" class="btn btn-default" onclick="app.page.btnCancelFieldClick()">Cancel</button>
+                  </c:if>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div role="tabpanel" class="tab-pane" id="tab-parser-params">
+            <c:if test="#{ pJcrType != null }">
+              <form id="frm-parser-params" class="form-horizontal">
+                <c:choose>
+                  <c:when test="#{ pJcrType eq jcrBean.binary }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ pJcrType eq jcrBean.boolean }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ pJcrType eq jcrBean.date }">
+                    <div class="form-group">
+                      <label class="col-sm-1 control-label">Format</label>
+                      <div class="col-sm-11">
+                        <input class="form-control" type="text" name="dateFormat" value="dd/MM/yyyy" data-bind="value: parserParams.dateFormat"/>
+                      </div>
+                    </div>
+                  </c:when>
+                  <c:when test="#{ pJcrType eq jcrBean.double }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ pJcrType eq jcrBean.long }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ pJcrType eq jcrBean.string }">
+                    <!-- -->
+                  </c:when>
+                </c:choose>
+              </form>
             </c:if>
-            <c:if test='#{ pField == "[new]" }'>
-              <button type="button" class="btn btn-default" onclick="app.page.btnSaveNewFieldClick()">Save new</button>
-              <button type="button" class="btn btn-default" onclick="app.page.btnCancelFieldClick()">Cancel</button>
+          </div>
+          <div role="tabpanel" class="tab-pane" id="tab-widget-params">
+            <c:if test="#{ pWidget != null }">
+              <form id="frm-widget-params" class="form-horizontal">
+                <c:choose>
+                  <c:when test="#{ pWidget eq 'textedit' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ pWidget eq 'textarea' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ pWidget eq 'datepicker' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ pWidget eq 'spinbox' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ pWidget eq 'selector' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ pWidget eq 'checkbox' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ pWidget eq 'radiobuttons' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ pWidget eq 'wysiwyg' }">
+                    <!-- -->
+                  </c:when>
+                </c:choose>
+              </form>
             </c:if>
           </div>
         </div>
-      </form>
+      </div>
     </c:if>
   </c:if>
 </div>
