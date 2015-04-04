@@ -2,6 +2,7 @@
 <ui:composition template="/templates/devtools/layout.xhtml"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:rl="http://xmlns.recursiveloop.org/cms"
@@ -30,16 +31,259 @@
   <ui:define name="sidebar">
     <div class="list-group">
       <c:forEach var="typeName" items="#{ jcrBean.typeList }">
-        <a class="list-group-item" href="#" onclick='app.page.mnuTypeClick("#{ typeName }"); return false'>#{ typeName }</a>
+        <a class="list-group-item" href="index.xhtml?type=#{ typeName }">#{ typeName }</a>
       </c:forEach>
       <div class="list-group-item">
         <input id="txtNewType" type="text"/>
-        <i class="mnu-new-type glyphicon glyphicon-plus" onclick="app.page.mnuNewTypeClick(); return false"/>
+        <i class="mnu-new-type glyphicon glyphicon-plus"/>
       </div>
     </div>
   </ui:define>
 
   <ui:define name="content">
-    <div id="panel"></div>
+    <div id="panel">
+      <!-- query parameters -->
+      <c:set var="pType" value="#{ request.getParameter('type') }" scope="request"/> <!-- optional -->
+      <c:set var="pField" value="#{ request.getParameter('field') }" scope="request"/> <!-- optional -->
+
+      <c:if test="#{ pType != null }">
+        <c:set var="type" value="#{ itemTypeBean.getType(pType) }" scope="request"/>
+
+        <c:if test="#{ pField != null and pField != '[new]' }">
+          <c:set var="activeField" value="#{ type.getField(pField) }"/>
+
+          <c:choose>
+            <c:when test="#{ activeField.jcrType eq jcrBean.binary }">
+              <c:set var="jcrTypeName" value="#{ 'Binary' }"/>
+            </c:when>
+            <c:when test="#{ activeField.jcrType eq jcrBean.boolean }">
+              <c:set var="jcrTypeName" value="#{ 'Boolean' }"/>
+            </c:when>
+            <c:when test="#{ activeField.jcrType eq jcrBean.date }">
+              <c:set var="jcrTypeName" value="#{ 'Date' }"/>
+            </c:when>
+            <c:when test="#{ activeField.jcrType eq jcrBean.double }">
+              <c:set var="jcrTypeName" value="#{ 'Double' }"/>
+            </c:when>
+            <c:when test="#{ activeField.jcrType eq jcrBean.long }">
+              <c:set var="jcrTypeName" value="#{ 'Long' }"/>
+            </c:when>
+            <c:when test="#{ activeField.jcrType eq jcrBean.string }">
+              <c:set var="jcrTypeName" value="#{ 'String' }"/>
+            </c:when>
+          </c:choose>
+
+          <c:choose>
+            <c:when test="#{ activeField.widget eq 'textedit' }">
+              <c:set var="widgetName" value="#{ 'Textedit' }"/>
+            </c:when>
+            <c:when test="#{ activeField.widget eq 'textarea' }">
+              <c:set var="widgetName" value="#{ 'Textarea' }"/>
+            </c:when>
+            <c:when test="#{ activeField.widget eq 'datepicker' }">
+              <c:set var="widgetName" value="#{ 'Datepicker' }"/>
+            </c:when>
+            <c:when test="#{ activeField.widget eq 'spinbox' }">
+              <c:set var="widgetName" value="#{ 'Spinbox' }"/>
+            </c:when>
+            <c:when test="#{ activeField.widget eq 'selector' }">
+              <c:set var="widgetName" value="#{ 'Selector' }"/>
+            </c:when>
+            <c:when test="#{ activeField.widget eq 'checkbox' }">
+              <c:set var="widgetName" value="#{ 'Checkbox' }"/>
+            </c:when>
+            <c:when test="#{ activeField.widget eq 'radiobuttons' }">
+              <c:set var="widgetName" value="#{ 'Radio buttons' }"/>
+            </c:when>
+            <c:when test="#{ activeField.widget eq 'wysiwyg' }">
+              <c:set var="widgetName" value="#{ 'WYSIWYG editor' }"/>
+            </c:when>
+          </c:choose>
+        </c:if>
+
+        <div class="type-info">
+          <span class="lbl-type-info">Type: </span><span class="type-info-dat">#{ pType }</span>
+        </div>
+
+        <table id="tbl-fields" class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Widget</th>
+              <th>Required</th>
+              <th>Default</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <c:forEach var="field" items="#{ type.fields }">
+              <tr>
+                <td>#{ field.name }</td>
+                <td>#{ field.jcrType }</td>
+                <td>#{ field.widget }</td>
+                <td>#{ field.required }</td>
+                <td>#{ field.default }</td>
+                <td class="field-buttons">
+                  <h:link outcome="index">
+                    <f:param name="type" value="#{ pType }"/>
+                    <f:param name="field" value="#{ field.name }"/>
+
+                    <i class="btn-edit-field glyphicon glyphicon-edit"/>
+                  </h:link>
+                  <i class="btn-delete-field glyphicon glyphicon-remove"/>
+                </td>
+              </tr>
+            </c:forEach>
+            <tr>
+              <td>
+                <i class="btn-new-field glyphicon glyphicon-plus" onclick="app.page.btnNewFieldClick()"/>
+              </td>
+              <td colspan="5"></td>
+            </tr>
+          </tbody>
+        </table>
+        <h:panelGroup layout="block" rendered="#{ pField != null }" role="tabpanel">
+
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#tab-field-def" role="tab" data-toggle="tab">Field</a></li>
+            <li role="presentation"><a href="#tab-parser-params" role="tab" data-toggle="tab">#{ jcrTypeName } parser</a></li>
+            <li role="presentation"><a href="#tab-widget-params" role="tab" data-toggle="tab">#{ widgetName } widget</a></li>
+          </ul>
+
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="tab-field-def">
+              <h:form id="frm-field-def" class="form-horizontal">
+                <div class="form-group">
+                  <label class="col-sm-1 control-label">Name</label>
+                  <div class="col-sm-11">
+                    <h:inputText id="field-def-name" class="form-control" value="#{ activeField.name }"/>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-1 control-label">Type</label>
+                  <div class="col-sm-11">
+                    <h:selectOneMenu id="field-def-type" class="form-control" value="#{ activeField.jcrType }">
+                      <f:selectItem itemValue="#{ jcrBean.binary }" itemLabel="Binary"/>
+                      <f:selectItem itemValue="#{ jcrBean.boolean }" itemLabel="Boolean"/>
+                      <f:selectItem itemValue="#{ jcrBean.date }" itemLabel="Date"/>
+                      <f:selectItem itemValue="#{ jcrBean.double }" itemLabel="Double"/>
+                      <f:selectItem itemValue="#{ jcrBean.long }" itemLabel="Long"/>
+                      <f:selectItem itemValue="#{ jcrBean.string }" itemLabel="String"/>
+                    </h:selectOneMenu>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-1 control-label">Widget</label>
+                  <div class="col-sm-11">
+                    <h:selectOneMenu id="field-def-widget" class="form-control" value="#{ activeField.widget }">
+                      <f:selectItem itemValue="textedit" itemLabel="Textbox"/>
+                      <f:selectItem itemValue="textarea" itemLabel="Text area"/>
+                      <f:selectItem itemValue="datepicker" itemLabel="Datepicker"/>
+                      <f:selectItem itemValue="spinbox" itemLabel="Spinbox"/>
+                      <f:selectItem itemValue="checkbox" itemLabel="Checkbox"/>
+                      <f:selectItem itemValue="selector" itemLabel="Selector"/>
+                      <f:selectItem itemValue="radiobuttons" itemLabel="Radio buttons"/>
+                      <f:selectItem itemValue="wysiwyg" itemLabel="WYSIWYG editor"/>
+                    </h:selectOneMenu>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-1 col-sm-11">
+                    <div class="checkbox">
+                      <label>
+                        <h:selectBooleanCheckbox id="field-def-required" value="#{ activeField.required }"/>Required
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-1 control-label">Default</label>
+                  <div class="col-sm-11">
+                    <h:inputText id="field-def-default" class="form-control" value="#{ activeField.default }"/>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-1 col-sm-11">
+                    <c:if test='#{ pField != null and pField != "[new]" }'>
+                      <h:commandButton class="btn btn-default" value="Save changes" action="#{ itemTypeBean.commitChanges() }">
+                        <f:param name="type" value="#{ pType }"/>
+                      </h:commandButton>
+                      <h:commandButton class="btn btn-default" value="Cancel"/>
+                    </c:if>
+                    <c:if test='#{ pField == "[new]" }'>
+                      <h:commandButton class="btn btn-default" value="Save new"/>
+                      <h:commandButton class="btn btn-default" value="Cancel"/>
+                    </c:if>
+                  </div>
+                </div>
+                <h:messages style="color: red; margin: 8px"/>
+              </h:form>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="tab-parser-params">
+              <h:form id="frm-parser-params" class="form-horizontal">
+                <c:choose>
+                  <c:when test="#{ activeField.jcrType eq jcrBean.binary }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ activeField.jcrType eq jcrBean.boolean }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ activeField.jcrType eq jcrBean.date }">
+                    <div class="form-group">
+                      <label class="col-sm-1 control-label">Format</label>
+                      <div class="col-sm-11">
+                        <h:inputText class="form-control" value="#{ activeField.getParserParam('dateFormat') }"/>
+                      </div>
+                    </div>
+                  </c:when>
+                  <c:when test="#{ activeField.jcrType eq jcrBean.double }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ activeField.jcrType eq jcrBean.long }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ activeField.jcrType eq jcrBean.string }">
+                    <!-- -->
+                  </c:when>
+                </c:choose>
+              </h:form>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="tab-widget-params">
+              <h:form id="frm-widget-params" class="form-horizontal">
+                <c:choose>
+                  <c:when test="#{ activeField.widget eq 'textedit' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ activeField.widget eq 'textarea' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ activeField.widget eq 'datepicker' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ activeField.widget eq 'spinbox' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ activeField.widget eq 'selector' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ activeField.widget eq 'checkbox' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ activeField.widget eq 'radiobuttons' }">
+                    <!-- -->
+                  </c:when>
+                  <c:when test="#{ activeField.widget eq 'wysiwyg' }">
+                    <!-- -->
+                  </c:when>
+                </c:choose>
+              </h:form>
+            </div>
+          </div>
+        </h:panelGroup>
+      </c:if>
+    </div>
   </ui:define>
 </ui:composition>
