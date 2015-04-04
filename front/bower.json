@@ -1,0 +1,31 @@
+{
+  "name": "angular-barebones",
+  "version": "0.0.0",
+  "authors": [
+    "Rob Jinman <admin@robjinman.com>"
+  ],
+  "description": "A barebones AngularJS application",
+  "license": "MIT License",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "vendor"
+  ],
+  "dependencies": {
+    "angular": "~1.3.x",
+    "angular-mocks": "~1.3.x",
+    "angular-route": "~1.3.x",
+    "angular-resource": "~1.3.x",
+    "angular-cookies": "~1.3.x",
+    "jquery": "~2.1.1",
+    "angular-bootstrap": null,
+    "bootstrap-sass": "3.3.x",
+    "jlUtil": "robjinman/angular-jloop-util",
+    "jlScroll": "robjinman/angular-jloop-scroll",
+    "jlDirectives": "robjinman/angular-jloop-directives"
+  },
+  "resolutions": {
+    "angular": "~1.3.x"
+  }
+}

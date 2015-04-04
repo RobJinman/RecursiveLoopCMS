@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="App">
+  <head>
+    <meta charset="UTF-8">
+
+    <link href='http://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'>
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript" src="vendor/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="vendor/angular/angular.js"></script>
+    <script type="text/javascript" src="vendor/angular-route/angular-route.js"></script>
+    <script type="text/javascript" src="vendor/angular-cookies/angular-cookies.js"></script>
+    <script type="text/javascript" src="vendor/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="vendor/jlUtil/dist/jlUtil.min.js"></script>
+    <script type="text/javascript" src="vendor/jlScroll/dist/jlScroll.min.js"></script>
+    <script type="text/javascript" src="vendor/jlDirectives/dist/jlDirectives.min.js"></script>
+    <script type="text/javascript" src="js/app.min.js"></script>
+
+    <title>Barebones AngularJS Application</title>
+  </head>
+  <body data-ng-controller="MainCtrl as main">
+    <h3>Barebones AngularJS Application</h3>
+
+    <p>square(8) = {{ main.square(8) }}</p>
+
+    <div data-ng-angular-view></div>
+  </body>
+</html>
