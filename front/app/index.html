@@ -5,8 +5,10 @@
 
     <link href='http://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'>
     <link href="css/styles.css" rel="stylesheet" type="text/css">
+    <link href="vendor/jquery-ui/themes/base/jquery-ui.css" rel="stylesheet" type="text/css">
 
     <script type="text/javascript" src="vendor/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="vendor/jquery-ui/jquery-ui.js"></script>
     <script type="text/javascript" src="vendor/angular/angular.js"></script>
     <script type="text/javascript" src="vendor/angular-route/angular-route.js"></script>
     <script type="text/javascript" src="vendor/angular-cookies/angular-cookies.js"></script>
@@ -14,15 +16,26 @@
     <script type="text/javascript" src="vendor/jlUtil/dist/jlUtil.min.js"></script>
     <script type="text/javascript" src="vendor/jlScroll/dist/jlScroll.min.js"></script>
     <script type="text/javascript" src="vendor/jlDirectives/dist/jlDirectives.min.js"></script>
-    <script type="text/javascript" src="js/app.min.js"></script>
+    <script type="text/javascript" src="js/app-compiled.js"></script> <!-- TODO: Use minified -->
 
-    <title>Barebones AngularJS Application</title>
+    <title>Recursive Loop CMS</title>
   </head>
-  <body data-ng-controller="MainCtrl as main">
-    <h3>Barebones AngularJS Application</h3>
+  <body data-ng-controller="MainCtrl as main" data-ng-class="main.layout.bodyClass">
+    <div id="header">
+      <button class="logout" data-ng-click="main.logout()">Logout</button>
+      <div class="header-right">
+        <data-rl-credentials></data-rl-credentials>
+      </div>
 
-    <p>square(8) = {{ main.square(8) }}</p>
-
-    <div data-ng-angular-view></div>
+      <ol class="rl-nav breadcrumb">
+        <li><a href="/#/index">CMS Home</a></li>
+        <li class="active">Content Editor</li>
+      </ol>
+    </div>
+    <div id="main">
+      <div id="sidebar" data-rl-block-insertion="sidebar_content"></div>
+      <div data-ng-view id="page"></div>
+      <div id="footer"></div>
+    </div>
   </body>
 </html>

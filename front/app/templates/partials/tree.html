@@ -1,0 +1,14 @@
+<div class="tree">
+  <span class="node-wrap">
+    <span class="node" data-ng-class="getCss(rlRoot)" data-ng-click="onNodeClick($event, rlRoot)">
+      <span class="icon"></span>
+      {{ rlRoot.name }}
+    </span>
+    <span class="opts" data-ng-click="onOptsClick($event, rlRoot)"></span>
+  </span>
+  <ul data-ng-hide="isMinimised()">
+    <li data-ng-repeat="node in rlRoot.children">
+      <rl-tree rl-root='node' rl-on-selection="rlOnSelection()" rl-on-options-selection="rlOnOptionsSelection()"></rl-tree>
+    </li>
+  </ul>
+</div>

@@ -9,12 +9,9 @@
 package com.recursiveloop.cms.resources;
 
 import com.recursiveloop.cms.JcrDao;
+import com.recursiveloop.cms.ShallowItem;
 import com.recursiveloop.cms.StringItem;
 import javax.json.JsonObject;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -29,17 +26,23 @@ public class RcItemImpl implements RcItem {
   JcrDao m_dao;
 
   @Override
-  public Response updateItem(JsonObject json) throws Exception {
-    try {
-      StringItem item = new StringItem(json);
-      m_dao.updateItem(item);
-    }
-    catch (Exception ex) {
-      m_logger.log(Level.WARNING, "Error updating item", ex);
-      throw ex;
-    }
-
+  public Response doNothing() {
     return Response.ok().build();
+  }
+
+  @Override
+  public ShallowItem get() throws Exception {
+    return getSubtree("/rl:items");
+  }
+
+  @Override
+  public ShallowItem getSubtree(String path) throws Exception {
+    return m_dao.getShallowItem(path);
+  }
+
+  @Override
+  public StringItem getItem(String path) throws Exception {
+    return m_dao.getStringItem(path);
   }
 
   @Override
@@ -50,6 +53,20 @@ public class RcItemImpl implements RcItem {
     }
     catch (Exception ex) {
       m_logger.log(Level.WARNING, "Error inserting new item", ex);
+      throw ex;
+    }
+
+    return Response.ok().build();
+  }
+
+  @Override
+  public Response updateItem(JsonObject json) throws Exception {
+    try {
+      StringItem item = new StringItem(json);
+      m_dao.updateItem(item);
+    }
+    catch (Exception ex) {
+      m_logger.log(Level.WARNING, "Error updating item", ex);
       throw ex;
     }
 

@@ -1,0 +1,98 @@
+$headerH: 40px;
+
+body.devtools-theme {
+  #main {
+    #sidebar {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      top: $headerH;
+      width: 25%;
+      overflow: scroll;
+      background-color: white;
+
+      .list-group {
+        .mnu-new-type {
+          line-height: 20px;
+
+          cursor: pointer;
+          float: right;
+
+          &:hover {
+            color: green;
+          }
+        }
+      }
+    }
+
+    #content {
+      width: 75%;
+      float: right;
+      padding: 20px 40px 40px 40px;
+
+      #panel {
+        height: 100%;
+
+        div.type-info {
+          width: 100%;
+          border-bottom: 1px solid #999;
+          margin-bottom: 20px;
+          font-size: 1.4em;
+
+          span.lbl-type-info {
+            font-weight: bold;
+          }
+
+          span.type-info-dat {
+          }
+        }
+
+        #tbl-fields {
+          .field-buttons {
+            text-align: right;
+
+            .btn-edit-field {
+              cursor: pointer;
+
+              &:hover {
+                color: green;
+              }
+            }
+
+            .btn-delete-field {
+              cursor: pointer;
+              padding: 0 0 0 20px;
+
+              &:hover {
+                color: red;
+              }
+            }
+          }
+
+          .btn-new-field {
+            cursor: pointer;
+            &:hover {
+              color: green;
+            }
+          }
+        }
+
+        .nav.nav-tabs > li.active > a {
+          background-color: #f9f9f9;
+        }
+
+        .tab-pane {
+          border-right: 1px solid #ddd;
+          border-bottom: 1px solid #ddd;
+          border-left: 1px solid #ddd;
+          background-color: #f9f9f9;
+          padding: 10px 10px 0 10px;
+        }
+      }
+    }
+  }
+}
+
+body.devtools-theme.index-xhtml {
+
+}

@@ -1,0 +1,76 @@
+$loginBoxH: 300px;
+$loginBoxTopH: 100px;
+$loginBoxBottomH: $loginBoxH - $loginBoxTopH;
+
+body.login-body {
+  background: url("/img/bg-rpt.jpg") repeat;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    background: -webkit-radial-gradient(center, ellipse cover, rgba(0,0,0,0) 0%, rgba(0,0,0,0.65) 100%);
+  }
+
+  .login-vw {
+
+    .login-box {
+      position: relative;
+      margin-top: 100px;
+
+      width: 400px;
+      height: $loginBoxH;
+
+      margin-left: auto;
+      margin-right: auto;
+
+      background-color: white;
+
+      border: 1px solid black;
+
+      .top {
+        width: 100%;
+        height: $loginBoxTopH;
+
+        background-color: white;
+
+        border-bottom: 1px solid black;
+
+        .login-logo {
+          position: relative;
+          display: block;
+
+          top: 20px;
+          width: 200px;
+
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }
+
+      .bottom {
+        width: 100%;
+        height: $loginBoxBottomH - 2;
+        background-color: #545d5a;
+
+        .login-form {
+          position: relative;
+          top: 14px;
+
+          width: 200px;
+
+          margin-left: auto;
+          margin-right: auto;
+
+          label {
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}

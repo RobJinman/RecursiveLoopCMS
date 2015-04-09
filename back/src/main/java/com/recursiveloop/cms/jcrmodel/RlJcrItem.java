@@ -8,6 +8,9 @@
 
 package com.recursiveloop.cms.jcrmodel;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.ocm.mapper.impl.annotation.Field;
 import org.apache.jackrabbit.ocm.mapper.impl.annotation.Node;
@@ -18,9 +21,13 @@ import org.apache.jackrabbit.ocm.mapper.impl.annotation.Node;
 * conformity to the rlt:item type when inserted into the repository via OCM.
 */
 @Node(jcrType = "rlt:item")
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class RlJcrItem {
+  @XmlElement(name = "path")
   private String m_rlPath;
+  @XmlElement(name = "typeName")
   private String m_rlType;
+  @XmlElement(name = "status")
   private int m_rlStatus;
 
   public RlJcrItem() {

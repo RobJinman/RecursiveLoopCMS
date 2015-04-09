@@ -1,0 +1,39 @@
+<div class="editor-vw">
+  <div id="content">
+    <div data-ng-if="ctrl.item">
+
+      <div class="item-info">
+        <span class="lbl-item-info">Name: </span><span class="item-info-dat">{{ ctrl.item.name }}</span>
+        <span class="lbl-item-info">Type: </span><span class="item-info-dat">{{ ctrl.item.typeName }}</span>
+      </div>
+
+      <form id="frm-item-content" class="form-horizontal">
+        <div class="form-group" data-ng-repeat="field in ctrl.type.fields">
+          <div data-ng-include="ctrl.chooseWidget(field)"></div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-1 col-sm-1">
+            <input class="btn btn-primary" type="button" data-ng-click="ctrl.onSaveClick()" value="{{ ctrl.buttonCaption() }}">
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<div data-rl-block-replacement="sidebar_content">
+  <rl-tree rl-root="ctrl.itemTree" rl-on-selection="ctrl.onItemSelection" rl-on-options-selection="ctrl.onOptionsSelection"></rl-tree>
+
+  <ul id="opts-menu">
+    <li>Insert new
+      <ul>
+        <li data-ng-click="ctrl.onNewFolderClick()">Folder</li>
+        <!-- TODO -->
+      </ul>
+    </li>
+    <li data-ng-click="ctrl.onRenameClick()">Rename</li>
+    <li data-ng-click="ctrl.onMoveClick()">Move</li>
+    <li data-ng-click="ctrl.onDeleteClick()">Delete</li>
+  </ul>
+</div>

@@ -5,8 +5,8 @@
 * @class IndexCtrl
 * @constructor
 */
-app.controller("IndexCtrl", [function() {
-  this.foo = function() {
-    return "Hello World, from IndexCtrl!";
-  };
+angular.module("Controllers").controller("IndexCtrl", [
+"layout",
+function(layout) {
+  layout.bodyClass = "index-body";
 }]);

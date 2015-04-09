@@ -11,13 +11,22 @@ package com.recursiveloop.cms;
 import com.recursiveloop.cms.exceptions.InvalidItemException;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class StringItem extends ShallowItem {
+  @XmlElement(name = "data")
   private Map<String, String> m_data;
+
+  public StringItem() {
+    m_data = new HashMap<String, String>();
+  }
 
   /**
   * JSON object should not contain child data. It is a flat
@@ -46,6 +55,14 @@ public class StringItem extends ShallowItem {
     super(cpy);
 
     m_data = new HashMap<String, String>();
+  }
+
+  public Map<String, String> getData() {
+    return m_data;
+  }
+
+  public void setData(Map<String, String> data) {
+    m_data = data;
   }
 
   public Iterator<Map.Entry<String, String>> iterator() {

@@ -5,8 +5,15 @@
 * @class MainCtrl
 * @constructor
 */
-app.controller("MainCtrl", [function() {
-  this.square = function(i) {
-    return i * i;
+angular.module("Controllers").controller("MainCtrl", [
+"layout", "session", "$route",
+function(layout, session, $route) {
+
+  this.layout = layout;
+
+  this.logout = function() {
+    session.logout().then(function() {
+      $route.reload();
+    });
   };
 }]);

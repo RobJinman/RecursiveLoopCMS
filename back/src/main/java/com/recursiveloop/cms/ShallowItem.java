@@ -15,13 +15,24 @@ import javax.jcr.RepositoryException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.json.JsonObject;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
 import java.util.List;
 import java.util.ArrayList;
 
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ShallowItem extends RlJcrItem {
+  @XmlElement(name = "name")
   private String m_name;
+  @XmlElement(name = "children")
   private List<ShallowItem> m_children;
+
+  public ShallowItem() {
+    m_name = null;
+    m_children = new ArrayList<ShallowItem>();
+  }
 
   /**
   * Does not add children
@@ -76,8 +87,16 @@ public class ShallowItem extends RlJcrItem {
     return m_name;
   }
 
+  public final void setName(String name) {
+    m_name = name;
+  }
+
   public final List<ShallowItem> getChildren() {
     return m_children;
+  }
+
+  public final void setChildren(List<ShallowItem> children) {
+    m_children = children;
   }
 
   public final void addChild(ShallowItem ch) {

@@ -1,0 +1,41 @@
+$btnH: 150px;
+$btnW: 300px;
+
+body.index-body {
+  .index-vw {
+    .btn-wrap {
+      position: relative;
+      top: 100px;
+
+      width: $btnW * 2 + $btnW * 0.1;
+      height: $btnH;
+
+      margin-left: auto;
+      margin-right: auto;
+
+      .devtools-btn {
+        float: left;
+      }
+
+      .editor-btn {
+        float: right;
+      }
+
+      .devtools-btn, .editor-btn {
+        position: relative;
+
+        width: $btnW;
+        height: $btnH;
+
+        img {
+          position: relative;
+
+          width: $btnW;
+          height: $btnH;
+
+          margin: 0;
+        }
+      }
+    }
+  }
+}

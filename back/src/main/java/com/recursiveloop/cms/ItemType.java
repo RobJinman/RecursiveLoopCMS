@@ -30,13 +30,13 @@ public class ItemType {
   private RlJcrItemType m_type;
 
   public ItemType() {
-    m_name = "unknown";
-    m_type = null;
+    m_name = "";
+    m_type = new RlJcrItemType();
   }
 
   public ItemType(String name) {
     m_name = name;
-    m_type = null;
+    m_type = new RlJcrItemType();
   }
 
   public ItemType(ItemType cpy) {
@@ -103,10 +103,6 @@ public class ItemType {
     return data;
   }
 
-  public boolean isNull() {
-    return m_type == null;
-  }
-
   public String getName() {
     return m_name;
   }
@@ -116,10 +112,6 @@ public class ItemType {
   }
 
   public String getPath() {
-    if (isNull()) {
-      return null;
-    }
-
     return m_type.getPath();
   }
 
@@ -128,18 +120,10 @@ public class ItemType {
   }
 
   public List<RlJcrFieldType> getFields() {
-    if (isNull()) {
-      return null;
-    }
-
     return m_type.getFields();
   }
 
   public RlJcrFieldType getField(String name) {
-    if (isNull()) {
-      return null;
-    }
-
     for (RlJcrFieldType f : m_type.getFields()) {
       if (f.getName().equals(name)) {
         return f;
@@ -150,18 +134,10 @@ public class ItemType {
   }
 
   public void addField(RlJcrFieldType field) {
-    if (isNull()) {
-      m_type = new RlJcrItemType();
-    }
-
     m_type.addField(field);
   }
 
   public void addField(JsonObject json) {
-    if (isNull()) {
-      m_type = new RlJcrItemType();
-    }
-
     RlJcrFieldType field = new RlJcrFieldType();
     field.setName(json.getString("fieldName"));
     field.setJcrType(json.getInt("type"));
@@ -181,10 +157,6 @@ public class ItemType {
   }
 
   public void removeField(String name) {
-    if (isNull()) {
-      return;
-    }
-
     List<RlJcrFieldType> fields = m_type.getFields();
     for (int i = 0; i < fields.size(); ++i) {
       RlJcrFieldType f = fields.get(i);

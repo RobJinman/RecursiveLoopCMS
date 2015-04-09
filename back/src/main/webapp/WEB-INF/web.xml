@@ -23,22 +23,6 @@
   version="3.0"
   metadata-complete="false">
 
-  <context-param>
-    <param-name>javax.faces.PROJECT_STAGE</param-name>
-    <param-value>Development</param-value>
-  </context-param>
-  <context-param>
-    <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-    <param-value>server</param-value>
-  </context-param>
-  <context-param>
-    <param-name>javax.faces.FACELETS_REFRESH_PERIOD</param-name>
-    <param-value>1</param-value>
-  </context-param>
-  <context-param>
-    <param-name>javax.faces.FACELETS_LIBRARIES</param-name>
-    <param-value>/WEB-INF/taglib.xml</param-value>
-  </context-param>
 	<context-param>
 		<param-name>resteasy.scan</param-name>
 		<param-value>true</param-value>
@@ -49,23 +33,10 @@
      Recursive Loop Content Management System
   </description>
 
-  <welcome-file-list>
-    <welcome-file>main/index.xhtml</welcome-file>
-  </welcome-file-list>
-
-  <error-page>
-    <error-code>403</error-code>
-    <location>/denied.xhtml</location>
-  </error-page>
-
-  <login-config>
-    <auth-method>FORM</auth-method>
-    <realm-name>file</realm-name>
-    <form-login-config>
-      <form-login-page>/login.xhtml</form-login-page>
-      <form-error-page>/error.xhtml</form-error-page>
-    </form-login-config>
-  </login-config>
+  <context-param>
+    <param-name>javax.faces.FACELETS_REFRESH_PERIOD</param-name>
+    <param-value>1</param-value>
+  </context-param>
 
   <security-role>
     <description/>
@@ -81,13 +52,21 @@
   </security-role>
 
   <security-constraint>
-    <display-name>Main</display-name>
+    <display-name>AuthorAPI</display-name>
     <web-resource-collection>
-      <web-resource-name>Main</web-resource-name>
-      <description/>
-      <url-pattern>/main/*</url-pattern>
+      <web-resource-name>Repository-READ</web-resource-name>
+      <url-pattern>/api/repository/itemTree/*</url-pattern>
+      <url-pattern>/api/repository/types/*</url-pattern>
       <http-method>GET</http-method>
+      <http-method>HEAD</http-method>
+      <http-method>OPTIONS</http-method>
+    </web-resource-collection>
+    <web-resource-collection>
+      <web-resource-name>Items-WRITE</web-resource-name>
+      <url-pattern>/api/repository/itemTree/*</url-pattern>
+      <http-method>PUT</http-method>
       <http-method>POST</http-method>
+      <http-method>DELETE</http-method>
     </web-resource-collection>
     <auth-constraint>
       <description/>
@@ -95,59 +74,23 @@
       <role-name>Developer</role-name>
       <role-name>Administrator</role-name>
     </auth-constraint>
-<!--
-    <user-data-constraint>CONFIDENTIAL</user-data-constraint>
--->
   </security-constraint>
 
   <security-constraint>
-    <display-name>ContentEditor</display-name>
+    <display-name>DeveloperAPI</display-name>
     <web-resource-collection>
-      <web-resource-name>AuthorControls</web-resource-name>
-      <description/>
-      <url-pattern>/editor/*</url-pattern>
-      <http-method>GET</http-method>
+      <web-resource-name>Types-WRITE</web-resource-name>
+      <url-pattern>/api/repository/types/*</url-pattern>
+      <http-method>PUT</http-method>
       <http-method>POST</http-method>
+      <http-method>DELETE</http-method>
     </web-resource-collection>
     <auth-constraint>
       <description/>
-      <role-name>Author</role-name>
       <role-name>Developer</role-name>
       <role-name>Administrator</role-name>
     </auth-constraint>
-<!--
-    <user-data-constraint>CONFIDENTIAL</user-data-constraint>
--->
   </security-constraint>
-
-  <security-constraint>
-    <display-name>ContentDeveloper</display-name>
-    <web-resource-collection>
-      <web-resource-name>DeveloperControls</web-resource-name>
-      <url-pattern>/devtools/*</url-pattern>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>Developer</role-name>
-      <role-name>Administrator</role-name>
-    </auth-constraint>
-<!--
-    <user-data-constraint>CONFIDENTIAL</user-data-constraint>
--->
-  </security-constraint>
-
-  <servlet>
-    <servlet-name>Faces Servlet</servlet-name>
-    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-      <servlet-name>Faces Servlet</servlet-name>
-      <url-pattern>*.xhtml</url-pattern>
-<!--
-      <url-pattern>/javax.faces.resource/*</url-pattern>-->
-  </servlet-mapping>
 
   <servlet>
     <servlet-name>javax.ws.rs.core.Application</servlet-name>
@@ -155,15 +98,39 @@
   </servlet>
   <servlet-mapping>
      <servlet-name>javax.ws.rs.core.Application</servlet-name>
-     <url-pattern>/ajax/*</url-pattern>
+     <url-pattern>/api/*</url-pattern>
   </servlet-mapping>
 
   <filter>
-    <filter-name>NoCacheFilter</filter-name>
-    <filter-class>com.recursiveloop.filters.NoCacheFilter</filter-class>
+    <filter-name>CorsFilter</filter-name>
+    <filter-class>com.recursiveloop.filters.CorsFilter</filter-class>
+    <init-param>
+      <param-name>cors.allowed.origins</param-name>
+      <param-value>http://localhost:8888</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.methods</param-name>
+      <param-value>GET,POST,HEAD,OPTIONS,PUT,DELETE</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.headers</param-name>
+      <param-value>Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.exposed.headers</param-name>
+      <param-value>Access-Control-Allow-Origin,Access-Control-Allow-Credentials</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.support.credentials</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.preflight.maxage</param-name>
+      <param-value>10</param-value>
+    </init-param>
   </filter>
   <filter-mapping>
-    <filter-name>NoCacheFilter</filter-name>
-    <servlet-name>Faces Servlet</servlet-name>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/api/*</url-pattern>
   </filter-mapping>
 </web-app>

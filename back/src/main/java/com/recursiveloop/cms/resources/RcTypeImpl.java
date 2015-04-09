@@ -12,14 +12,15 @@ import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
 import com.recursiveloop.cms.JcrDao;
 import com.recursiveloop.cms.ItemType;
 import com.recursiveloop.cms.exceptions.NoSuchFieldException;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonObject;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -29,6 +30,39 @@ public class RcTypeImpl implements RcType {
 
   @Inject
   JcrDao m_dao;
+
+  @Override
+  public Response doNothing() {
+    return Response.ok().build();
+  }
+
+  @Override
+  public JsonObject getNames() throws Exception {
+    JsonObjectBuilder obj = Json.createObjectBuilder();
+    JsonArrayBuilder arr = Json.createArrayBuilder();
+
+    Collection<String> names = m_dao.getTypeList();
+    for (String name : names) {
+      arr.add(name);
+    }
+
+    obj.add("typeNames", arr);
+
+    return obj.build();
+  }
+
+  @Override
+  public JsonObject getType(String name) throws Exception {
+    try {
+      ItemType type = m_dao.getType(name);
+
+      return type.toJson();
+    }
+    catch (Exception ex) {
+      m_logger.log(Level.WARNING, "Error getting type '" + name + "'", ex);
+      throw ex;
+    }
+  }
 
   @Override
   public Response insertType(JsonObject json) throws Exception {
@@ -88,19 +122,6 @@ public class RcTypeImpl implements RcType {
     }
 
     return Response.ok().build();
-  }
-
-  @Override
-  public JsonObject getType(String name) throws Exception {
-    try {
-      ItemType type = m_dao.getType(name);
-
-      return type.toJson();
-    }
-    catch (Exception ex) {
-      m_logger.log(Level.WARNING, "Error getting type '" + name + "'", ex);
-      throw ex;
-    }
   }
 
   @Override

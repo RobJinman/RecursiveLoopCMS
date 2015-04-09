@@ -2,9 +2,78 @@
 
 @import 'mixins';
 
-[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, x-ng-cloak {
-  display: none !important;
+@import 'devTools/devTools';
+@import 'editor/contentEditor';
+@import 'denied';
+@import 'error';
+@import 'index';
+@import 'login';
+@import 'debug'; /*TODO*/
+
+body {
+  background-color: white;
 }
 
-// Prevent the need for empty href attributes on Bootstrap components
-.nav, .pagination, .carousel, a { cursor: pointer; }
+#header {
+  position: fixed;
+  z-index: 2;
+  top: 0px;
+  width: 100%;
+  height: $headerH;
+  background-color: white;
+  border-bottom: 2px solid black;
+
+  .header-right {
+    line-height: $headerH;
+    float: right;
+    padding-right: 5px;
+
+    .username {
+      @extend .text-info;
+      float: right;
+      margin-right: 10px;
+    }
+
+    .role-badge {
+      float: right;
+      margin-right: 3px;
+      margin-top: ($headerH - 16) / 2;
+    }
+
+    .badge-active {
+      @extend .label-success;
+    }
+
+    .badge-inactive {
+      @extend .label-default;
+    }
+  }
+
+  .logout {
+    margin: 5px 10px 0 10px;
+    float: left;
+  }
+
+  .rl-nav {
+    background-color: transparent;
+    margin: 0;
+  }
+}
+
+#main {
+  position: absolute;
+  z-index: 1;
+  top: $headerH;
+  left: 0;
+  width: 100%;
+  min-height: 500px;
+}
+
+.modal {
+  z-index: 9;
+
+  .modal-dialog {
+    top: 100px;
+    outline: none;
+  }
+}

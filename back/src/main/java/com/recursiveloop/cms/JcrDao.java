@@ -74,7 +74,7 @@ public class JcrDao {
   public void setup() {
     try {
       Repository repository = JcrUtils.getRepository();
-      m_session = repository.login(new SimpleCredentials("admin", "admin".toCharArray()));
+      m_session = repository.login(new SimpleCredentials("admin", "admin".toCharArray())); // TODO
 
       Value transactionSupport = repository.getDescriptorValue(Repository.OPTION_TRANSACTIONS_SUPPORTED);
       if (transactionSupport.getBoolean() == false) {
@@ -138,6 +138,7 @@ public class JcrDao {
         ItemType type = m_typeMap.get(item.getTypeName());
 
         if (type == null) {
+          m_logger.log(Level.WARNING, "Error retrieving full item; no such type");
           throw new NoSuchTypeException(item.getTypeName());
         }
 
@@ -393,6 +394,7 @@ public class JcrDao {
     createNodeIfNotExists(root, "rl:types");
 
     m_typeMap.clear();
+    m_typeMap.put("folder", new ItemType("folder"));
 
     extractTypes(root);
   }

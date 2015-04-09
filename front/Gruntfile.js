@@ -95,7 +95,10 @@ module.exports = function(grunt) {
         tasks: ["concat", "uglify:target", "docs"]
       },
       scss: {
-        files: ["<%= appbase %>/scss/*.scss"],
+        files: [
+          "<%= appbase %>/scss/*.scss",
+          "<%= appbase %>/scss/**/*.scss"
+        ],
         tasks: ["sass:dev"]
       }
     },
