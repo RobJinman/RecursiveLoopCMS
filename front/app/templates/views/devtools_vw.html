@@ -1,5 +1,132 @@
 <div class="devtools-vw">
   <div id="content">
-    <h3>Developer Tools</h3>
+    <table data-ng-if="ctrl.current.type" id="tbl-fields" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Widget</th>
+          <th>Required</th>
+          <th>Default</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-repeat="field in ctrl.current.type.fields">
+          <td>{{ field.fieldName }}</td>
+          <td>{{ ctrl.jcrTypes.byValue[field.type] }}</td>
+          <td>{{ field.widget }}</td>
+          <td>{{ field.required }}</td>
+          <td>{{ field.defaultValue }}</td>
+          <td class="field-buttons">
+            <i data-ng-click="ctrl.onEditFieldClick(field)" class="btn-edit-field glyphicon"></i>
+            <i data-ng-click="ctrl.onDeleteFieldClick(field)" class="btn-delete-field glyphicon"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <i class="btn-new-field glyphicon" data-ng-click="ctrl.onNewFieldClick()">
+          </td>
+          <td colspan="5"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <tabset data-ng-if="ctrl.current.state !== ctrl.ST_OTHER">
+      <tab heading="Field">
+        <form id="frm-field" class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-1 control-label" for="inp-name">Name</label>
+            <div class="col-sm-11">
+              <input id="inp-name" class="form-control" type="text" data-ng-model="ctrl.current.field.fieldName">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-1 control-label" for="inp-type">Type</label>
+            <div class="col-sm-11">
+              <select id="inp-type" class="form-control" data-integer data-ng-model="ctrl.jcrTypes.byValue[ctrl.current.field.type]">
+                <option value="binary">Binary</option>
+                <option value="boolean">Boolean</option>
+                <option value="date">Date</option>
+                <option value="double">Double</option>
+                <option value="long">Long</option>
+                <option value="string">String</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-1 control-label" for="inp-widget">Widget</label>
+            <div class="col-sm-11">
+              <select id="inp-widget" class="form-control" data-ng-model="ctrl.current.field.widget">
+                <option value="textedit">Textbox</option>
+                <option value="textarea">Text area</option>
+                <option value="datepicker">Datepicker</option>
+                <option value="spinbox">Spinbox</option>
+                <option value="checkbox">Checkbox</option>
+                <option value="selector">Selector</option>
+                <option value="radiobuttons">Radio Buttons</option>
+                <option value="wysiwyg">WYSIWYG Editor</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-1 control-label" for="inp-required">Required</label>
+            <div class="col-sm-1">
+              <input id="inp-required" type="checkbox" data-ng-model="ctrl.current.field.required">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-1 control-label" for="inp-default">Default</label>
+            <div class="col-sm-11">
+              <input class="form-control" id="inp-default" type="text" data-ng-model="ctrl.current.field.defaultValue"> <!-- Use widget -->
+            </div>
+          </div>
+          <button class="col-sm-offset-1 btn btn-primary" data-ng-click="ctrl.onSaveFieldClick()">{{ ctrl.saveBtnCaption() }}</button>
+          <button class="btn btn-warning" data-ng-click="ctrl.onCancelFieldClick()">Cancel</button>
+        </form>
+      </tab>
+      <tab heading="Parser">
+        <form id="frm-parser-params" data-ng-switch="ctrl.jcrTypes.byValue[ctrl.current.field.type]">
+          <div data-ng-switch-when="date" class="form-group">
+            <label class="col-sm-1 control-label" for="inp-pp-date-format">Date Format</label>
+            <div class="col-sm-11">
+              <input class="form-control" id="inp-pp-date-format" type="text" data-ng-model="ctrl.current.field.parserParams.dateFormat">
+            </div>
+          </div>
+          <!-- ... -->
+        </form>
+      </tab>
+      <tab heading="Widget">
+        <form id="frm-widget-params" data-ng-switch="ctrl.current.field.widget">
+          <div data-ng-switch-when="datepicker" class="form-group">
+            <label class="col-sm-1 control-label" for="inp-wp-date-format">Date Format</label>
+            <div class="col-sm-11">
+              <input class="form-control" id="inp-wp-date-format" type="text" data-ng-model="ctrl.current.field.widgetParams.dateFormat">
+            </div>
+          </div>
+          <!-- ... -->
+        </form>
+      </tab>
+    </tabset>
+  </div>
+</div>
+
+<div data-rl-block-replacement="sidebar_content">
+  <img class="sidebar-loading" data-ng-show="ctrl.sidebarLoading" src="img/loading.gif" alt="Loading...">
+  <div data-ng-hide="ctrl.sidebarLoading" class="list-group">
+    <div
+    data-ng-repeat="typeName in ctrl.typeList.typeNames"
+    data-ng-if="typeName !== 'folder'"
+    data-ng-click="ctrl.onTypeSelection(typeName)"
+    class="list-group-item type-link">
+      <span>{{ typeName }}</span>
+      <i class="mnu-delete-type glyphicon" data-ng-click="ctrl.onDeleteTypeClick(typeName, $event)"></i>
+    </div>
+    <div class="list-group-item">
+      <form>
+        <input id="txtNewType" type="text" data-ng-model="ctrl.newTypeName">
+        <i class="mnu-new-type glyphicon" data-ng-click="ctrl.onNewTypeClick()"></i>
+      </form>
+    </div>
   </div>
 </div>

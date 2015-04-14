@@ -1,4 +1,11 @@
-angular.module("Controllers").directive("rlCredentials", ["session", function(session) {
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
+
+angular.module("Directives").directive("rlCredentials", ["session", function(session) {
   function link($scope, $element, $attrs) {
     var onChange = function() {
       $scope.username = session.getUserData().username;

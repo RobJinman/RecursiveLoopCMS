@@ -1,4 +1,4 @@
 <label class="col-sm-1 control-label" for="inp-{{ field.fieldName }}">{{ field.fieldName }}</label>
 <div class="col-sm-11">
-  <input id="inp-{{ field.fieldName }}" class="form-control" name="{{ field.fieldName }}" type="text" value="{{ ctrl.item.data[field.fieldName] }}">
+  <input id="inp-{{ field.fieldName }}" class="form-control" name="{{ field.fieldName }}" type="text" data-ng-model="item.data[field.fieldName]">
 </div>

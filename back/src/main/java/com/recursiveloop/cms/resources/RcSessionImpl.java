@@ -40,11 +40,6 @@ public class RcSessionImpl implements RcSession {
   }
 
   @Override
-  public Response doNothing() {
-    return Response.ok().build();
-  }
-
-  @Override
   public MSession create(HttpServletRequest request, MCredentials credentials) throws Exception {
     try {
       if (request.getUserPrincipal() != null) {

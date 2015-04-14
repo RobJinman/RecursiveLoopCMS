@@ -14,8 +14,6 @@
     <script type="text/javascript" src="vendor/angular-cookies/angular-cookies.js"></script>
     <script type="text/javascript" src="vendor/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
     <script type="text/javascript" src="vendor/jlUtil/dist/jlUtil.min.js"></script>
-    <script type="text/javascript" src="vendor/jlScroll/dist/jlScroll.min.js"></script>
-    <script type="text/javascript" src="vendor/jlDirectives/dist/jlDirectives.min.js"></script>
     <script type="text/javascript" src="js/app-compiled.js"></script> <!-- TODO: Use minified -->
 
     <title>Recursive Loop CMS</title>
@@ -27,15 +25,13 @@
         <data-rl-credentials></data-rl-credentials>
       </div>
 
-      <ol class="rl-nav breadcrumb">
-        <li><a href="/#/index">CMS Home</a></li>
-        <li class="active">Content Editor</li>
-      </ol>
+      <rl-breadcrumb></rl-breadcrumb>
     </div>
     <div id="main">
       <div id="sidebar" data-rl-block-insertion="sidebar_content"></div>
       <div data-ng-view id="page"></div>
-      <div id="footer"></div>
+
+      <rl-notifications></rl-notifications>
     </div>
   </body>
 </html>

@@ -2,13 +2,13 @@
   <span class="node-wrap">
     <span class="node" data-ng-class="getCss(rlRoot)" data-ng-click="onNodeClick($event, rlRoot)">
       <span class="icon"></span>
-      {{ rlRoot.name }}
+      {{ rlRoot.itemName }}
     </span>
     <span class="opts" data-ng-click="onOptsClick($event, rlRoot)"></span>
   </span>
-  <ul data-ng-hide="isMinimised()">
+  <ul>
     <li data-ng-repeat="node in rlRoot.children">
-      <rl-tree rl-root='node' rl-on-selection="rlOnSelection()" rl-on-options-selection="rlOnOptionsSelection()"></rl-tree>
+      <rl-tree data-rl-root='node' data-rl-on-selection="rlOnSelection()" data-rl-on-options-selection="rlOnOptionsSelection()"></rl-tree>
     </li>
   </ul>
 </div>

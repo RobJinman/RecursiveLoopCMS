@@ -1,63 +1,79 @@
-angular.module("Layout", ["jlUtil"])
-  .factory("layout", [function() {
-      var layout = {
-        blocks: {},
-        bodyClass: ""
-      };
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
 
-      return layout;
-  }])
+//===========================================
+// MODULE: Layout
+//===========================================
+angular.module("Layout", [])
 
-  /**
-  * (DIRECTIVE) Defines a containing element into which another may be inserted.
-  *
-  * @namespace Layout
-  * @class rlBlockInsertion
-  * @constructor
-  * @param {Angular service} util
-  * @param {Angular service} _layout
-  */
-  .directive("rlBlockInsertion", ["util", "layout", function(util, layout) {
-    function link($scope, $element, $attrs) {
-      var element = util.element($element);
-      layout.blocks[$attrs.rlBlockInsertion] = element;
+//===========================================
+// SERVICE: layout
+//===========================================
+.factory("layout", [function() {
+    var layout = {
+      blocks: {},
+      bodyClass: "",
+      navpath: []
+    };
+
+    return layout;
+}])
+
+//===========================================
+// DIRECTIVE: rlBreadcrumb
+//===========================================
+.directive("rlBreadcrumb", ["layout", function(layout) {
+  function link($scope) {
+    $scope.layout = layout;
+  }
+
+  return {
+    link: link,
+    restrict: "E",
+    replace: true,
+    templateUrl: "templates/partials/breadcrumb.html"
+  };
+}])
+
+//===========================================
+// DIRECTIVE: rlBlockInsertion
+//===========================================
+.directive("rlBlockInsertion", ["layout", function(layout) {
+  function link($scope, $element, $attrs) {
+    layout.blocks[$attrs.rlBlockInsertion] = $element;
+  }
+
+  return {
+    restrict: 'A',
+    link: link
+  };
+}])
+
+//===========================================
+// DIRECTIVE: rlBlockReplacement
+//===========================================
+.directive("rlBlockReplacement", ["layout", function(layout) {
+  function link($scope, $element, $attrs) {
+    $element.detach();
+    var block = layout.blocks[$attrs.rlBlockReplacement];
+
+    if (!block) {
+      return;
     }
 
-    return {
-      restrict: 'A',
-      link: link
-    };
-  }])
+    block.append($element);
 
-  /**
-  * (DIRECTIVE)
-  *
-  * @namespace Layout
-  * @class rlBlockReplacement
-  * @constructor
-  * @param {Angular service} util
-  * @param {Angular service} layout
-  */
-  .directive("rlBlockReplacement", ["util", "layout", function(util, layout) {
-    function link($scope, $element, $attrs) {
-      var element = util.element($element);
+    $scope.$on('$destroy', function () {
+      $element.remove();
+    });
+  }
 
-      element.detach();
-      var block = layout.blocks[$attrs.rlBlockReplacement];
-
-      if (!block) {
-        return;
-      }
-
-      block.append(element);
-
-      $scope.$on('$destroy', function () {
-        element.remove();
-      });
-    }
-
-    return {
-      restrict: 'A',
-      link: link
-    };
-  }]);
+  return {
+    restrict: 'A',
+    link: link
+  };
+}]);

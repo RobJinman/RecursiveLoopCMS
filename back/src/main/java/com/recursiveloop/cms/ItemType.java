@@ -12,6 +12,7 @@ import com.recursiveloop.cms.exceptions.InvalidTypeException;
 import com.recursiveloop.cms.jcrmodel.RlJcrItemType;
 import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
+import com.recursiveloop.cms.jcrmodel.RlJcrWidgetParam;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonObject;
@@ -80,11 +81,10 @@ public class ItemType {
       }
 
       JsonObjectBuilder widgetParams = Json.createObjectBuilder();
-/*
-      for (RlJcrParserParam wp : f.getWidgetParams()) {
+      for (RlJcrWidgetParam wp : f.getWidgetParams()) {
         widgetParams.add(wp.getName(), wp.getValue());
       }
-*/
+
       fields.add(f.getName(), Json.createObjectBuilder()
         .add("fieldName", f.getName())
         .add("type", f.getJcrType())
@@ -146,11 +146,19 @@ public class ItemType {
     field.setDefault(json.getString("defaultValue"));
 
     JsonObject parserParamsData = json.getJsonObject("parserParams");
-    Iterator<Map.Entry<String, JsonValue>> j = parserParamsData.entrySet().iterator();
+    Iterator<Map.Entry<String, JsonValue>> i = parserParamsData.entrySet().iterator();
+
+    while (i.hasNext()) {
+      Map.Entry<String, JsonValue> pair_ = i.next();
+      field.setParserParam(pair_.getKey(), parserParamsData.getString(pair_.getKey()));
+    }
+
+    JsonObject widgetParamsData = json.getJsonObject("widgetParams");
+    Iterator<Map.Entry<String, JsonValue>> j = widgetParamsData.entrySet().iterator();
 
     while (j.hasNext()) {
       Map.Entry<String, JsonValue> pair_ = j.next();
-      field.setParserParam(pair_.getKey(), parserParamsData.getString(pair_.getKey()));
+      field.setWidgetParam(pair_.getKey(), widgetParamsData.getString(pair_.getKey()));
     }
 
     m_type.addField(field);

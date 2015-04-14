@@ -28,12 +28,6 @@ import javax.servlet.ServletException;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface RcType {
   /**
-  * For CORS compliance
-  */
-  @OPTIONS
-  public Response doNothing();
-
-  /**
   * Retrieve the full list of type names
   */
   @GET
@@ -63,20 +57,20 @@ public interface RcType {
   * Update a field on specified type
   */
   @PUT
-  @Path("{name}/field/{field}")
+  @Path("{name}/fields/{field}")
   public Response updateField(@PathParam("name") String name, @PathParam("field") String field, JsonObject json) throws Exception;
 
   /**
   * Insert a new field on specified type
   */
   @POST
-  @Path("{name}/field")
+  @Path("{name}/fields")
   public Response insertField(@PathParam("name") String name, JsonObject json) throws Exception;
 
   /**
   * Delete a new field on specified type
   */
   @DELETE
-  @Path("{name}/field/{field}")
+  @Path("{name}/fields/{field}")
   public Response deleteField(@PathParam("name") String name, @PathParam("field") String field) throws Exception;
 }

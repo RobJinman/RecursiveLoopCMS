@@ -25,9 +25,12 @@ public class RlJcrFieldType {
   private String m_rlDefault;
   @Collection(jcrName = "rl:parserParams", jcrType = "rlt:parserParams", jcrElementName = "rl:parserParam")
   public List<RlJcrParserParam> parserParams;
+  @Collection(jcrName = "rl:widgetParams", jcrType = "rlt:widgetParams", jcrElementName = "rl:widgetParam")
+  public List<RlJcrWidgetParam> widgetParams;
 
   public RlJcrFieldType() {
     this.parserParams = new ArrayList<RlJcrParserParam>();
+    this.widgetParams = new ArrayList<RlJcrWidgetParam>();
   }
 
   public RlJcrFieldType(String name, int type, boolean required) {
@@ -38,6 +41,7 @@ public class RlJcrFieldType {
     m_rlRequired = required;
     m_rlDefault = "";
     this.parserParams = new ArrayList<RlJcrParserParam>();
+    this.widgetParams = new ArrayList<RlJcrWidgetParam>();
   }
 
   public RlJcrFieldType(String name, int type, boolean required, String def) {
@@ -48,6 +52,7 @@ public class RlJcrFieldType {
     m_rlRequired = required;
     m_rlDefault = def;
     this.parserParams = new ArrayList<RlJcrParserParam>();
+    this.widgetParams = new ArrayList<RlJcrWidgetParam>();
   }
 
   public RlJcrFieldType(String name, int type, boolean required, String def, String widget) {
@@ -58,6 +63,7 @@ public class RlJcrFieldType {
     m_rlRequired = required;
     m_rlDefault = def;
     this.parserParams = new ArrayList<RlJcrParserParam>();
+    this.widgetParams = new ArrayList<RlJcrWidgetParam>();
   }
 
   public RlJcrFieldType(RlJcrFieldType cpy) {
@@ -69,8 +75,13 @@ public class RlJcrFieldType {
     m_rlDefault = cpy.m_rlDefault;
 
     this.parserParams = new ArrayList<RlJcrParserParam>();
-    for (RlJcrParserParam p : cpy.parserParams) {
-      this.parserParams.add(new RlJcrParserParam(p));
+    for (RlJcrParserParam pp : cpy.parserParams) {
+      this.parserParams.add(new RlJcrParserParam(pp));
+    }
+
+    this.widgetParams = new ArrayList<RlJcrWidgetParam>();
+    for (RlJcrWidgetParam wp : cpy.widgetParams) {
+      this.widgetParams.add(new RlJcrWidgetParam(wp));
     }
   }
 
@@ -142,6 +153,28 @@ public class RlJcrFieldType {
 
   public String getParserParam(String name) {
     for (RlJcrParserParam p : this.parserParams) {
+      if (name.equals(p.getName())) {
+        return p.getValue();
+      }
+    }
+
+    return null;
+  }
+
+  public List<RlJcrWidgetParam> getWidgetParams() {
+    return this.widgetParams;
+  }
+
+  public void setWidgetParams(List<RlJcrWidgetParam> params) {
+    this.widgetParams = params;
+  }
+
+  public void setWidgetParam(String name, String value) {
+    this.widgetParams.add(new RlJcrWidgetParam(name, value));
+  }
+
+  public String getWidgetParam(String name) {
+    for (RlJcrWidgetParam p : this.widgetParams) {
       if (name.equals(p.getName())) {
         return p.getValue();
       }

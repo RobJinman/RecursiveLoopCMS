@@ -28,12 +28,6 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface RcSession {
   /**
-  * For CORS compliance
-  */
-  @OPTIONS
-  public Response doNothing();
-
-  /**
   * Begin a new authenticated session
   */
   @POST

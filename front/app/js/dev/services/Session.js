@@ -1,4 +1,21 @@
-app.factory("session", ["backend", "$q", "$rootScope", "$location", function(backend, $q, $rootScope, $location) {
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
+
+//===========================================
+// MODULE: Services
+//===========================================
+angular.module("Services")
+
+//===========================================
+// SERVICE: session
+//===========================================
+.factory("session", ["backend", "$q", "$rootScope", "$location",
+function(backend, $q, $rootScope, $location) {
+
   function User() {
     this.isLoggedIn = false;
     this.username = null;
@@ -7,6 +24,9 @@ app.factory("session", ["backend", "$q", "$rootScope", "$location", function(bac
   var _user = new User();
 
   var _session = {
+    //===========================================
+    // authenticate
+    //===========================================
     authenticate: function(username, password) {
       return backend.login(username, password).then(function(response) {
         _user.isLoggedIn = true;
@@ -19,6 +39,9 @@ app.factory("session", ["backend", "$q", "$rootScope", "$location", function(bac
       });
     },
 
+    //===========================================
+    // authorise
+    //===========================================
     authorise: function(roles) {
       return backend.getSession().then(function(response) {
         if (typeof response.data.username === "undefined" || response.data.username === null) {
@@ -44,6 +67,9 @@ app.factory("session", ["backend", "$q", "$rootScope", "$location", function(bac
       });
     },
 
+    //===========================================
+    // logout
+    //===========================================
     logout: function() {
       return backend.logout().then(function(response) {
         _user = new User();
@@ -53,14 +79,23 @@ app.factory("session", ["backend", "$q", "$rootScope", "$location", function(bac
       });
     },
 
+    //===========================================
+    // userHasRole
+    //===========================================
     userHasRole: function(role) {
       return _user.roles.indexOf(role) != -1;
     },
 
+    //===========================================
+    // getUserData
+    //===========================================
     getUserData: function() {
       return _user;
     },
 
+    //===========================================
+    // authResolver
+    //===========================================
     authResolver: function(roles, onFail) {
       return _session.authorise(roles).then(
         function(success) {},

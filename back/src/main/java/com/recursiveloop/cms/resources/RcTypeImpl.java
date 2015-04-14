@@ -32,11 +32,6 @@ public class RcTypeImpl implements RcType {
   JcrDao m_dao;
 
   @Override
-  public Response doNothing() {
-    return Response.ok().build();
-  }
-
-  @Override
   public JsonObject getNames() throws Exception {
     JsonObjectBuilder obj = Json.createObjectBuilder();
     JsonArrayBuilder arr = Json.createArrayBuilder();

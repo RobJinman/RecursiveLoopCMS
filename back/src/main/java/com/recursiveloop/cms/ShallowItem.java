@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ShallowItem extends RlJcrItem {
-  @XmlElement(name = "name")
+  @XmlElement(name = "itemName")
   private String m_name;
   @XmlElement(name = "children")
   private List<ShallowItem> m_children;

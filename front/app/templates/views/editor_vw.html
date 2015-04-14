@@ -1,39 +1,70 @@
 <div class="editor-vw">
   <div id="content">
-    <div data-ng-if="ctrl.item">
+    <rl-editor-dropdown
+      data-rl-type-list="ctrl.typeList.typeNames"
+      data-rl-on-new="ctrl.onNewItemClick(item, typeName)"
+      data-rl-on-rename="ctrl.onRenameItemClick(item)"
+      data-rl-on-move="ctrl.onMoveItemClick(item)"
+      data-rl-on-delete="ctrl.onDeleteItemClick(item)"></rl-editor-dropdown>
+
+    <div data-ng-if="ctrl.state !== ctrl.ST_OTHER">
 
       <div class="item-info">
-        <span class="lbl-item-info">Name: </span><span class="item-info-dat">{{ ctrl.item.name }}</span>
+        <span data-ng-if="ctrl.state !== ctrl.ST_CREATE_NEW">
+          <span class="lbl-item-info">Name: </span><span class="item-info-dat">{{ ctrl.item.itemName }}</span>
+        </span>
         <span class="lbl-item-info">Type: </span><span class="item-info-dat">{{ ctrl.item.typeName }}</span>
       </div>
 
-      <form id="frm-item-content" class="form-horizontal">
-        <div class="form-group" data-ng-repeat="field in ctrl.type.fields">
-          <div data-ng-include="ctrl.chooseWidget(field)"></div>
+      <form data-ng-if="ctrl.state === ctrl.ST_CREATE_NEW" id="frm-item-meta" class="form-horizontal">
+        <div class="form-group">
+          <label class="col-sm-1 control-label" for="inp-itemName">Name</label>
+          <div class="col-sm-11">
+            <input id="inp-itemName" class="form-control" type="text" data-ng-model="ctrl.item.itemName">
+          </div>
         </div>
         <div class="form-group">
-          <div class="col-sm-offset-1 col-sm-1">
-            <input class="btn btn-primary" type="button" data-ng-click="ctrl.onSaveClick()" value="{{ ctrl.buttonCaption() }}">
+          <label class="col-sm-1 control-label" for="inp-parent">Parent</label>
+          <div class="col-sm-11">
+            <input id="inp-parent" class="form-control" type="text" data-ng-model="ctrl.item.path">
           </div>
         </div>
       </form>
 
+      <form id="frm-item-content" class="form-horizontal">
+        <div class="form-group" data-ng-repeat="field in ctrl.type.fields">
+          <div data-ng-switch="field.widget">
+            <div data-ng-switch-when="checkbox">
+              <rl-checkbox data-rl-item="ctrl.item" data-rl-field="field"></rl-checkbox>
+            </div>
+            <div data-ng-switch-when="datepicker">
+              <rl-datepicker data-rl-item="ctrl.item" data-rl-field="field"></rl-datepicker>
+            </div>
+            <div data-ng-switch-when="radiobuttons">
+              <rl-radiobuttons data-rl-item="ctrl.item" data-rl-field="field"></rl-radiobutton>
+            </div>
+            <div data-ng-switch-when="spinbox">
+              <rl-spinbox data-rl-item="ctrl.item" data-rl-field="field"></rl-spinbox>
+            </div>
+            <div data-ng-switch-when="textarea">
+              <rl-textarea data-rl-item="ctrl.item" data-rl-field="field"></rl-textarea>
+            </div>
+            <div data-ng-switch-when="textedit">
+              <rl-textedit data-rl-item="ctrl.item" data-rl-field="field"></rl-textedit>
+            </div>
+            <div data-ng-switch-when="wysiwyg">
+              <rl-wysiwyg data-rl-item="ctrl.item" data-rl-field="field"></rl-wysiwyg>
+            </div>
+          </div>
+        </div>
+        <button class="col-sm-offset-1 btn btn-primary" data-ng-click="ctrl.onSaveClick()">{{ ctrl.buttonCaption() }}</button>
+        <button class="btn btn-warning" data-ng-click="ctrl.onCancelClick()">Cancel</button>
+      </form>
     </div>
   </div>
 </div>
 
 <div data-rl-block-replacement="sidebar_content">
-  <rl-tree rl-root="ctrl.itemTree" rl-on-selection="ctrl.onItemSelection" rl-on-options-selection="ctrl.onOptionsSelection"></rl-tree>
-
-  <ul id="opts-menu">
-    <li>Insert new
-      <ul>
-        <li data-ng-click="ctrl.onNewFolderClick()">Folder</li>
-        <!-- TODO -->
-      </ul>
-    </li>
-    <li data-ng-click="ctrl.onRenameClick()">Rename</li>
-    <li data-ng-click="ctrl.onMoveClick()">Move</li>
-    <li data-ng-click="ctrl.onDeleteClick()">Delete</li>
-  </ul>
+  <img class="sidebar-loading" data-ng-show="ctrl.sidebarLoading" src="img/loading.gif" alt="Loading...">
+  <rl-tree data-ng-hide="ctrl.sidebarLoading" data-rl-root="ctrl.itemTree" data-rl-on-selection="ctrl.onItemSelection" data-rl-on-options-selection="ctrl.onOptionsSelection"></rl-tree>
 </div>

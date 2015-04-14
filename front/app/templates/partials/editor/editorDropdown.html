@@ -1,0 +1,10 @@
+<ul id="opts-menu">
+  <li>Insert new
+    <ul>
+      <li data-ng-repeat="typeName in typeNames" data-ng-click="fnNew({ item: item, typeName: typeName })">{{ typeName }}</li>
+    </ul>
+  </li>
+  <li data-ng-click="fnRename({ item: item })">Rename</li>
+  <li data-ng-click="fnMove({ item: item })">Move</li>
+  <li data-ng-click="fnDelete({ item: item })">Delete</li>
+</ul>

@@ -10,6 +10,7 @@ package com.recursiveloop.cms.resources;
 
 import com.recursiveloop.cms.ShallowItem;
 import com.recursiveloop.cms.StringItem;
+import com.recursiveloop.cms.models.MUploadForm;
 import javax.json.JsonObject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.GET;
@@ -22,18 +23,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 
 @Path("/repository/itemTree")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface RcItem {
-  /**
-  * For CORS compliance
-  */
-  @OPTIONS
-  public Response doNothing();
-
   /**
   * Returns the full item tree. The items do not contain any content
   */
@@ -72,4 +68,27 @@ public interface RcItem {
   @DELETE
   @Path("item/{path}")
   public Response deleteItem(@PathParam("path") String path) throws Exception;
+
+  /**
+  * Insert a field
+  */
+/*
+  @POST
+  @Path("item/{path}")
+  public Response insertField(@PathParam("path") String path, String field) throws Exception;
+*/
+  /**
+  * Update a field
+  */
+  @PUT
+  @Path("item/{path}")
+  public Response updateField(@PathParam("path") String path, String field) throws Exception;
+
+  /**
+  * Insert a file as a binary field
+  */
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  @POST
+  @Path("item/{path}")
+  public Response uploadFile(@PathParam("path") String path, @MultipartForm MUploadForm form) throws Exception;
 }

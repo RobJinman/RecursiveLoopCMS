@@ -1,31 +1,27 @@
-/**
-* @module App
-* @requires ui.bootstrap
-* @requires ngRoute
-* @requires ngCookies
-* @requires jlUtil
-* @requires jlBackend
-* @requires jlLayout
-* @requires jlScroll
-* @requires jlDirectives
-* @requires Controllers
-* @requires Directives
-* @requires Backend
-* @requires Layout
-* @requires Tree
-*/
+// This file is property of Recursive Loop Ltd.
+//
+// Author: Rob Jinman
+// Web: http://recursiveloop.org
+// Copyright Recursive Loop Ltd 2015
+// Copyright Rob Jinman 2015
+
+//===========================================
+// MODULE: App
+//===========================================
 var app = angular.module("App", [
   "ui.bootstrap",
   "ngRoute",
   "ngCookies",
   "jlUtil",
-  "jlScroll",
-  "jlDirectives",
   "Controllers",
   "Directives",
-  "Backend",
+  "Services",
+  "Converters",
   "Layout",
-  "Tree"])
+  "Tree",
+  "ContentEditor",
+  "DeveloperTools",
+  "Notifications"])
 
   .config(["$logProvider", function($logProvider) {
     $logProvider.debugEnabled(true);
@@ -77,3 +73,5 @@ var app = angular.module("App", [
 
 angular.module("Controllers", []);
 angular.module("Directives", []);
+angular.module("Services", []);
+angular.module("Converters", []);

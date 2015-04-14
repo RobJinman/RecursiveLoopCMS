@@ -7,13 +7,15 @@
       <div class="bottom">
         <div id="frm-login" class="login-form">
           <form name="loginForm" data-ng-submit="ctrl.login()" role="form">
-            <label for="inp-username">Username:</label>
-            <input type="text" id="inp-username" placeholder="Enter username" required="true" data-ng-model="ctrl.username">
-            <br><br>
-            <label for="inp-password">Password:</label>
-            <input type="password" id="inp-password" placeholder="Enter password" required="true" data-ng-model="ctrl.password">
-            <br><br>
-            <input type="submit" value="Login" data-ng-disabled="loginForm.$invalid">
+            <div class="form-group">
+              <label for="inp-username">Username:</label>
+              <input class="form-control" type="text" id="inp-username" placeholder="Enter username" required="true" data-ng-model="ctrl.username">
+            </div>
+            <div class="form-group">
+              <label for="inp-password">Password:</label>
+              <input class="form-control" type="password" id="inp-password" placeholder="Enter password" required="true" data-ng-model="ctrl.password">
+            </div>
+            <input class="btn btn-default" type="submit" value="Login" data-ng-disabled="loginForm.$invalid">
           </form>
         </div>
       </div>

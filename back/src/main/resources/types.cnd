@@ -16,6 +16,12 @@
   - ocm_classname (string)
 [rlt:parserParams]
   + rl:parserParam (rlt:parserParam) multiple
+[rlt:widgetParam]
+  - rl:name (string) mandatory
+  - rl:value (string) mandatory
+  - ocm_classname (string)
+[rlt:widgetParams]
+  + rl:widgetParam (rlt:widgetParam) multiple
 [rlt:fieldType]
   - rl:name (string) mandatory
   - rl:jcrType (long) mandatory
@@ -23,6 +29,7 @@
   - rl:default
   - rl:widget (string)
   + rl:parserParams (rlt:parserParams)
+  + rl:widgetParams (rlt:widgetParams)
   - ocm_classname (string)
 [rlt:fieldTypeGroup]
   + rl:field (rlt:fieldType) multiple

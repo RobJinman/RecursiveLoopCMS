@@ -16,6 +16,7 @@ import com.recursiveloop.cms.exceptions.NoSuchFieldException;
 import com.recursiveloop.cms.jcrmodel.RlJcrItemType;
 import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
+import com.recursiveloop.cms.jcrmodel.RlJcrWidgetParam;
 import com.recursiveloop.cms.jcrmodel.RlJcrItem;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -25,6 +26,7 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Value;
+import javax.jcr.Binary;
 import javax.jcr.Workspace;
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.nodetype.NodeTypeManager;
@@ -59,7 +61,7 @@ import java.util.logging.Level;
 @Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
 public class JcrDao {
-  private static final Logger m_logger = Logger.getLogger(JcrDao.class.getName());
+  private final static Logger m_logger = Logger.getLogger(JcrDao.class.getName());
 
   @Inject
   ItemParser m_parser;
@@ -85,6 +87,7 @@ public class JcrDao {
       classes.add(RlJcrItemType.class);
       classes.add(RlJcrFieldType.class);
       classes.add(RlJcrParserParam.class);
+      classes.add(RlJcrWidgetParam.class);
       classes.add(RlJcrItem.class);
 
       Mapper mapper = new AnnotationMapperImpl(classes);
@@ -177,6 +180,21 @@ public class JcrDao {
     }
 
     return type;
+  }
+
+  @Lock(LockType.WRITE)
+  public void insertNewBinaryField(String itemPath, String fieldName, InputStream data)
+    throws RepositoryException, NoSuchItemException {
+
+    if (m_session.nodeExists(itemPath)) {
+      Node node = m_session.getNode(itemPath);
+      Binary bin = m_session.getValueFactory().createBinary(data);
+
+      node.setProperty(fieldName, bin);
+    }
+    else {
+      throw new NoSuchItemException(itemPath);
+    }
   }
 
   /**
