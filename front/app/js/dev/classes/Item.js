@@ -7,11 +7,20 @@
 
 var rl = rl || {};
 
-rl.Item = function() {
-  this.children = [];
-  this.path = "/rl:items";
-  this.typeName = "folder";
-  this.itemName = "";
-  this.status = 0;
-  this.data = {};
-};
+(function(ns) {
+  ns.Item = function(type) {
+    this.children = [];
+    this.path = "/rl:items";
+    this.typeName = "folder";
+    this.itemName = "";
+    this.status = 0;
+    this.data = {};
+
+    if (type) {
+      for (var key in type.fields) {
+        var f = type.fields[key];
+        this.data[f.fieldName] = f.defaultValue || "";
+      }
+    }
+  };
+})(rl);

@@ -75,6 +75,46 @@ function($scope, $modalInstance, path) {
 }])
 
 //===========================================
+// CONTROLLER: ItemMoveModalCtrl
+//===========================================
+.controller("ItemMoveModalCtrl", [
+"$scope", "$modalInstance", "parent",
+function($scope, $modalInstance, parent) {
+  var self = this;
+
+  self.currentParent = parent;
+  self.newParent = parent;
+
+  self.ok = function() {
+    $modalInstance.close(self.newParent);
+  };
+
+  self.cancel = function() {
+    $modalInstance.dismiss("cancel");
+  };
+}])
+
+//===========================================
+// CONTROLLER: ItemRenameModalCtrl
+//===========================================
+.controller("ItemRenameModalCtrl", [
+"$scope", "$modalInstance", "itemName",
+function($scope, $modalInstance, itemName) {
+  var self = this;
+
+  self.currentName = itemName;
+  self.newName = itemName;
+
+  self.ok = function() {
+    $modalInstance.close(self.newName);
+  };
+
+  self.cancel = function() {
+    $modalInstance.dismiss("cancel");
+  };
+}])
+
+//===========================================
 // CONTROLLER: ContentEditorCtrl
 //===========================================
 .controller("ContentEditorCtrl", [
@@ -189,7 +229,6 @@ function(layout, backend, $modal, $rootScope, $timeout, notificationTypes) {
             self.type = null;
             self.state = self.ST_OTHER;
 
-            _loadTree();
             $rootScope.$broadcast("notification", notificationTypes.SUCCESS, "Operation successful");
           },
           function(err) {
@@ -260,29 +299,120 @@ function(layout, backend, $modal, $rootScope, $timeout, notificationTypes) {
   // onDeleteItemClick
   //===========================================
   self.onDeleteItemClick = function(item) {
-    backend.deleteItem(item.path).then(
-      function(success) {
-        _loadTree();
-        $rootScope.$broadcast("notification", notificationTypes.SUCCESS, "Operation successful");
-      },
-      function(err) {
-        $rootScope.$broadcast("notification", notificationTypes.ERROR, "Server error", err);
-      }
-    );
+    $modal.open({
+      templateUrl: "templates/partials/confirmationModal.html",
+    }).result.then(function() {
+      backend.deleteItem(item.path).then(
+        function(success) {
+          _loadTree();
+          $rootScope.$broadcast("notification", notificationTypes.SUCCESS, "Operation successful");
+        },
+        function(err) {
+          $rootScope.$broadcast("notification", notificationTypes.ERROR, "Server error", err);
+        }
+      );
+    });
   };
 
   //===========================================
   // onMoveItemClick
   //===========================================
-  self.onMoveItemClick = function(item) {
-    console.log("Moving item " + item.itemName + " at " + item.path);
+  self.onMoveItemClick = function(shallowItem) {
+    var oldParent = shallowItem.path.substr(0, shallowItem.path.lastIndexOf("/"));
+
+    var modalInstance = $modal.open({
+      templateUrl: "templates/partials/editor/itemMoveModal.html",
+      controller: "ItemMoveModalCtrl as ctrl",
+      resolve: {
+        parent: function() {
+          return oldParent;
+        }
+      }
+    });
+
+    modalInstance.result.then(
+      function(newParent) {
+        var item = null;
+
+        backend.getItem(shallowItem.path).then(
+          function(success) {
+            item = success.data;
+            item.path = newParent + "/" + item.itemName;
+
+            return backend.createItem(item);
+          }
+        ).then(
+          function(success) {
+            item.path = oldParent + "/" + item.itemName;
+
+            return backend.deleteItem(item.path);
+          }
+        ).then(
+          function(success) {
+            _loadTree();
+            self.state = self.ST_OTHER;
+
+            $rootScope.$broadcast("notification", notificationTypes.SUCCESS, "Operation successful");
+          },
+          function(err) {
+            $rootScope.$broadcast("notification", notificationTypes.ERROR, "Server error", err);
+          }
+        );
+      },
+      function() {}
+    );
   };
 
   //===========================================
   // onRenameItemClick
   //===========================================
-  self.onRenameItemClick = function(item) {
-    console.log("Renaming item " + item.itemName + " at " + item.path);
+  self.onRenameItemClick = function(shallowItem) {
+    var oldName = shallowItem.itemName;
+    var parent = shallowItem.path.substr(0, shallowItem.path.lastIndexOf("/"));
+
+    var modalInstance = $modal.open({
+      templateUrl: "templates/partials/editor/itemRenameModal.html",
+      controller: "ItemRenameModalCtrl as ctrl",
+      resolve: {
+        itemName: function() {
+          return shallowItem.itemName;
+        }
+      }
+    });
+
+    modalInstance.result.then(
+      function(newName) {
+        var item = null;
+
+        backend.getItem(shallowItem.path).then(
+          function(success) {
+            item = success.data;
+            item.itemName = newName;
+            item.path = parent + "/" + newName;
+
+            return backend.createItem(item);
+          }
+        ).then(
+          function(success) {
+            item.itemName = oldName;
+            item.path = parent + "/" + oldName;
+
+            return backend.deleteItem(item.path);
+          }
+        ).then(
+          function(success) {
+            _loadTree();
+            self.state = self.ST_OTHER;
+
+            $rootScope.$broadcast("notification", notificationTypes.SUCCESS, "Operation successful");
+          },
+          function(err) {
+            $rootScope.$broadcast("notification", notificationTypes.ERROR, "Server error", err);
+          }
+        );
+      },
+      function() {}
+    );
   };
 
   //===========================================
@@ -298,12 +428,10 @@ function(layout, backend, $modal, $rootScope, $timeout, notificationTypes) {
       function(success) {
         self.type = success.data;
 
-        self.item = new rl.Item();
+        self.item = new rl.Item(self.type);
         self.item.path = item.path;
         self.item.typeName = typeName;
         self.state = self.ST_CREATE_NEW;
-
-        $rootScope.$broadcast("notification", notificationTypes.SUCCESS, "Operation successful");
       },
       function(err) {
         $rootScope.$broadcast("notification", notificationTypes.ERROR, "Server error", err);

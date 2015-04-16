@@ -26,7 +26,7 @@ import javax.servlet.ServletException;
 @Path("/repository/types")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface RcType {
+public interface RcTypes {
   /**
   * Retrieve the full list of type names
   */

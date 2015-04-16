@@ -22,8 +22,11 @@ public class DateParser extends FieldParser {
   public Object parse(String str, List<RlJcrParserParam> paramList) throws InvalidItemException {
     Map<String, String> params = paramsAsMap(paramList);
 
+    
     String dateFormat = params.get("dateFormat");
-    dateFormat = dateFormat != null ? dateFormat : "dd/MM/yyyy HH:mm";
+    if (dateFormat == null) {
+      dateFormat = "dd/MM/yyyy HH:mm";
+    }
 
     try {
       Calendar calendar = Calendar.getInstance();
@@ -32,7 +35,7 @@ public class DateParser extends FieldParser {
 
       return calendar;
     }
-    catch (ParseException ex) {
+    catch (Exception ex) {
       throw new InvalidItemException("Error parsing string '" + str + "' into Calendar", ex);
     }
   }

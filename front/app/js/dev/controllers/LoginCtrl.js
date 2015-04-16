@@ -6,15 +6,17 @@
 // Copyright Rob Jinman 2015
 
 angular.module("Controllers").controller("LoginCtrl", [
-"layout", "session", "$location",
-function(layout, session, $location) {
+"layout", "session", "$location", "$rootScope", "notificationTypes",
+function(layout, session, $location, $rootScope, notificationTypes) {
   var self = this;
 
   layout.bodyClass = "login-body";
+  layout.navpath = [
+    { href: "/#/index", title: "CMS Home" }
+  ];
 
   self.username = "";
   self.password = "";
-  self.errorMessage = "";
 
   self.login = function() {
     session.authenticate(self.username, self.password).then(
@@ -22,7 +24,8 @@ function(layout, session, $location) {
         $location.path("/index");
       },
       function(err) {
-        self.errorMessage = "Authentication failed";
+        self.password = "";
+        $rootScope.$broadcast("notification", notificationTypes.ERROR, "Authentication Failed", err);
       }
     );
   };

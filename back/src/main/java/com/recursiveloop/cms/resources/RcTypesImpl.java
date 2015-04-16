@@ -25,8 +25,8 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 
-public class RcTypeImpl implements RcType {
-  private final static Logger m_logger = Logger.getLogger(RcTypeImpl.class.getName());
+public class RcTypesImpl implements RcTypes {
+  private final static Logger m_logger = Logger.getLogger(RcTypesImpl.class.getName());
 
   @Inject
   JcrDao m_dao;

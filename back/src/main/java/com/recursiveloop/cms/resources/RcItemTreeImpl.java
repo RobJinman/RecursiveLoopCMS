@@ -11,7 +11,6 @@ package com.recursiveloop.cms.resources;
 import com.recursiveloop.cms.JcrDao;
 import com.recursiveloop.cms.ShallowItem;
 import com.recursiveloop.cms.StringItem;
-import com.recursiveloop.cms.models.MUploadForm;
 import javax.json.JsonObject;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -21,8 +20,8 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 
-public class RcItemImpl implements RcItem {
-  private final static Logger m_logger = Logger.getLogger(RcItemImpl.class.getName());
+public class RcItemTreeImpl implements RcItemTree {
+  private final static Logger m_logger = Logger.getLogger(RcItemTreeImpl.class.getName());
 
   @Inject
   JcrDao m_dao;
@@ -77,32 +76,6 @@ public class RcItemImpl implements RcItem {
     }
     catch (Exception ex) {
       m_logger.log(Level.WARNING, "Error deleting item", ex);
-      throw ex;
-    }
-
-    return Response.ok().build();
-  }
-/*
-  @Override
-  public Response insertField(String path, String field) throws Exception {
-    // TODO
-    return Response.ok().build();
-  }
-*/
-  @Override
-  public Response updateField(String path, String field) throws Exception {
-    // TODO
-    return Response.ok().build();
-  }
-
-  @Override
-  public Response uploadFile(String path, MUploadForm form) throws Exception {
-    try {
-      ByteArrayInputStream stream = new ByteArrayInputStream(form.getFileData());
-      m_dao.insertNewBinaryField(path, form.getFieldName(), stream);
-    }
-    catch (Exception ex) {
-      m_logger.log(Level.WARNING, "Error inserting binary field", ex);
       throw ex;
     }
 

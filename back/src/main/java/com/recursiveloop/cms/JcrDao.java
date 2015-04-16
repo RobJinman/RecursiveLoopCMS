@@ -119,6 +119,10 @@ public class JcrDao {
     m_session.logout();
   }
 
+  public Binary createBinary(InputStream stream) throws RepositoryException {
+    return m_session.getValueFactory().createBinary(stream);
+  }
+
   @Lock(LockType.READ)
   public ShallowItem getShallowItemTree() {
     return m_itemRoot;
@@ -180,21 +184,6 @@ public class JcrDao {
     }
 
     return type;
-  }
-
-  @Lock(LockType.WRITE)
-  public void insertNewBinaryField(String itemPath, String fieldName, InputStream data)
-    throws RepositoryException, NoSuchItemException {
-
-    if (m_session.nodeExists(itemPath)) {
-      Node node = m_session.getNode(itemPath);
-      Binary bin = m_session.getValueFactory().createBinary(data);
-
-      node.setProperty(fieldName, bin);
-    }
-    else {
-      throw new NoSuchItemException(itemPath);
-    }
   }
 
   /**

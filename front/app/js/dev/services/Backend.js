@@ -221,8 +221,6 @@ rl.Backend = function($http, url) {
   // insertField
   //===========================================
   this.insertField = function(typeName, field) {
-    console.log(field);
-
     var config = {
       method: "POST",
       url: _url + "/repository/types/" + encodeURIComponent(typeName) + "/fields",

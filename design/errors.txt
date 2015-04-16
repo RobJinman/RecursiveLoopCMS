@@ -1,0 +1,103 @@
+Read:       JCR node -> Binary item
+Write:      Binary item -> JCR node
+Parse:      String item -> Binary item
+Stringify:  Binary item -> String item
+Marshal:    String item -> JSON
+Unmarshal:  JSON -> String item
+
+ACTIONS (by resource)
+  Repository
+    - getJcrTypeNames
+  Session
+    - create
+      - AuthenticationFailureException
+        - 401
+    - get
+      - NoSuchResourceException
+        - 404 No session exists
+    - delete
+      - NoSuchResourceException
+        - 404 No session exists
+  ItemTree
+    - get
+    - getSubtree
+      - NoSuchResourceException
+        - 404 Node doesn't exist
+    - getItem
+      - NoSuchResourceException
+        - 404 Node doesn't exist
+    - insertItem
+    - updateItem
+      - NoSuchResourceException
+        - 404 Node doesn't exist
+    - deleteItem
+      - NoSuchResourceException
+        - 404 Node doesn't exist
+  Types
+    - getNames
+    - getType
+      - NoSuchResourceException
+        - 404 Node doesn't exist
+    - insertType
+    - deleteType
+      - NoSuchResourceException
+        - 404 Node doesn't exist
+    - updateField
+      - NoSuchResourceException
+        - 404 Node doesn't exist
+    - insertField
+    - deleteField
+      - NoSuchResourceException
+        - 404 Node doesn't exist
+  All resources
+    - All actions
+      - 403 Not authorised
+      - 400 Syntactically invalid request
+      - 404 Nonexistent sub-resource
+      - 500
+404 - No such resource
+403 - No such method on resource
+
+ITEM PROCESSING PHASES
+  Read
+    ReadException
+      - 500 Failure to pull data from repo into native Java types (represented by BinaryItem). This should never happen.
+  Write
+    WriteException
+      - 500 Failure to write data to repo from native Java types (represented by BinaryItem). This should never happen.
+  Parse
+    ParseException
+      - 422 Item data is not in recognised or parsable format according to parser params (or perhaps invalid parser params).
+    NoSuchTypeException
+      - 422 Item references a nonexistent entity (a Type that doesn't exist).
+  Stringify
+    StringifyException
+      - 409 The parser had to fall back on defaults due to an invalid or missing Type. The message body will contain the best attempt.
+  Marshal
+    MarshalException
+      - 500
+  Unmarshal
+    UnmarshalException
+      - 400 Malformed JSON (syntax error)
+      - 422 Missing JSON field
+
+TYPE PROCESSING PHASES
+  Read
+    ReadException
+      - 500
+  Write
+    WriteException
+      - 422
+  Marshal
+    MarshalException
+      - 500
+  Unmarshal
+    UnmarshalException
+      - 400 Malformed JSON (syntax error)
+      - 422 Missing JSON field
+
+400 - Bad request
+403 - Forbidden
+409 - Conflict
+422 - Unprocessable entity
+500 - Internal server error

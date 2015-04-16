@@ -5,7 +5,7 @@
 // Copyright Recursive Loop Ltd 2015
 // Copyright Rob Jinman 2015
 
-angular.module("Converters").directive("integer", function() {
+angular.module("Converters").directive("rlInteger", function() {
   function link($scope, $element, $attr, ngModel) {
     function toInteger(text) {
       return parseInt(text);
@@ -13,7 +13,7 @@ angular.module("Converters").directive("integer", function() {
 
     function toString(value) {
       return value.toString();
-    };
+    }
 
     ngModel.$parsers.push(toInteger);
     ngModel.$formatters.push(toString);

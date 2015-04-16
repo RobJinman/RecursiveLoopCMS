@@ -1,7 +1,13 @@
 <label class="col-sm-1 control-label" for="inp-{{ field.fieldName }}">{{ field.fieldName }}</label>
 <div class="col-sm-11">
   <p class="input-group">
-    <input type="text" class="form-control" data-datepicker-popup="{{ format }}" data-is-open="opened" data-ng-required="true" data-close-text="Close" data-ng-model="dt" data-ng-change="onChange()">
+    <input type="text" class="form-control"
+    data-datepicker-popup="{{ format }}"
+    data-is-open="opened"
+    data-ng-required="true"
+    data-close-text="Close"
+    data-ng-model="dt"
+    data-ng-change="onChange()">
 
     <span class="input-group-btn">
       <button type="button" class="btn btn-default" data-ng-click="open($event)">

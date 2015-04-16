@@ -44,13 +44,13 @@
           <div class="form-group">
             <label class="col-sm-1 control-label" for="inp-type">Type</label>
             <div class="col-sm-11">
-              <select id="inp-type" class="form-control" data-integer data-ng-model="ctrl.jcrTypes.byValue[ctrl.current.field.type]">
-                <option value="binary">Binary</option>
-                <option value="boolean">Boolean</option>
-                <option value="date">Date</option>
-                <option value="double">Double</option>
-                <option value="long">Long</option>
-                <option value="string">String</option>
+              <select id="inp-type" class="form-control" data-rl-integer data-ng-model="ctrl.current.field.type">
+                <option value="{{ ctrl.jcrTypes.byName['binary'] }}">Binary</option>
+                <option value="{{ ctrl.jcrTypes.byName['boolean'] }}">Boolean</option>
+                <option value="{{ ctrl.jcrTypes.byName['date'] }}">Date</option>
+                <option value="{{ ctrl.jcrTypes.byName['double'] }}">Double</option>
+                <option value="{{ ctrl.jcrTypes.byName['long'] }}">Long</option>
+                <option value="{{ ctrl.jcrTypes.byName['string'] }}">String</option>
               </select>
             </div>
           </div>
@@ -64,8 +64,9 @@
                 <option value="spinbox">Spinbox</option>
                 <option value="checkbox">Checkbox</option>
                 <option value="selector">Selector</option>
-                <option value="radiobuttons">Radio Buttons</option>
-                <option value="wysiwyg">WYSIWYG Editor</option>
+                <option value="radiobuttons">Radio buttons</option>
+                <option value="fileUpload">File upload</option>
+                <option value="wysiwyg">WYSIWYG editor</option>
               </select>
             </div>
           </div>
@@ -102,6 +103,15 @@
             <label class="col-sm-1 control-label" for="inp-wp-date-format">Date Format</label>
             <div class="col-sm-11">
               <input class="form-control" id="inp-wp-date-format" type="text" data-ng-model="ctrl.current.field.widgetParams.dateFormat">
+            </div>
+          </div>
+          <div data-ng-switch-when="fileUpload" class="form-group">
+            <label class="col-sm-1 control-label" for="inp-wp-date-format">MIME Type</label>
+            <div class="col-sm-11">
+              <select class="form-control" id="inp-wp-mime-type" data-ng-model="ctrl.current.field.widgetParams.mimeType">
+                <option value="image/png">image/png</option>
+                <option value="other">other</option>
+              </select>
             </div>
           </div>
           <!-- ... -->

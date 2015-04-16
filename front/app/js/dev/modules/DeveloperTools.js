@@ -150,11 +150,13 @@ function(layout, backend, $modal, notificationTypes, $rootScope) {
   // onNewTypeClick
   //===========================================
   self.onNewTypeClick = function() {
-    backend.createType(self.newTypeName).then(
+    var typeName = self.newTypeName;
+
+    backend.createType(typeName).then(
       function(success) {
-        self.current.type = success.data;
-        self.onTypeSelection(self.current.type.typeName);
         _loadSidebar();
+
+        self.onTypeSelection(typeName);
         self.newTypeName = "";
 
         $rootScope.$broadcast("notification", notificationTypes.SUCCESS, "Operation successful");
