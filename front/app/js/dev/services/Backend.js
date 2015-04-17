@@ -117,7 +117,42 @@ rl.Backend = function($http, url) {
   this.updateItem = function(item) {
     var config = {
       method: "PUT",
-      url: _url + "/repository/itemTree",
+      url: _url + "/repository/itemTree/item/" + encodeURIComponent(item.path),
+      data: item
+    };
+
+    return $http(config);
+  };
+
+  //===========================================
+  // moveItem
+  //===========================================
+  this.moveItem = function(oldPath, item) {
+    console.log(oldPath);
+    console.log(item);
+
+    var config = {
+      method: "PUT",
+      url: _url + "/repository/itemTree/item/" + encodeURIComponent(oldPath),
+      data: item
+    };
+
+    return $http(config);
+  };
+
+  //===========================================
+  // renameItem
+  //===========================================
+  this.renameItem = function(oldName, item) {
+    var parent = item.path.substr(0, item.path.lastIndexOf("/"));
+    var oldPath = parent + "/" + oldName;
+
+    console.log(oldPath);
+    console.log(item);
+
+    var config = {
+      method: "PUT",
+      url: _url + "/repository/itemTree/item/" + encodeURIComponent(oldPath),
       data: item
     };
 

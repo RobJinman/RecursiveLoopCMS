@@ -318,14 +318,12 @@ function(layout, backend, $modal, $rootScope, $timeout, notificationTypes) {
   // onMoveItemClick
   //===========================================
   self.onMoveItemClick = function(shallowItem) {
-    var oldParent = shallowItem.path.substr(0, shallowItem.path.lastIndexOf("/"));
-
     var modalInstance = $modal.open({
       templateUrl: "templates/partials/editor/itemMoveModal.html",
       controller: "ItemMoveModalCtrl as ctrl",
       resolve: {
         parent: function() {
-          return oldParent;
+          return shallowItem.path.substr(0, shallowItem.path.lastIndexOf("/"));
         }
       }
     });
@@ -337,15 +335,11 @@ function(layout, backend, $modal, $rootScope, $timeout, notificationTypes) {
         backend.getItem(shallowItem.path).then(
           function(success) {
             item = success.data;
+
+            var oldPath = item.path;
             item.path = newParent + "/" + item.itemName;
 
-            return backend.createItem(item);
-          }
-        ).then(
-          function(success) {
-            item.path = oldParent + "/" + item.itemName;
-
-            return backend.deleteItem(item.path);
+            return backend.moveItem(oldPath, item);
           }
         ).then(
           function(success) {
@@ -367,9 +361,6 @@ function(layout, backend, $modal, $rootScope, $timeout, notificationTypes) {
   // onRenameItemClick
   //===========================================
   self.onRenameItemClick = function(shallowItem) {
-    var oldName = shallowItem.itemName;
-    var parent = shallowItem.path.substr(0, shallowItem.path.lastIndexOf("/"));
-
     var modalInstance = $modal.open({
       templateUrl: "templates/partials/editor/itemRenameModal.html",
       controller: "ItemRenameModalCtrl as ctrl",
@@ -387,17 +378,14 @@ function(layout, backend, $modal, $rootScope, $timeout, notificationTypes) {
         backend.getItem(shallowItem.path).then(
           function(success) {
             item = success.data;
+
+            var oldName = item.itemName;
+            var parent = item.path.substr(0, item.path.lastIndexOf("/"));
+
             item.itemName = newName;
             item.path = parent + "/" + newName;
 
-            return backend.createItem(item);
-          }
-        ).then(
-          function(success) {
-            item.itemName = oldName;
-            item.path = parent + "/" + oldName;
-
-            return backend.deleteItem(item.path);
+            return backend.renameItem(oldName, item);
           }
         ).then(
           function(success) {

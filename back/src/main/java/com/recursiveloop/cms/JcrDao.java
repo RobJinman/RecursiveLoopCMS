@@ -186,45 +186,7 @@ public class JcrDao {
     throws RepositoryException, NoSuchTypeException, ParseException, WriteException {
 
     try {
-      m_logger.log(Level.INFO, "Inserting new item");
-
-      String path = item.getPath();
-
-      Node root = m_session.getRootNode();
-
-      if (item.getTypeName().equals("folder")) {
-        createNodeIfNotExists(root, path, "rlt:folder");
-      }
-      else {
-        createNodeIfNotExists(root, path, "rlt:item");
-
-        ItemType type = m_typeMap.get(item.getTypeName());
-        if (type == null) {
-          throw new NoSuchTypeException(item.getTypeName());
-        }
-
-        Node node = m_session.getNode(path);
-
-        BinaryItem binItem = m_parser.parse(item, type);
-        binItem.writeTo(node);
-      }
-
-
-      // Retain a shallow copy of the new item
-
-      ShallowItem shallowCopy = new ShallowItem(item);
-
-      int i = path.lastIndexOf("/");
-      if (i != -1) {
-        String parent = path.substring(0, i);
-        ShallowItem par = m_itemMap.get(parent);
-        if (par != null) {
-          par.addChild(shallowCopy);
-        }
-      }
-      m_itemMap.put(path, shallowCopy);
-
-
+      _insertNewItem(item);
       m_session.save();
     }
     catch (Exception ex) {
@@ -238,28 +200,12 @@ public class JcrDao {
   * Verifies that the item to be updated actually exists
   */
   @Lock(LockType.WRITE)
-  public void updateItem(StringItem item)
-    throws RepositoryException, NoSuchItemException, NoSuchTypeException, ParseException, WriteException {
+  public void updateItem(StringItem item) throws
+    RepositoryException, NoSuchItemException, NoSuchTypeException,
+    ParseException, WriteException {
 
     try {
-      m_logger.log(Level.INFO, "Updating item");
-
-      String path = item.getPath();
-
-      if (!m_session.nodeExists(item.getPath())) {
-        throw new NoSuchItemException(item.getPath());
-      }
-
-      ItemType type = m_typeMap.get(item.getTypeName());
-      if (type == null) {
-        throw new NoSuchTypeException(item.getTypeName());
-      }
-
-      Node node = m_session.getNode(path);
-
-      BinaryItem binItem = m_parser.parse(item, type);
-      binItem.writeTo(node);
-
+      _updateItem(item);
       m_session.save();
     }
     catch (Exception ex) {
@@ -270,25 +216,24 @@ public class JcrDao {
   }
 
   @Lock(LockType.WRITE)
+  public void moveItem(String path, StringItem item)
+    throws RepositoryException, NoSuchItemException, ReadException {
+
+    try {
+      _moveItem(path, item);
+      m_session.save();
+    }
+    catch (Exception ex) {
+      m_logger.log(Level.WARNING, "Error moving item", ex);
+      m_session.refresh(false);
+      throw ex;
+    }
+  }
+
+  @Lock(LockType.WRITE)
   public void deleteItem(String path) throws RepositoryException, NoSuchItemException {
     try {
-      if (!m_session.nodeExists(path)) {
-        throw new NoSuchItemException(path);
-      }
-
-      ShallowItem item = m_itemMap.get(path);
-
-      int i = path.lastIndexOf("/");
-      if (i != -1) {
-        String parent = path.substring(0, i);
-        ShallowItem par = m_itemMap.get(parent);
-        if (par != null) {
-          par.removeChild(item);
-        }
-      }
-      m_itemMap.remove(path);
-
-      m_session.removeItem(path);
+      _deleteItem(path);
       m_session.save();
     }
     catch (Exception ex) {
@@ -301,13 +246,7 @@ public class JcrDao {
   @Lock(LockType.WRITE)
   public void insertNewType(ItemType type) throws RepositoryException {
     try {
-      RlJcrItemType jcrType = type.getType();
-      jcrType.setPath("/rl:types/" + type.getName());
-
-      m_ocm.insert(jcrType);
-
-      m_typeMap.put(type.getName(), type);
-
+      _insertNewType(type);
       m_session.save();
     }
     catch (Exception ex) {
@@ -319,22 +258,22 @@ public class JcrDao {
 
   @Lock(LockType.WRITE)
   public void updateType(ItemType type) throws RepositoryException, NoSuchTypeException {
-    deleteType(type.getName()); // TODO
-    insertNewType(type);
+    try {
+      _deleteType(type.getName());
+      _insertNewType(type);
+      m_session.save();
+    }
+    catch (Exception ex) {
+      m_logger.log(Level.WARNING, "Error inserting new type", ex);
+      m_session.refresh(false);
+      throw ex;
+    }
   }
 
   @Lock(LockType.WRITE)
   public void deleteType(String typeName) throws RepositoryException, NoSuchTypeException {
     try {
-      ItemType type = m_typeMap.get(typeName);
-      if (type == null) {
-        throw new NoSuchTypeException(typeName);
-      }
-
-      m_session.removeItem(type.getPath());
-
-      m_typeMap.remove(typeName);
-
+      _deleteType(typeName);
       m_session.save();
     }
     catch (Exception ex) {
@@ -349,23 +288,7 @@ public class JcrDao {
     throws RepositoryException, NoSuchTypeException, NoSuchFieldException {
 
     try {
-      String fieldPath = "";
-
-      ItemType type = m_typeMap.get(typeName);
-      if (type == null) {
-        throw new NoSuchTypeException(typeName);
-      }
-
-      RlJcrFieldType field = type.getField(fieldName);
-      if (field == null) {
-        throw new NoSuchFieldException(typeName, fieldName);
-      }
-
-      fieldPath = field.getPath();
-      m_session.removeItem(fieldPath);
-
-      type.removeField(fieldName);
-
+      _deleteField(typeName, fieldName);
       m_session.save();
     }
     catch (Exception ex) {
@@ -373,6 +296,145 @@ public class JcrDao {
       m_session.refresh(false);
       throw ex;
     }
+  }
+
+  private void _insertNewItem(StringItem item)
+    throws RepositoryException, NoSuchTypeException, ParseException, WriteException {
+
+    m_logger.log(Level.INFO, "Inserting new item");
+
+    String path = item.getPath();
+
+    Node root = m_session.getRootNode();
+
+    if (item.getTypeName().equals("folder")) {
+      createNodeIfNotExists(root, path, "rlt:folder");
+    }
+    else {
+      createNodeIfNotExists(root, path, "rlt:item");
+
+      ItemType type = m_typeMap.get(item.getTypeName());
+      if (type == null) {
+        throw new NoSuchTypeException(item.getTypeName());
+      }
+
+      Node node = m_session.getNode(path);
+
+      BinaryItem binItem = m_parser.parse(item, type);
+      binItem.writeTo(node);
+    }
+
+
+    // Retain a shallow copy of the new item
+
+    ShallowItem shallowCopy = new ShallowItem(item);
+
+    int i = path.lastIndexOf("/");
+    if (i != -1) {
+      String parent = path.substring(0, i);
+      ShallowItem par = m_itemMap.get(parent);
+      if (par != null) {
+        par.addChild(shallowCopy);
+      }
+    }
+    m_itemMap.put(path, shallowCopy);
+  }
+
+  private void _updateItem(StringItem item) throws
+    RepositoryException, NoSuchItemException, NoSuchTypeException,
+    ParseException, WriteException {
+
+    m_logger.log(Level.INFO, "Updating item at '" + item.getPath() + "'");
+
+    if (!m_session.nodeExists(item.getPath())) {
+      throw new NoSuchItemException(item.getPath());
+    }
+
+    ItemType type = m_typeMap.get(item.getTypeName());
+    if (type == null) {
+      throw new NoSuchTypeException(item.getTypeName());
+    }
+
+    Node node = m_session.getNode(item.getPath());
+
+    BinaryItem binItem = m_parser.parse(item, type);
+    binItem.writeTo(node);
+  }
+
+  private void _moveItem(String path, StringItem item)
+    throws RepositoryException, NoSuchItemException, ReadException {
+
+    m_logger.log(Level.INFO, "Moving item from '" + path + "' to '" + item.getPath() + "'");
+
+    if (!m_session.nodeExists(path)) {
+      throw new NoSuchItemException(path);
+    }
+
+    if (!item.getPath().equals(path)) {
+      m_session.move(path, item.getPath());
+      loadShallowItems();
+    }
+  }
+
+  private void _deleteItem(String path) throws RepositoryException, NoSuchItemException {
+    if (!m_session.nodeExists(path)) {
+      throw new NoSuchItemException(path);
+    }
+
+    ShallowItem item = m_itemMap.get(path);
+
+    int i = path.lastIndexOf("/");
+    if (i != -1) {
+      String parent = path.substring(0, i);
+      ShallowItem par = m_itemMap.get(parent);
+      if (par != null) {
+        par.removeChild(item);
+      }
+    }
+    m_itemMap.remove(path);
+
+    m_session.removeItem(path);
+  }
+
+  private void _insertNewType(ItemType type) throws RepositoryException {
+    RlJcrItemType jcrType = type.getType();
+    jcrType.setPath("/rl:types/" + type.getName());
+
+    m_ocm.insert(jcrType);
+
+    m_typeMap.put(type.getName(), type);
+  }
+
+  private void _deleteType(String typeName) throws RepositoryException, NoSuchTypeException {
+    ItemType type = m_typeMap.get(typeName);
+    if (type == null) {
+      throw new NoSuchTypeException(typeName);
+    }
+
+    m_session.removeItem(type.getPath());
+
+    m_typeMap.remove(typeName);
+  }
+
+  private void _deleteField(String typeName, String fieldName)
+    throws RepositoryException, NoSuchTypeException, NoSuchFieldException {
+
+    String fieldPath = "";
+
+    ItemType type = m_typeMap.get(typeName);
+    if (type == null) {
+      throw new NoSuchTypeException(typeName);
+    }
+
+    RlJcrFieldType field = type.getField(fieldName);
+    if (field == null) {
+      throw new NoSuchFieldException(typeName, fieldName);
+    }
+
+    fieldPath = field.getPath();
+    m_session.removeItem(fieldPath);
+
+    type.removeField(fieldName);
   }
 
   private void loadShallowItems() throws RepositoryException, ReadException {

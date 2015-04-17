@@ -97,13 +97,19 @@ public class RcItemTreeImpl implements RcItemTree {
   }
 
   @Override
-  public Response updateItem(JsonObject json) throws
+  public Response updateItem(String path, JsonObject json) throws
     UnmarshalException, NoSuchResourceException, RepositoryException,
-    MiscException, ParseException, WriteException {
+    MiscException, ParseException, ReadException, WriteException {
 
     try {
       StringItem item = new StringItem(json);
-      m_dao.updateItem(item);
+
+      if (item.getPath().equals(path)) {
+        m_dao.updateItem(item);
+      }
+      else {
+        m_dao.moveItem(path, item);
+      }
 
       return Response.ok().build();
     }

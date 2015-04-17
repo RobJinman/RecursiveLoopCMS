@@ -47,14 +47,16 @@ public interface RcTypes {
   * Insert new type
   */
   @POST
-  public Response insertType(JsonObject type) throws UnmarshalException, RepositoryException;
+  public Response insertType(JsonObject type)
+    throws UnmarshalException, RepositoryException;
 
   /**
   * Delete type by name
   */
   @DELETE
   @Path("{name}")
-  public Response deleteType(@PathParam("name") String name) throws RepositoryException, NoSuchResourceException;
+  public Response deleteType(@PathParam("name") String name)
+    throws RepositoryException, NoSuchResourceException;
 
   /**
   * Update a field on specified type
@@ -69,12 +71,14 @@ public interface RcTypes {
   */
   @POST
   @Path("{name}/fields")
-  public Response insertField(@PathParam("name") String name, JsonObject json) throws RepositoryException, NoSuchResourceException;
+  public Response insertField(@PathParam("name") String name, JsonObject json)
+    throws RepositoryException, NoSuchResourceException;
 
   /**
   * Delete a new field on specified type
   */
   @DELETE
   @Path("{name}/fields/{field}")
-  public Response deleteField(@PathParam("name") String name, @PathParam("field") String field) throws RepositoryException, NoSuchResourceException;
+  public Response deleteField(@PathParam("name") String name, @PathParam("field") String field)
+    throws RepositoryException, NoSuchResourceException;
 }

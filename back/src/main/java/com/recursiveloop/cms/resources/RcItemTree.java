@@ -55,29 +55,32 @@ public interface RcItemTree {
   */
   @GET
   @Path("item/{path}")
-  public StringItem getItem(@PathParam("path") String path) throws
-    RepositoryException, NoSuchResourceException, MiscException, ReadException, StringifyException;
+  public StringItem getItem(@PathParam("path") String path)
+    throws RepositoryException, NoSuchResourceException, MiscException, ReadException,
+    StringifyException;
 
   /**
   * Insert a new item at the location specified by the item's path property
   */
   @POST
-  public Response insertItem(JsonObject item) throws
-    UnmarshalException, RepositoryException, MiscException, ParseException, WriteException;
+  public Response insertItem(JsonObject item)
+    throws UnmarshalException, RepositoryException, MiscException, ParseException,
+    WriteException;
 
   /**
-  * Update an existing item at the location specified by the item's path property
+  * Update an existing item
   */
-  // TODO: Don't rely on path property
   @PUT
-  public Response updateItem(JsonObject item) throws
-    UnmarshalException, NoSuchResourceException, RepositoryException, MiscException, ParseException, WriteException;
+  @Path("item/{path}")
+  public Response updateItem(@PathParam("path") String path, JsonObject item)
+    throws UnmarshalException, NoSuchResourceException, RepositoryException,
+    MiscException, ParseException, ReadException, WriteException;
 
   /**
   * Delete the subtree at the specified path
   */
   @DELETE
   @Path("item/{path}")
-  public Response deleteItem(@PathParam("path") String path) throws
-    NoSuchResourceException, RepositoryException;
+  public Response deleteItem(@PathParam("path") String path)
+    throws NoSuchResourceException, RepositoryException;
 }
