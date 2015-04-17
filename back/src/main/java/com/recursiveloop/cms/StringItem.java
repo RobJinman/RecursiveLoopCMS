@@ -8,7 +8,7 @@
 
 package com.recursiveloop.cms;
 
-import com.recursiveloop.cms.exceptions.InvalidItemException;
+import com.recursiveloop.cms.exceptions.UnmarshalException;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 import javax.xml.bind.annotation.XmlElement;
@@ -32,7 +32,7 @@ public class StringItem extends ShallowItem {
   * JSON object should not contain child data. It is a flat
   * list of key-value pairs.
   */
-  public StringItem(JsonObject json) throws InvalidItemException {
+  public StringItem(JsonObject json) throws UnmarshalException {
     super(json);
 
     m_data = new HashMap<String, String>();
@@ -46,8 +46,8 @@ public class StringItem extends ShallowItem {
         m_data.put(pair.getKey(), data.getString(pair.getKey()));
       }
     }
-    catch (NullPointerException|ClassCastException ex) {
-      throw new InvalidItemException("Error constructing item from JSON object; property missing?", ex);
+    catch (NullPointerException | ClassCastException ex) {
+      throw new UnmarshalException("Error constructing item from JSON object; property missing?", ex);
     }
   }
 

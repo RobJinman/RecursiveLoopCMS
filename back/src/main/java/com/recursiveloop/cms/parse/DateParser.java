@@ -8,18 +8,18 @@
 
 package com.recursiveloop.cms.parse;
 
-import com.recursiveloop.cms.exceptions.InvalidItemException;
+import com.recursiveloop.cms.exceptions.ParseException;
+import com.recursiveloop.cms.exceptions.StringifyException;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
 import java.util.List;
 import java.util.Map;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 
 public class DateParser extends FieldParser {
   @Override
-  public Object parse(String str, List<RlJcrParserParam> paramList) throws InvalidItemException {
+  public Object parse(String str, List<RlJcrParserParam> paramList) throws ParseException {
     Map<String, String> params = paramsAsMap(paramList);
 
     
@@ -36,12 +36,12 @@ public class DateParser extends FieldParser {
       return calendar;
     }
     catch (Exception ex) {
-      throw new InvalidItemException("Error parsing string '" + str + "' into Calendar", ex);
+      throw new ParseException("Error parsing string '" + str + "' into Calendar", ex);
     }
   }
 
   @Override
-  public String stringify(Object obj, List<RlJcrParserParam> paramList) throws InvalidItemException {
+  public String stringify(Object obj, List<RlJcrParserParam> paramList) throws StringifyException {
     if (obj == null) {
       return "";
     }

@@ -11,18 +11,18 @@ package com.recursiveloop.cms.exceptions;
 import java.io.Serializable;
 
 
-public class InvalidItemException extends Exception implements Serializable {
+public class NotAuthorisedException extends Exception implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public InvalidItemException() {
+  public NotAuthorisedException() {
     super();
   }
 
-  public InvalidItemException(String msg) {
+  public NotAuthorisedException(String msg) {
     super(msg);
   }
 
-  public InvalidItemException(String msg, Exception e) {
+  public NotAuthorisedException(String msg, Exception e) {
     super(msg, e);
   }
 }

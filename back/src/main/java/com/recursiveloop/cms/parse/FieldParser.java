@@ -8,7 +8,8 @@
 
 package com.recursiveloop.cms.parse;
 
-import com.recursiveloop.cms.exceptions.InvalidItemException;
+import com.recursiveloop.cms.exceptions.ParseException;
+import com.recursiveloop.cms.exceptions.StringifyException;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
 import java.util.List;
 import java.util.Map;
@@ -16,12 +17,12 @@ import java.util.HashMap;
 
 
 public abstract class FieldParser {
-  public abstract Object parse(String str, List<RlJcrParserParam> paramList) throws InvalidItemException;
+  public abstract Object parse(String str, List<RlJcrParserParam> paramList) throws ParseException;
 
   /**
   * Must handle null values appropriately (e.g. return empty string)
   */
-  public abstract String stringify(Object obj, List<RlJcrParserParam> paramList) throws InvalidItemException;
+  public abstract String stringify(Object obj, List<RlJcrParserParam> paramList) throws StringifyException;
 
   protected Map<String, String> paramsAsMap(List<RlJcrParserParam> paramList) {
     Map<String, String> map = new HashMap<String, String>();

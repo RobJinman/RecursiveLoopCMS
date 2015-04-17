@@ -8,8 +8,17 @@
 
 package com.recursiveloop.cms.resources;
 
+import com.recursiveloop.cms.exceptions.UnmarshalException;
+import com.recursiveloop.cms.exceptions.NoSuchResourceException;
+import com.recursiveloop.cms.exceptions.NoSuchItemException;
+import com.recursiveloop.cms.exceptions.ReadException;
+import com.recursiveloop.cms.exceptions.WriteException;
+import com.recursiveloop.cms.exceptions.ParseException;
+import com.recursiveloop.cms.exceptions.StringifyException;
+import com.recursiveloop.cms.exceptions.MiscException;
 import com.recursiveloop.cms.ShallowItem;
 import com.recursiveloop.cms.StringItem;
+import javax.jcr.RepositoryException;
 import javax.json.JsonObject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.GET;
@@ -32,39 +41,43 @@ public interface RcItemTree {
   * Returns the full item tree. The items do not contain any content
   */
   @GET
-  public ShallowItem get() throws Exception;
+  public ShallowItem get();
 
   /**
   * Returns the subtree at specified path. The items do not contain any content
   */
   @GET
   @Path("{path}")
-  public ShallowItem getSubtree(@PathParam("path") String path) throws Exception;
+  public ShallowItem getSubtree(@PathParam("path") String path);
 
   /**
   * Retrieves a full item (excluding its children)
   */
   @GET
   @Path("item/{path}")
-  public StringItem getItem(@PathParam("path") String path) throws Exception;
+  public StringItem getItem(@PathParam("path") String path) throws
+    RepositoryException, NoSuchResourceException, MiscException, ReadException, StringifyException;
 
   /**
   * Insert a new item at the location specified by the item's path property
   */
   @POST
-  public Response insertItem(JsonObject item) throws Exception;
+  public Response insertItem(JsonObject item) throws
+    UnmarshalException, RepositoryException, MiscException, ParseException, WriteException;
 
   /**
   * Update an existing item at the location specified by the item's path property
   */
   // TODO: Don't rely on path property
   @PUT
-  public Response updateItem(JsonObject item) throws Exception;
+  public Response updateItem(JsonObject item) throws
+    UnmarshalException, NoSuchResourceException, RepositoryException, MiscException, ParseException, WriteException;
 
   /**
   * Delete the subtree at the specified path
   */
   @DELETE
   @Path("item/{path}")
-  public Response deleteItem(@PathParam("path") String path) throws Exception;
+  public Response deleteItem(@PathParam("path") String path) throws
+    NoSuchResourceException, RepositoryException;
 }

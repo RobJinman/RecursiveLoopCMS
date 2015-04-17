@@ -8,6 +8,9 @@
 
 package com.recursiveloop.cms.resources;
 
+import com.recursiveloop.cms.exceptions.UnmarshalException;
+import com.recursiveloop.cms.exceptions.NoSuchResourceException;
+import javax.jcr.RepositoryException;
 import javax.json.JsonObject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.POST;
@@ -31,46 +34,47 @@ public interface RcTypes {
   * Retrieve the full list of type names
   */
   @GET
-  public JsonObject getNames() throws Exception;
+  public JsonObject getNames();
 
   /**
   * Retrieve type by name
   */
   @GET
   @Path("{name}")
-  public JsonObject getType(@PathParam("name") String name) throws Exception;
+  public JsonObject getType(@PathParam("name") String name);
 
   /**
   * Insert new type
   */
   @POST
-  public Response insertType(JsonObject type) throws Exception;
+  public Response insertType(JsonObject type) throws UnmarshalException, RepositoryException;
 
   /**
   * Delete type by name
   */
   @DELETE
   @Path("{name}")
-  public Response deleteType(@PathParam("name") String name) throws Exception;
+  public Response deleteType(@PathParam("name") String name) throws RepositoryException, NoSuchResourceException;
 
   /**
   * Update a field on specified type
   */
   @PUT
   @Path("{name}/fields/{field}")
-  public Response updateField(@PathParam("name") String name, @PathParam("field") String field, JsonObject json) throws Exception;
+  public Response updateField(@PathParam("name") String name, @PathParam("field") String field, JsonObject json)
+    throws RepositoryException, NoSuchResourceException;
 
   /**
   * Insert a new field on specified type
   */
   @POST
   @Path("{name}/fields")
-  public Response insertField(@PathParam("name") String name, JsonObject json) throws Exception;
+  public Response insertField(@PathParam("name") String name, JsonObject json) throws RepositoryException, NoSuchResourceException;
 
   /**
   * Delete a new field on specified type
   */
   @DELETE
   @Path("{name}/fields/{field}")
-  public Response deleteField(@PathParam("name") String name, @PathParam("field") String field) throws Exception;
+  public Response deleteField(@PathParam("name") String name, @PathParam("field") String field) throws RepositoryException, NoSuchResourceException;
 }

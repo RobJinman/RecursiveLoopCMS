@@ -15,9 +15,9 @@ import javax.ws.rs.ext.Provider;
 
 
 @Provider
-public class NotImplementedExceptionHandler implements ExceptionMapper<NotImplementedException> {
+public class NotAuthorisedExceptionHandler implements ExceptionMapper<NotAuthorisedException> {
   @Override
-  public Response toResponse(NotImplementedException ex) {
-    return Response.status(Status.NOT_IMPLEMENTED).build();
+  public Response toResponse(NotAuthorisedException ex) {
+    return Response.status(Status.FORBIDDEN).build();
   }
 }

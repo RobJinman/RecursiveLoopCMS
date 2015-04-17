@@ -8,19 +8,20 @@
 
 package com.recursiveloop.cms.parse;
 
-import com.recursiveloop.cms.exceptions.InvalidItemException;
+import com.recursiveloop.cms.exceptions.ParseException;
+import com.recursiveloop.cms.exceptions.StringifyException;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
 import java.util.List;
 
 
 public class BooleanParser extends FieldParser {
   @Override
-  public Object parse(String str, List<RlJcrParserParam> paramList) throws InvalidItemException {
+  public Object parse(String str, List<RlJcrParserParam> paramList) throws ParseException {
     return new Boolean(str);
   }
 
   @Override
-  public String stringify(Object obj, List<RlJcrParserParam> paramList) throws InvalidItemException {
+  public String stringify(Object obj, List<RlJcrParserParam> paramList) throws StringifyException {
     if (obj == null) {
       return "false";
     }

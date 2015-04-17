@@ -8,7 +8,8 @@
 
 package com.recursiveloop.cms.parse;
 
-import com.recursiveloop.cms.exceptions.InvalidItemException;
+import com.recursiveloop.cms.exceptions.ParseException;
+import com.recursiveloop.cms.exceptions.StringifyException;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
 import com.recursiveloop.cms.JcrDao;
 import javax.xml.bind.DatatypeConverter;
@@ -23,7 +24,7 @@ public class BinaryParser extends FieldParser {
   JcrDao m_dao;
 
   @Override
-  public Object parse(String str, List<RlJcrParserParam> paramList) throws InvalidItemException {
+  public Object parse(String str, List<RlJcrParserParam> paramList) throws ParseException {
     Binary bin = null;
 
     try {
@@ -33,14 +34,14 @@ public class BinaryParser extends FieldParser {
       bin = m_dao.createBinary(stream);
     }
     catch (Exception ex) {
-      throw new InvalidItemException("Error parsing binary string", ex);
+      throw new ParseException("Error parsing binary string", ex);
     }
 
     return bin;
   }
 
   @Override
-  public String stringify(Object obj, List<RlJcrParserParam> paramList) throws InvalidItemException {
+  public String stringify(Object obj, List<RlJcrParserParam> paramList) throws StringifyException {
     String str = "";
 
     try {
@@ -55,7 +56,7 @@ public class BinaryParser extends FieldParser {
       str = DatatypeConverter.printBase64Binary(bytes);
     }
     catch (Exception ex) {
-      throw new InvalidItemException("Error stringifying binary object", ex);
+      throw new StringifyException("Error stringifying binary object", ex);
     }
 
     return str;

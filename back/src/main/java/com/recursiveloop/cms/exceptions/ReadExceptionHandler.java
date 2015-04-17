@@ -15,9 +15,9 @@ import javax.ws.rs.ext.Provider;
 
 
 @Provider
-public class NoSuchFieldExceptionHandler implements ExceptionMapper<NoSuchFieldException> {
+public class ReadExceptionHandler implements ExceptionMapper<ReadException> {
   @Override
-  public Response toResponse(NoSuchFieldException ex) {
-    return Response.status(Status.CONFLICT).build();
+  public Response toResponse(ReadException ex) {
+    return Response.status(Status.INTERNAL_SERVER_ERROR).build();
   }
 }

@@ -8,6 +8,7 @@
 
 package com.recursiveloop.cms.resources;
 
+import com.recursiveloop.cms.exceptions.BadQueryStringException;
 import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -27,5 +28,5 @@ public interface RcRepository {
   */
   @GET
   @Path("jcrTypes")
-  public JsonObject getJcrTypeNames(@Context HttpServletRequest request) throws Exception;
+  public JsonObject getJcrTypeNames(@Context HttpServletRequest request) throws BadQueryStringException;
 }

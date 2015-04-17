@@ -11,10 +11,18 @@ package com.recursiveloop.cms.exceptions;
 import java.io.Serializable;
 
 
-public class AuthenticationFailureException extends Exception implements Serializable {
+public class ReadException extends Exception implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public AuthenticationFailureException() {
+  public ReadException() {
     super();
+  }
+
+  public ReadException(String msg) {
+    super(msg);
+  }
+
+  public ReadException(String msg, Exception e) {
+    super(msg, e);
   }
 }

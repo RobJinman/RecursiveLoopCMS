@@ -15,9 +15,9 @@ import javax.ws.rs.ext.Provider;
 
 
 @Provider
-public class NoSuchItemExceptionHandler implements ExceptionMapper<NoSuchItemException> {
+public class ParseExceptionHandler implements ExceptionMapper<ParseException> {
   @Override
-  public Response toResponse(NoSuchItemException ex) {
-    return Response.status(Status.CONFLICT).build();
+  public Response toResponse(ParseException ex) {
+    return Response.status(ExtStatusCode.UNPROCESSABLE_ENTITY).build();
   }
 }

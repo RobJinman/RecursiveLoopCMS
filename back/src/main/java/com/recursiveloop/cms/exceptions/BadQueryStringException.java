@@ -14,15 +14,18 @@ import java.io.Serializable;
 public class BadQueryStringException extends Exception implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public BadQueryStringException() {
-    super();
+  private String m_queryString;
+
+  public BadQueryStringException(String queryString) {
+    m_queryString = queryString;
   }
 
-  public BadQueryStringException(String msg) {
+  public BadQueryStringException(String queryString, String msg) {
     super(msg);
+    m_queryString = queryString;
   }
 
-  public BadQueryStringException(String msg, Exception e) {
-    super(msg, e);
+  public String getQueryString() {
+    return m_queryString;
   }
 }

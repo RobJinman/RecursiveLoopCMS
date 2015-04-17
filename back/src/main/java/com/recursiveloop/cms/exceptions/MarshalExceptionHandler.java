@@ -15,9 +15,9 @@ import javax.ws.rs.ext.Provider;
 
 
 @Provider
-public class InvalidTypeExceptionHandler implements ExceptionMapper<InvalidTypeException> {
+public class MarshalExceptionHandler implements ExceptionMapper<MarshalException> {
   @Override
-  public Response toResponse(InvalidTypeException ex) {
-    return Response.status(Status.BAD_REQUEST).build();
+  public Response toResponse(MarshalException ex) {
+    return Response.status(Status.INTERNAL_SERVER_ERROR).build();
   }
 }

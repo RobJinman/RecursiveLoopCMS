@@ -12,6 +12,10 @@ import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
 import com.recursiveloop.cms.JcrDao;
 import com.recursiveloop.cms.ItemType;
 import com.recursiveloop.cms.exceptions.NoSuchFieldException;
+import com.recursiveloop.cms.exceptions.NoSuchTypeException;
+import com.recursiveloop.cms.exceptions.NoSuchResourceException;
+import com.recursiveloop.cms.exceptions.UnmarshalException;
+import javax.jcr.RepositoryException;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
@@ -32,7 +36,7 @@ public class RcTypesImpl implements RcTypes {
   JcrDao m_dao;
 
   @Override
-  public JsonObject getNames() throws Exception {
+  public JsonObject getNames() {
     JsonObjectBuilder obj = Json.createObjectBuilder();
     JsonArrayBuilder arr = Json.createArrayBuilder();
 
@@ -47,88 +51,114 @@ public class RcTypesImpl implements RcTypes {
   }
 
   @Override
-  public JsonObject getType(String name) throws Exception {
+  public JsonObject getType(String name) {
     try {
       ItemType type = m_dao.getType(name);
 
       return type.toJson();
     }
     catch (Exception ex) {
-      m_logger.log(Level.WARNING, "Error getting type '" + name + "'", ex);
+      m_logger.log(Level.WARNING, "Error retrieving type");
       throw ex;
     }
   }
 
   @Override
-  public Response insertType(JsonObject json) throws Exception {
+  public Response insertType(JsonObject json) throws
+    UnmarshalException, RepositoryException {
+
     try {
       ItemType type = new ItemType(json);
       m_dao.insertNewType(type);
+
+      return Response.ok().build();
     }
     catch (Exception ex) {
-      m_logger.log(Level.WARNING, "Error inserting type", ex);
+      m_logger.log(Level.WARNING, "Error inserting type");
       throw ex;
     }
-
-    return Response.ok().build();
   }
 
   @Override
-  public Response deleteType(String name) throws Exception {
+  public Response deleteType(String name) throws
+    RepositoryException, NoSuchResourceException {
+
     try {
       m_dao.deleteType(name);
+
+      return Response.ok().build();
+    }
+    catch (NoSuchTypeException ex) {
+      m_logger.log(Level.WARNING, "Error deleting type");
+      throw new NoSuchResourceException();
     }
     catch (Exception ex) {
-      m_logger.log(Level.WARNING, "Error deleting type", ex);
+      m_logger.log(Level.WARNING, "Error deleting type");
       throw ex;
     }
-
-    return Response.ok().build();
   }
 
   @Override
-  public Response updateField(String name, String field, JsonObject json) throws Exception {
+  public Response updateField(String name, String field, JsonObject json) throws
+    RepositoryException, NoSuchResourceException {
+
     try {
       ItemType type = m_dao.getType(name);
       type.removeField(field);
       type.addField(json);
 
       m_dao.updateType(type);
+
+      return Response.ok().build();
+    }
+    catch (NoSuchTypeException ex) {
+      m_logger.log(Level.WARNING, "Error updating field");
+      throw new NoSuchResourceException();
     }
     catch (Exception ex) {
-      m_logger.log(Level.WARNING, "Error updating field '" + field + "' of type '" + name + "'", ex);
+      m_logger.log(Level.WARNING, "Error updating field");
       throw ex;
     }
-
-    return Response.ok().build();
   }
 
   @Override
-  public Response insertField(String name, JsonObject json) throws Exception {
+  public Response insertField(String name, JsonObject json) throws
+    RepositoryException, NoSuchResourceException {
+
     try {
       ItemType type = m_dao.getType(name);
       type.addField(json);
 
       m_dao.updateType(type);
+
+      return Response.ok().build();
+    }
+    catch (NoSuchTypeException ex) {
+      m_logger.log(Level.WARNING, "Error inserting field");
+      throw new NoSuchResourceException();
     }
     catch (Exception ex) {
-      m_logger.log(Level.WARNING, "Error inserting field of type '" + name + "'", ex);
+      m_logger.log(Level.WARNING, "Error inserting field");
       throw ex;
     }
-
-    return Response.ok().build();
   }
 
   @Override
-  public Response deleteField(String name, String field) throws Exception {
+  public Response deleteField(String name, String field) throws
+    RepositoryException, NoSuchResourceException {
+
     try {
       m_dao.deleteField(name, field);
+
+      return Response.ok().build();
+    }
+    catch (NoSuchTypeException | NoSuchFieldException ex) {
+      m_logger.log(Level.WARNING, "Error deleting field");
+      throw new NoSuchResourceException();
     }
     catch (Exception ex) {
-      m_logger.log(Level.WARNING, "Error deleting field '" + field + "' of type '" + name + "'", ex);
+      m_logger.log(Level.WARNING, "Error deleting field");
       throw ex;
     }
-
-    return Response.ok().build();
   }
 }

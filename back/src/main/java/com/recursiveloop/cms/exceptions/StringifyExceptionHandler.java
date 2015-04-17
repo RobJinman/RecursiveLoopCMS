@@ -15,9 +15,9 @@ import javax.ws.rs.ext.Provider;
 
 
 @Provider
-public class NoSuchTypeExceptionHandler implements ExceptionMapper<NoSuchTypeException> {
+public class StringifyExceptionHandler implements ExceptionMapper<StringifyException> {
   @Override
-  public Response toResponse(NoSuchTypeException ex) {
+  public Response toResponse(StringifyException ex) {
     return Response.status(Status.CONFLICT).build();
   }
 }

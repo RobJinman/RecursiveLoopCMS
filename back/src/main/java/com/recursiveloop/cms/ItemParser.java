@@ -9,7 +9,8 @@
 package com.recursiveloop.cms;
 
 import com.recursiveloop.cms.parse.*;
-import com.recursiveloop.cms.exceptions.InvalidItemException;
+import com.recursiveloop.cms.exceptions.ParseException;
+import com.recursiveloop.cms.exceptions.StringifyException;
 import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
 import javax.ejb.Stateless;
@@ -36,7 +37,7 @@ public class ItemParser {
   LongParser m_longParser;
 
   public BinaryItem parse(StringItem strItem, ItemType itemType)
-    throws InvalidItemException {
+    throws ParseException {
 
     BinaryItem binItem = new BinaryItem(strItem);
 
@@ -75,7 +76,7 @@ public class ItemParser {
   }
 
   public StringItem stringify(BinaryItem binItem, ItemType itemType)
-    throws InvalidItemException {
+    throws StringifyException {
 
     StringItem strItem = new StringItem(binItem);
 

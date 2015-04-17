@@ -101,3 +101,20 @@ TYPE PROCESSING PHASES
 409 - Conflict
 422 - Unprocessable entity
 500 - Internal server error
+
+TOP LEVEL EXCEPTIONS (Propagated all the way to the exception handlers and converted into http responses)
+  - ReadException 500
+  - WriteException 500
+  - ParseException 422
+  - StringifyException 409
+  - MarshalException 500
+  - UnmarshalException 400, 422
+  - NoSuchResourceException 404
+  - AuthenticationFailureException 401
+  - NotAuthorisedException 403
+  - BadQueryStringException 400
+
+INTERNAL EXCEPTIONS (Must be caught)
+  - NoSuchFieldException
+  - NoSuchTypeException
+  - NoSuchItemException

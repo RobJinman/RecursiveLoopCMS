@@ -11,18 +11,18 @@ package com.recursiveloop.cms.exceptions;
 import java.io.Serializable;
 
 
-public class InvalidTypeException extends Exception implements Serializable {
+public class ParseException extends Exception implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public InvalidTypeException() {
+  public ParseException() {
     super();
   }
 
-  public InvalidTypeException(String msg) {
+  public ParseException(String msg) {
     super(msg);
   }
 
-  public InvalidTypeException(String msg, Exception e) {
+  public ParseException(String msg, Exception e) {
     super(msg, e);
   }
 }

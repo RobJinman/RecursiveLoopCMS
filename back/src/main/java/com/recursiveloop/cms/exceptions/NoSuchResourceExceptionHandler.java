@@ -15,9 +15,9 @@ import javax.ws.rs.ext.Provider;
 
 
 @Provider
-public class InvalidItemExceptionHandler implements ExceptionMapper<InvalidItemException> {
+public class NoSuchResourceExceptionHandler implements ExceptionMapper<NoSuchResourceException> {
   @Override
-  public Response toResponse(InvalidItemException ex) {
-    return Response.status(Status.BAD_REQUEST).build();
+  public Response toResponse(NoSuchResourceException ex) {
+    return Response.status(Status.NOT_FOUND).build();
   }
 }

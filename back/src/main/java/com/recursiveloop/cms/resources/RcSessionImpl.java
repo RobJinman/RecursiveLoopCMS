@@ -11,6 +11,7 @@ package com.recursiveloop.cms.resources;
 import com.recursiveloop.cms.models.MCredentials;
 import com.recursiveloop.cms.models.MSession;
 import com.recursiveloop.cms.exceptions.AuthenticationFailureException;
+import com.recursiveloop.cms.exceptions.MiscException;
 import com.recursiveloop.webcommon.annotations.Config;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletException;
@@ -40,7 +41,9 @@ public class RcSessionImpl implements RcSession {
   }
 
   @Override
-  public MSession create(HttpServletRequest request, MCredentials credentials) throws Exception {
+  public MSession create(HttpServletRequest request, MCredentials credentials)
+    throws AuthenticationFailureException, MiscException {
+
     try {
       if (request.getUserPrincipal() != null) {
         delete(request);
@@ -48,32 +51,34 @@ public class RcSessionImpl implements RcSession {
 
       request.getSession(true);
       request.login(credentials.getUsername(), credentials.getPassword());
+
+      return getUserSession(request);
     }
     catch (ServletException ex) {
-      m_logger.log(Level.INFO, "Login failed", ex);
+      m_logger.log(Level.INFO, "Login failed");
       throw new AuthenticationFailureException();
     }
+  }
 
+  @Override
+  public MSession get(HttpServletRequest request) {
     return getUserSession(request);
   }
 
   @Override
-  public MSession get(HttpServletRequest request) throws Exception {
-    return getUserSession(request);
-  }
+  public Response delete(HttpServletRequest request) throws
+    MiscException {
 
-  @Override
-  public Response delete(HttpServletRequest request) throws Exception {
     try {
       request.logout();
       request.getSession(true).invalidate();
+
+      return Response.ok().build();
     }
     catch (ServletException ex) {
-      m_logger.log(Level.INFO, "Logout failed", ex);
-      throw ex;
+      m_logger.log(Level.INFO, "Logout failed");
+      throw new MiscException(Status.INTERNAL_SERVER_ERROR);
     }
-
-    return Response.ok().build();
   }
 
   private MSession getUserSession(HttpServletRequest request) {

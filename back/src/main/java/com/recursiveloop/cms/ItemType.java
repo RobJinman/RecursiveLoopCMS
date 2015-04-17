@@ -8,7 +8,7 @@
 
 package com.recursiveloop.cms;
 
-import com.recursiveloop.cms.exceptions.InvalidTypeException;
+import com.recursiveloop.cms.exceptions.UnmarshalException;
 import com.recursiveloop.cms.jcrmodel.RlJcrItemType;
 import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
 import com.recursiveloop.cms.jcrmodel.RlJcrParserParam;
@@ -50,7 +50,7 @@ public class ItemType {
     m_type = type;
   }
 
-  public ItemType(JsonObject data) throws InvalidTypeException {
+  public ItemType(JsonObject data) throws UnmarshalException {
     m_type = new RlJcrItemType();
 
     try {
@@ -68,7 +68,7 @@ public class ItemType {
       }
     }
     catch (NullPointerException|ClassCastException ex) {
-      throw new InvalidTypeException("Error constructing type from JSON object; property missing?", ex);
+      throw new UnmarshalException("Error constructing type from JSON object; property missing?", ex);
     }
   }
 

@@ -8,7 +8,8 @@
 
 package com.recursiveloop.cms;
 
-import com.recursiveloop.cms.exceptions.InvalidItemException;
+import com.recursiveloop.cms.exceptions.ReadException;
+import com.recursiveloop.cms.exceptions.WriteException;
 import com.recursiveloop.cms.jcrmodel.RlJcrFieldType;
 import java.util.Map;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class BinaryItem extends ShallowItem {
   private Map<String, JcrProperty> m_data;
 
   public BinaryItem(Node node, ItemType itemType)
-    throws RepositoryException, InvalidItemException {
+    throws RepositoryException, ReadException {
 
     super(node);
 
@@ -71,7 +72,7 @@ public class BinaryItem extends ShallowItem {
   }
 
   @Override
-  public void writeTo(Node node) throws InvalidItemException, RepositoryException { // TODO: Validation check
+  public void writeTo(Node node) throws WriteException, RepositoryException { // TODO: Validation check
     super.writeTo(node);
 
     Iterator<Map.Entry<String, JcrProperty>> i = m_data.entrySet().iterator();
@@ -107,7 +108,7 @@ public class BinaryItem extends ShallowItem {
       }
     }
     catch (ValueFormatException ex) {
-      throw new InvalidItemException("Error committing item", ex);
+      throw new WriteException("Error committing item", ex);
     }
   }
 

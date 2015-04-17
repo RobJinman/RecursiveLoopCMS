@@ -22,7 +22,7 @@ public class RcRepositoryImpl implements RcRepository {
   private final static Logger m_logger = Logger.getLogger(RcRepositoryImpl.class.getName());
 
   @Override
-  public JsonObject getJcrTypeNames(HttpServletRequest request) throws Exception {
+  public JsonObject getJcrTypeNames(HttpServletRequest request) throws BadQueryStringException {
     String key = request.getParameter("key"); // Expects one of 'name' or 'value'
     if (key == null) {
       key = "name";
@@ -47,7 +47,7 @@ public class RcRepositoryImpl implements RcRepository {
         .add(Integer.toString(PropertyType.STRING), "string").build();
     }
     else {
-      throw new BadQueryStringException();
+      throw new BadQueryStringException(request.getQueryString());
     }
   }
 }

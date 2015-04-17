@@ -12,12 +12,18 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 
 
 @Provider
 public class BadQueryStringExceptionHandler implements ExceptionMapper<BadQueryStringException> {
   @Override
   public Response toResponse(BadQueryStringException ex) {
-    return Response.status(Status.FORBIDDEN).build();
+    JsonObjectBuilder json = Json.createObjectBuilder();
+    json.add("queryString", ex.getQueryString())
+      .add("message", ex.getMessage());
+
+    return Response.status(Status.BAD_REQUEST).entity(json.build()).build();
   }
 }

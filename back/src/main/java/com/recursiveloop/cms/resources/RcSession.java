@@ -10,6 +10,8 @@ package com.recursiveloop.cms.resources;
 
 import com.recursiveloop.cms.models.MCredentials;
 import com.recursiveloop.cms.models.MSession;
+import com.recursiveloop.cms.exceptions.AuthenticationFailureException;
+import com.recursiveloop.cms.exceptions.MiscException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Context;
@@ -31,17 +33,19 @@ public interface RcSession {
   * Begin a new authenticated session
   */
   @POST
-  public MSession create(@Context HttpServletRequest request, MCredentials credentials) throws Exception;
+  public MSession create(@Context HttpServletRequest request, MCredentials credentials) throws
+    AuthenticationFailureException, MiscException;
 
   /**
   * Retrieve the current session
   */
   @GET
-  MSession get(@Context HttpServletRequest request) throws Exception;
+  MSession get(@Context HttpServletRequest request);
 
   /**
   * Delete the current session
   */
   @DELETE
-  public Response delete(@Context HttpServletRequest request) throws Exception;
+  public Response delete(@Context HttpServletRequest request) throws
+    MiscException;
 }

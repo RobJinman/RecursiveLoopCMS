@@ -8,7 +8,9 @@
 
 package com.recursiveloop.cms;
 
-import com.recursiveloop.cms.exceptions.InvalidItemException;
+import com.recursiveloop.cms.exceptions.ReadException;
+import com.recursiveloop.cms.exceptions.WriteException;
+import com.recursiveloop.cms.exceptions.UnmarshalException;
 import com.recursiveloop.cms.jcrmodel.RlJcrItem;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -37,7 +39,7 @@ public class ShallowItem extends RlJcrItem {
   /**
   * Does not add children
   */
-  public ShallowItem(Node node) throws RepositoryException, InvalidItemException {
+  public ShallowItem(Node node) throws RepositoryException, ReadException {
     super("folder");
     super.setPath(node.getPath());
 
@@ -49,7 +51,7 @@ public class ShallowItem extends RlJcrItem {
         super.setTypeName(prop.getString());
       }
       catch (PathNotFoundException ex) {
-        throw new InvalidItemException("Error constucting item from JCR node; property missing", ex);
+        throw new ReadException("Error constucting item from JCR node; property missing", ex);
       }
     }
 
@@ -59,7 +61,7 @@ public class ShallowItem extends RlJcrItem {
   /**
   * Does not add children
   */
-  public ShallowItem(JsonObject json) throws InvalidItemException {
+  public ShallowItem(JsonObject json) throws UnmarshalException {
     try {
       super.setPath(json.getString("path"));
       super.setTypeName(json.getString("typeName"));
@@ -67,8 +69,8 @@ public class ShallowItem extends RlJcrItem {
       m_name = json.getString("itemName");
       m_children = new ArrayList<ShallowItem>();
     }
-    catch (NullPointerException|ClassCastException ex) {
-      throw new InvalidItemException("Error constructing item from JSON object; property missing?", ex);
+    catch (NullPointerException | ClassCastException ex) {
+      throw new UnmarshalException("Error constructing item from JSON object; property missing?", ex);
     }
   }
 
@@ -112,7 +114,7 @@ public class ShallowItem extends RlJcrItem {
     }
   }
 
-  public void writeTo(Node node) throws InvalidItemException, RepositoryException {
+  public void writeTo(Node node) throws WriteException, RepositoryException {
     write(node);
   }
 }
