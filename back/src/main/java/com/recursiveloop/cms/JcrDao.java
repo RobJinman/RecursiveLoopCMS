@@ -79,9 +79,9 @@ public class JcrDao {
       Repository repository = JcrUtils.getRepository();
       m_session = repository.login(new SimpleCredentials("admin", "admin".toCharArray())); // TODO
 
-      Value transactionSupport = repository.getDescriptorValue(Repository.OPTION_TRANSACTIONS_SUPPORTED);
-      if (transactionSupport.getBoolean() == false) {
-        m_logger.log(Level.SEVERE, "Repository does not support transactions");
+      Value versioningSupport = repository.getDescriptorValue(Repository.OPTION_VERSIONING_SUPPORTED);
+      if (versioningSupport.getBoolean() == false) {
+        m_logger.log(Level.SEVERE, "Repository does not support versioning");
       }
 
       List<Class> classes = new ArrayList<Class>();	

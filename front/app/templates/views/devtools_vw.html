@@ -1,5 +1,9 @@
 <div class="devtools-vw">
   <div id="content">
+    <div data-ng-if="ctrl.current.type" class="type-info">
+      <span class="lbl-type-info">Type: </span><span class="type-info-dat">{{ ctrl.current.type.typeName }}</span>
+    </div>
+
     <table data-ng-if="ctrl.current.type" id="tbl-fields" class="table table-striped">
       <thead>
         <tr>
@@ -128,6 +132,7 @@
     data-ng-repeat="typeName in ctrl.typeList.typeNames"
     data-ng-if="typeName !== 'folder'"
     data-ng-click="ctrl.onTypeSelection(typeName)"
+    data-ng-class="{ 'selected': typeName === ctrl.current.type.typeName }"
     class="list-group-item type-link">
       <span>{{ typeName }}</span>
       <i class="mnu-delete-type glyphicon" data-ng-click="ctrl.onDeleteTypeClick(typeName, $event)"></i>
